@@ -51,9 +51,3 @@ jobs:
             --instance-ids "$INSTANCE_ID" \
             --query Reservations[0].Instances[0].PublicIpAddress --output text)
           echo "PUBLIC_IP=$PUBLIC_IP" >> $GITHUB_OUTPUT
-
-      - name: Health-check
-        run: |
-          echo "Esperando a que Ollama esté listo..."
-          until curl -f http://${{ steps.ec2.outputs.PUBLIC_IP }}:11434/api/tags; do sleep 15; done
-          echo "Ollama OK"
