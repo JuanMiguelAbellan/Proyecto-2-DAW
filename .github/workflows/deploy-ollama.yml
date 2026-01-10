@@ -5,7 +5,7 @@ on:
   push:
     branches: [main]
     paths: ["ollama/**"]
-#
+
 env:
   AWS_REGION: us-east-1
   KEY_PAIR_NAME: ${{ secrets.KEY_PAIR_NAME }}
@@ -38,7 +38,7 @@ jobs:
         id: ec2
         run: |
           INSTANCE_ID=$(aws ec2 run-instances \
-            --image-id ami-0fc970cb875c1d4e9 \
+            --image-id ami-0ecb62995f68bb549 \
             --instance-type t3.micro \
             --key-name "${{ secrets.KEY_PAIR_NAME }}" \
             --security-groups iad-ollama-sg \
