@@ -45,9 +45,7 @@ jobs:
             --user-data "file://$GITHUB_WORKSPACE/.github/scripts/init-ec2-ollama.sh" \
             --tag-specifications "ResourceType=instance,Tags=[{Key=Name,Value=iad-ollama}]" \
             --query Instances[0].InstanceId --output text)
-          echo "INSTANCE_ID=$INSTANCE_ID" >> $GITHUB_OUTPUT
           aws ec2 wait instance-running --instance-ids "$INSTANCE_ID"
           PUBLIC_IP=$(aws ec2 describe-instances \
             --instance-ids "$INSTANCE_ID" \
             --query Reservations[0].Instances[0].PublicIpAddress --output text)
-          echo "PUBLIC_IP=$PUBLIC_IP" >> $GITHUB_OUTPUT
