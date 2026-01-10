@@ -23,7 +23,11 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws_session_token: ${{ secrets.AWS_SESSION_TOKEN }}
           aws-region: ${{ env.AWS_REGION }}
+
+      - name: Make scripts executable
+        run: chmod +x .github/scripts/*.sh
 
       - name: Create / update security group
         run: |
@@ -36,17 +40,20 @@ jobs:
           INSTANCE_ID=$(aws ec2 run-instances \
             --image-id ami-0fc970cb875c1d4e9 \
             --instance-type t3.micro \
-            --key-name "$KEY_PAIR_NAME" \
+            --key-name "${{ secrets.KEY_PAIR_NAME }}" \
             --security-groups iad-ollama-sg \
-            --user-data "file://$GITHUB_WORKSPACE/ollama/init-ec2-ollama.sh" \
+            --user-data "file://$GITHUB_WORKSPACE/.github/scripts/init-ec2-ollama.sh" \
             --tag-specifications "ResourceType=instance,Tags=[{Key=Name,Value=iad-ollama}]" \
             --query Instances[0].InstanceId --output text)
           echo "INSTANCE_ID=$INSTANCE_ID" >> $GITHUB_OUTPUT
           aws ec2 wait instance-running --instance-ids "$INSTANCE_ID"
-          PUBLIC_IP=$(aws ec2 describe-instances --instance-ids "$INSTANCE_ID" --query Reservations[0].Instances[0].PublicIpAddress --output text)
+          PUBLIC_IP=$(aws ec2 describe-instances \
+            --instance-ids "$INSTANCE_ID" \
+            --query Reservations[0].Instances[0].PublicIpAddress --output text)
           echo "PUBLIC_IP=$PUBLIC_IP" >> $GITHUB_OUTPUT
 
       - name: Health-check
         run: |
+          echo "Esperando a que Ollama esté listo..."
           until curl -f http://${{ steps.ec2.outputs.PUBLIC_IP }}:11434/api/tags; do sleep 15; done
           echo "Ollama OK"
