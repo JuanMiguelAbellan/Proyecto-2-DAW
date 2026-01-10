@@ -1,0 +1,52 @@
+name: Deploy Ollama EC2
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ["ollama/**"]
+
+env:
+  AWS_REGION: eu-west-1
+  KEY_PAIR_NAME: ${{ secrets.KEY_PAIR_NAME }}
+  S3_BUCKET: ${{ secrets.S3_BUCKET }}
+  EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Create / update security group
+        run: |
+          aws ec2 create-security-group --group-name iad-ollama-sg --description "Ollama 11434" || true
+          aws ec2 authorize-security-group-ingress --group-name iad-ollama-sg --protocol tcp --port 11434 --cidr 0.0.0.0/0 || true
+
+      - name: Launch EC2
+        id: ec2
+        run: |
+          INSTANCE_ID=$(aws ec2 run-instances \
+            --image-id ami-0fc970cb875c1d4e9 \
+            --instance-type t3.micro \
+            --key-name "$KEY_PAIR_NAME" \
+            --security-groups iad-ollama-sg \
+            --user-data "file://$GITHUB_WORKSPACE/ollama/init-ec2-ollama.sh" \
+            --tag-specifications "ResourceType=instance,Tags=[{Key=Name,Value=iad-ollama}]" \
+            --query Instances[0].InstanceId --output text)
+          echo "INSTANCE_ID=$INSTANCE_ID" >> $GITHUB_OUTPUT
+          aws ec2 wait instance-running --instance-ids "$INSTANCE_ID"
+          PUBLIC_IP=$(aws ec2 describe-instances --instance-ids "$INSTANCE_ID" --query Reservations[0].Instances[0].PublicIpAddress --output text)
+          echo "PUBLIC_IP=$PUBLIC_IP" >> $GITHUB_OUTPUT
+
+      - name: Health-check
+        run: |
+          until curl -f http://${{ steps.ec2.outputs.PUBLIC_IP }}:11434/api/tags; do sleep 15; done
+          echo "Ollama OK"
