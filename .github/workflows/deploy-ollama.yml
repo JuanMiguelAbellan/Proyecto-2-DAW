@@ -7,7 +7,7 @@ on:
     paths: ["ollama/**"]
 #
 env:
-  AWS_REGION: eu-west-1
+  AWS_REGION: us-east-1
   KEY_PAIR_NAME: ${{ secrets.KEY_PAIR_NAME }}
   S3_BUCKET: ${{ secrets.S3_BUCKET }}
   EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
