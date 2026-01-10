@@ -1,0 +1,13 @@
+{
+  "AWSEBDockerrunVersion": "1",
+  "Image": {
+    "Name": "ollama/ollama
+  },
+  "Ports": [
+    {
+      "ContainerPort": 11434,
+      "HostPort": 11434
+    }
+  ],
+  "Logging": "/var/log/ollama"
+}
