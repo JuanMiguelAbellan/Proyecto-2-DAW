@@ -1,0 +1,18 @@
+:root{
+    --background-color: hsla(219, 34%, 62%, 100%);
+    --background-color-chats: hsla(198, 31%, 67%, 100%);
+    --background-color-chat-selected: hsla(197, 30%, 63%, 100%);
+    --background-color-text-user: hsla(277, 41%, 66%, 100%);
+    --background-color-text-user-doc: hsla(277, 14%, 57%, 100%);
+    --background-color-text-ia: hsla(197, 77%, 44%, 100%);
+    --background-color-text-ia-selected: hsla(183, 59%, 45%, 100%);
+    --background-color-text-ia-doc: hsla(197, 52%, 38%, 100%);
+    --background-color-menu: hsla(180, 44%, 89%, 75%);
+    --color-text: hsla(0, 0, 0, 100%);
+    --family-font-conversacion: Verdana, Geneva, Tahoma, sans-serif; 
+    --font-size-chat: 16px;
+    --font-size-menu: 14px;
+    --img-height-menu: 25px;
+    --img-height-menu-sub2: 16px;
+    --logo-height-menu: 30px;
+}
