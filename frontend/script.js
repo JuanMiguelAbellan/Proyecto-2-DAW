@@ -26,7 +26,7 @@ function crearMensaje(clase, contenido){
         mensaje.setAttribute("class", clase)
         mensaje.append(document.createElement("span"))
         document.querySelector(".emoji").before(mensaje)
-        input.value = ""
+        input.value = " "
     }else{
         mensaje = document.createElement("p")
         mensaje.textContent = contenido
