@@ -39,7 +39,7 @@ jobs:
         with: 
           task-definition: despliegue/ecs-task-definition-front.json
           container-name: Main 
-          image: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPOSITORY_FRONT }}:latest
+          image: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECS_REPOSITORY_FRONT }}:latest
       - name: Deploy new task definition to ECS 
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1 
         with: 
