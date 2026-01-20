@@ -1,0 +1,22 @@
+{
+  "family": "default-frontend-705b",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "256",
+  "memory": "512",
+  "executionRoleArn": "arn:aws:iam::808668160477:role/LabRole",
+  "taskRoleArn": "arn:aws:iam::808668160477:role/LabRole",
+  "containerDefinitions": [
+    {
+      "name": "frontend",
+      "image": "<IMAGE_URI>",
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 80,
+          "protocol": "tcp"
+        }
+      ]
+    }
+  ]
+}

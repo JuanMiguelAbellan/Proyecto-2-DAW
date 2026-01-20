@@ -33,10 +33,16 @@ jobs:
       - name: Push image to ECR
         run: |
           docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/iadocs/frontend:latest
-
-      - name: Deploy to ECS Express
-        run: |
-          aws ecs update-service \
-            --cluster ${{ secrets.ECS_CLUSTER }} \
-            --service ${{ secrets.ECS_SERVICE_FRONT }} \
-            --force-new-deployment
+      - name: Render new task definition 
+        id: taskdef 
+        uses: aws-actions/amazon-ecs-render-task-definition@v1 
+        with: 
+          task-definition: ecs-task-definition-front.json 
+          container-name: frontend 
+          image: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPOSITORY_FRONT }}:latest
+      - name: Deploy new task definition to ECS 
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1 
+        with: 
+          task-definition: ${{ steps.taskdef.outputs.task-definition }} 
+          service: ${{ secrets.ECS_SERVICE_FRONT }}
+          cluster: ${{ secrets.ECS_CLUSTER }}
