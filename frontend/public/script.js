@@ -21,7 +21,9 @@ function listeners(){
 
 function crearMensaje(clase, contenido){
     let input = document.querySelector("#campo")
+
     if(clase === "mensaje_ia_wait"){
+        
         mensaje = document.createElement("p")
         span = document.createElement("span")
         mensaje.setAttribute("class", clase)
