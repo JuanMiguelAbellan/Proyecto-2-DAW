@@ -1,9 +1,6 @@
-import React from "react"
-
 document.addEventListener("DOMContentLoaded", listeners)
 
 function listeners(){
-    let button = new Element
     button = document.querySelector(".enviar")
     let input = document.querySelector("#campo")
 
@@ -23,6 +20,7 @@ function listeners(){
 }
 
 function crearMensaje(clase, contenido){
+    let input = document.querySelector("#campo")
     if(clase === "mensaje_ia_wait"){
         mensaje = document.createElement("p")
         span = document.createElement("span")
