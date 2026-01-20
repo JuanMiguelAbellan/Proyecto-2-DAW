@@ -1,9 +1,10 @@
 document.addEventListener("DOMContentLoaded", listeners)
 
 function listeners(){
+    let button = new Element
     button = document.querySelector(".enviar")
-    input = document.querySelector("#campo")
-    
+    let input = document.querySelector("#campo")
+
     button.addEventListener("click", function(e){
         let text = input.value
         crearMensaje("mensaje_usuario", text)
