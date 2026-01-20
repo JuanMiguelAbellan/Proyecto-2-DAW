@@ -1,8 +1,8 @@
 document.addEventListener("DOMContentLoaded", listeners)
 
 function listeners(){
-    button = document.querySelector(".enviar")
-    input = document.querySelector("#campo")
+    let button = document.querySelector(".enviar")
+    let input = document.querySelector("#campo")
     
     button.addEventListener("click", function(e){
         let text = input.value
