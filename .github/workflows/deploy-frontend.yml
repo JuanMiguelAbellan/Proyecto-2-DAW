@@ -25,7 +25,7 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t frontend .
+          docker build -t iadocs/frontend ./frontend
 
       - name: Tag image
         run: |
@@ -38,6 +38,6 @@ jobs:
       - name: Deploy to ECS Express
         run: |
           aws ecs update-service \
-            --cluster default \
-            --service frontend-705b \
+            --cluster ${{ secrets.ECS_CLUSTER }} \
+            --service ${{ secrets.ECS_SERVICE_FRONT }} \
             --force-new-deployment
