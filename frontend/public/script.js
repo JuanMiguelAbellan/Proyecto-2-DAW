@@ -23,6 +23,7 @@ function listeners(){
 
 function crearMensaje(clase, contenido){
     console.log(contenido);
+    let input = document.querySelector("#campo")
     
     if(clase === "mensaje_ia_wait"){
         let mensaje = document.createElement("p")
