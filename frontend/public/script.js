@@ -25,14 +25,14 @@ function crearMensaje(clase, contenido){
     console.log(contenido);
     
     if(clase === "mensaje_ia_wait"){
-        mensaje = document.createElement("p")
-        span = document.createElement("span")
+        let mensaje = document.createElement("p")
+        let span = document.createElement("span")
         mensaje.setAttribute("class", clase)
         mensaje.append(document.createElement("span"))
         document.querySelector(".emoji").before(mensaje)
         input.value = ""
     }else{
-        mensaje = document.createElement("p")
+        let mensaje = document.createElement("p")
         mensaje.textContent = contenido
         mensaje.setAttribute("class", clase)
         document.querySelector(".emoji").before(mensaje)
