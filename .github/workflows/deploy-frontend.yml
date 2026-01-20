@@ -37,7 +37,7 @@ jobs:
         id: taskdef 
         uses: aws-actions/amazon-ecs-render-task-definition@v1 
         with: 
-          task-definition: ecs-task-definition-front.json 
+          task-definition: ./despliegue/ecs-task-definition-front.json 
           container-name: frontend 
           image: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPOSITORY_FRONT }}:latest
       - name: Deploy new task definition to ECS 
