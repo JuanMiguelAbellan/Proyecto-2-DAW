@@ -22,14 +22,19 @@ function listeners(){
 }
 
 function crearMensaje(clase, contenido){
-    console.log(contenido);
     let input = document.querySelector("#campo")
     
     if(clase === "mensaje_ia_wait"){
         let mensaje = document.createElement("p")
-        let span = document.createElement("span")
         mensaje.setAttribute("class", clase)
         mensaje.append(document.createElement("span"))
+        document.querySelector(".emoji").before(mensaje)
+        input.value = ""
+    }else if(clase === "mensaje_ia"){
+        let mensaje = document.createElement("p")
+        document.querySelector(".mensaje_ia_wait").remove()
+        mensaje.textContent = contenido
+        mensaje.setAttribute("class", clase)
         document.querySelector(".emoji").before(mensaje)
         input.value = ""
     }else{
@@ -42,24 +47,44 @@ function crearMensaje(clase, contenido){
 }
 
 function getRespuesta(pregunta){
-    const URL = "http://localhost:8080/api"
+    const URL = "http://localhost:11434/api/generate"
     const myHeaders = new Headers();
-    myHeaders.append("Authorization", 
-        "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwZXBpdG81LnBlcGUuQGdtYWlsLmNvbSIsImlhdCI6MTc2ODkxMDEzMywiZXhwIjoxNzY4OTEzNzMzfQ.4K2qSyQSqxseI5mCzX29euEx_dZMY1FAEiwZmCxxhHc");
+    const json = {
+        "model": "gemma3:latest",
+        "prompt": pregunta,
+        "stream": false, //--> Para recibir una respuesta unica
+        //"format": "json" 
+        //"context": [105, 2364, 107, ...] //--> Para continuar una conversacion sin tener que enviar todo el historial (que lo devuelve al final de la respuesta)
+        //"system": "Eres un asistente especializado en..." //--> Instrucciones del sistema
+        //"image": ["<base64>"] //--> Para modelos que soporten entrada de imagen
+        //"max_new_tokens": 150 //--> Longitud máxima de la respuesta
+        //"temperature": 0.7 //--> Creatividad
 
-    const requestOptions = {
-        method: "GET",
-        headers: myHeaders
+        //"top_p": 0.9 //--> Probabilidad acumulada cuanto mayor, más creatividad
+        //"top_k": 50 //--> nº de tokens candidatos a considerar por el top_p cuanto mayor, más variado por defecto 0 sin limite
+        //"repetition_penalty": 1.2 //--> Penalización por repetición
+        //"presence_penalty": 0.2 //--> Penalización si ya se habló del tema cuanto mayor, mas evita repetir temas
+        //"frequency_penalty": 0.2 //--> Penalización por frecuencia de palabras
+        //"stop": ["\n", ###] //--> Secuencias de parada para cortar respuestas largas
+        
     };
-    fetch(URL+"/tareas/6", requestOptions)
+    myHeaders.append(
+        "Content-Type", "application/json"
+    )
+    const requestOptions = {
+        method: "POST",
+        headers: myHeaders,
+        redirect: 'follow',
+        body: JSON.stringify(json)
+    };
+    fetch(URL, requestOptions)
     .then(response => {
         if(response.ok){
             return response.json()
         }else{
-            console.log(response);
             throw new Error(response.statusText)
         }
     })
-    .then(data => crearMensaje("mensaje_ia" , data.texto))
+    .then(data => crearMensaje("mensaje_ia", data.response))
     .catch(error => console.log(error))
 }
