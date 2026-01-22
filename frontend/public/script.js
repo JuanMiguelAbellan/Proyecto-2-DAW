@@ -28,20 +28,20 @@ function crearMensaje(clase, contenido){
         let mensaje = document.createElement("p")
         mensaje.setAttribute("class", clase)
         mensaje.append(document.createElement("span"))
-        document.querySelector(".emoji").before(mensaje)
+        document.querySelector(".mensajes").appendChild(mensaje)
         input.value = ""
     }else if(clase === "mensaje_ia"){
         let mensaje = document.createElement("p")
         document.querySelector(".mensaje_ia_wait").remove()
         mensaje.textContent = contenido
         mensaje.setAttribute("class", clase)
-        document.querySelector(".emoji").before(mensaje)
+        document.querySelector(".mensajes").appendChild(mensaje)
         input.value = ""
     }else{
         let mensaje = document.createElement("p")
         mensaje.textContent = contenido
         mensaje.setAttribute("class", clase)
-        document.querySelector(".emoji").before(mensaje)
+        document.querySelector(".mensajes").appendChild(mensaje)
         input.value = ""
     }
 }

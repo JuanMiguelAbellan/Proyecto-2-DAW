@@ -7,7 +7,8 @@
     --background-color-text-ia: hsla(197, 77%, 44%, 100%);
     --background-color-text-ia-selected: hsla(183, 59%, 45%, 100%);
     --background-color-text-ia-doc: hsla(197, 52%, 38%, 100%);
-    --background-color-menu: hsla(180, 44%, 89%, 75%);
+    --background-color-menu: hsla(0, 10%, 92%, 0.966);
+    --background-color-body: hsla(180, 90%, 92%, 0.75);
     --color-text: hsla(0, 0, 0, 100%);
     --family-font-conversacion: Verdana, Geneva, Tahoma, sans-serif; 
     --font-size-chat: 16px;
