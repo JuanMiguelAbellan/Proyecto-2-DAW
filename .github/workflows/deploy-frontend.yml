@@ -25,14 +25,14 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t iadocs/frontend ./frontend
+          docker build -t ${{ secrets.ECS_REPOSITORY_FRONT }} ./frontend
 
       - name: Tag image
         run: |
-          docker tag iadocs/frontend:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/iadocs/frontend:latest
+          docker tag ${{ secrets.ECS_REPOSITORY_FRONT }}:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECS_REPOSITORY_FRONT }}:latest
       - name: Push image to ECR
         run: |
-          docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/iadocs/frontend:latest
+          docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECS_REPOSITORY_FRONT }}:latest
       - name: Render new task definition 
         id: taskdef 
         uses: aws-actions/amazon-ecs-render-task-definition@v1 
