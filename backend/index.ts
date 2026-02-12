@@ -1,16 +1,17 @@
 import express from "express";
-import aiRoutes from "./src/routes/ai.routes";
+import routerUsuario from "./Usuarios/infrastructure/rest/usuario.rest"
+import routerIA from "./Ollama/infrastructure/rest/ia.controller"
 import dotenv from "dotenv";
 
 dotenv.config();
 const app = express();
+const port = 8080;
 const api = "/api/";
-const PORT = process.env.PORT || 4000;
 
-app.use(express.json());
+app.use(express.json())
+app.use(`${api}usuarios`, routerUsuario);
+app.use(`${api}tareas`, routerIA)
 
-app.use("/api/ai", aiRoutes);
-
-app.listen(PORT, () => {
-  console.log(`Servidor escuchando en http://localhost:${PORT}`);
+app.listen(port, () => {
+  console.log(`Application started on port ${port}`);
 });
