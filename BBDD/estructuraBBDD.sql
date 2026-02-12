@@ -30,18 +30,33 @@ CREATE TABLE subscripcion (
 CREATE TABLE chats (
     id_chat     SERIAL,
     id_usuario  INTEGER NOT NULL,
-    historial   TEXT[] DEFAULT '{}',
+    titulo VARCHAR(255),
+    creado_en TIMESTAMP NOT NULL DEFAULT NOW(),
+    context JSONB DEFAULT '[]', -- Tokens devueltos por Ollama
     PRIMARY KEY (id_chat, id_usuario),
     CONSTRAINT fk_chat_usuario
         FOREIGN KEY (id_usuario) REFERENCES usuarios (id_usuario)
         ON DELETE CASCADE
 );
 
+CREATE TABLE mensajes (
+    id_mensaje   SERIAL PRIMARY KEY,
+    id_chat      INTEGER NOT NULL REFERENCES chats(id_chat) ON DELETE CASCADE,
+    rol          VARCHAR(20) NOT NULL,
+    contenido    TEXT NOT NULL,
+    creado_en    TIMESTAMP NOT NULL DEFAULT NOW(),
+    CONSTRAINT fk_mensaje_chat
+        FOREIGN KEY (id_chat) REFERENCES chats (id_chat)
+        ON DELETE CASCADE
+);
+
+
 CREATE TABLE documentos (
     id_documento    SERIAL,
     id_chat         INTEGER NOT NULL,
     tipo            tipo_documento NOT NULL,
     s3_key          VARCHAR(500) NOT NULL,
+    creado_en TIMESTAMP NOT NULL DEFAULT NOW()
     PRIMARY KEY (id_documento, id_chat),
     CONSTRAINT fk_documento_chat
         FOREIGN KEY (id_chat) REFERENCES chats (id_chat)
