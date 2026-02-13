@@ -1,14 +1,16 @@
 import executeQuery from "../../../context/db/postgres.connector";
 import IaReposiroty from "../../domain/ia.repository";
+import Chat from "../../domain/Chat"
+import Mensaje from "../../domain/Mensaje"
 
 export default class IaRepositoryPostgres implements IaReposiroty{
-    crearChat(idUsuario: Number): Promise<void> {
+    async crearChat(idUsuario: Number ): Promise<void> {
         throw new Error("Method not implemented.");
     }
-    guardarRespuesta(idChat: Number): Promise<void> {
+    async guardarRespuesta(respuesta: Mensaje, idChat?: Number): Promise<void> {
         throw new Error("Method not implemented.");
     }
-    guardarDocumentoRes(idChat: number): Promise<void> {
+    async guardarDocumentoRespuesta(documento: Mensaje, idChat?: Number): Promise<void> {
         throw new Error("Method not implemented.");
     }
     async addPreferencia(preferencia: String, id:Number): Promise<String> {
