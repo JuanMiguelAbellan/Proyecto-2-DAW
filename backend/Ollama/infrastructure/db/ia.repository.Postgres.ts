@@ -17,7 +17,7 @@ export default class IaRepositoryPostgres implements IaReposiroty{
         const query=`'${idChatNuevo}'`
         throw new Error("Method not implemented.");
     }
-    async guardarDocumentoRespuesta(documento: Mensaje, idChat?: Number, idUsuario?:Number): Promise<void> {
+    async guardarDocumentoRespuesta(documento: Mensaje, key:String, idChat?: Number, idUsuario?:Number): Promise<void> {
         let idChatNuevo
         if(idChat == null && idUsuario != null){
             idChatNuevo=this.crearChat(idUsuario)

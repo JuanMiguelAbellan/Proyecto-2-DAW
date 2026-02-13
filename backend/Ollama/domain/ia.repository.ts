@@ -6,5 +6,5 @@ export default interface IaReposiroty{
     addPreferencia(preferencia: String, idUsuario: Number): Promise<String>
     editPreferencia(preferencias: String, idUsuario: Number): Promise<String>
     guardarRespuesta(respuesta: Mensaje, idChat?: Number, idUsuario?:Number): Promise<void>
-    guardarDocumentoRespuesta(documento: Mensaje, idChat?: Number, idUsuario?:Number): Promise<void>
+    guardarDocumentoRespuesta(documento: Mensaje, key:String, idChat?: Number, idUsuario?:Number): Promise<void>
 }
