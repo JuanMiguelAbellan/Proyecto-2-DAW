@@ -18,7 +18,7 @@ export default class IaUseCases{
 
     insertDocumento(documento:any){}
 
-    async getRespuesta(prompt:string, tipoSub:string, idUsuario:Number, idChat:Number):Promise<Mensaje>{
+    async getRespuesta(prompt:string, tipoSub:string, idUsuario:Number, idChat?:Number):Promise<Mensaje>{
         let json = {
             model: "gemma3:latest",
             prompt: prompt,
