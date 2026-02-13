@@ -16,7 +16,9 @@ export default class IaUseCases{
         return this.iaRepository.editPreferencia(preferencais, id)
     }
 
-    insertDocumento(documento:any){}
+    insertDocumento(documento:any){
+        //Insertarlo en BBDD y en la S3
+    }
 
     async getRespuesta(prompt:string, tipoSub:string, idUsuario:Number, idChat?:Number):Promise<Mensaje>{
         let json = {
