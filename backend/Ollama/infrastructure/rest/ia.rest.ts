@@ -12,8 +12,8 @@ const routerIA = express.Router();
 routerIA.post("/generate", isAuth, async (req: Request, res: Response)=>{
     const { prompt, tipo, idChat} = req.body;
     const idUsuario = req.body.idUser
-    const respuesta=iaUsecases.getRespuesta(prompt, tipo, idUsuario, idChat)
-    if(respuesta == null){
+    const respuesta=await iaUsecases.getRespuesta(prompt, tipo, idUsuario, idChat)
+    if(respuesta.contenido == null || respuesta.contenido == ""){
         res.status(500).send("Error al contactar con Ollama")
     }
     res.status(200).send(respuesta)
@@ -21,9 +21,8 @@ routerIA.post("/generate", isAuth, async (req: Request, res: Response)=>{
 
 routerIA.post("/nuevo", async (req: Request, res: Response)=>{
     const {usuario} = req.body;
-    const idChat= req.body.idChat
     let prompt = "Comportamiento + info usuario"
-    const respuesta=await iaUsecases.getRespuesta(prompt, usuario.tipo, usuario.id, idChat)
+    const respuesta=await iaUsecases.getRespuesta(prompt, usuario.tipo, usuario.id)
     if(respuesta.contenido == null || respuesta.contenido == ""){
         res.status(500).send("Error al contactar con Ollama")
     }
