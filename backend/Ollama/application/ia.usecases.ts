@@ -16,8 +16,11 @@ export default class IaUseCases{
         return this.iaRepository.editPreferencia(preferencais, id)
     }
 
-    insertDocumento(documento:any){
-        //Insertarlo en BBDD y en la S3
+    async insertDocumento(documento:any):Promise<String>{
+        //Insertarlo en BBDD y en la S3, primero en s3 para obtener la key
+        let key = this.iaController.guardarDocS3(documento).then((e)=>{return e})
+        
+        return key
     }
 
     async getRespuesta(prompt:string, tipoSub:string, idUsuario:Number, idChat?:Number):Promise<Mensaje>{
@@ -61,7 +64,7 @@ export default class IaUseCases{
         else if(texto.includes("//*")){
             const docInsert = texto.substring(texto.indexOf("//*"), texto.indexOf("*//"))
             const textoDevolver = texto.substring(texto.indexOf("*//"))
-            this.insertDocumento(docInsert)
+            let key = this.insertDocumento(docInsert)
             mensaje={
                 idChat:idChat,
                 tipo:"documento",
@@ -69,7 +72,7 @@ export default class IaUseCases{
                 contenido:textoDevolver,
                 contenidoDoc:docInsert
             }
-            this.iaRepository.guardarDocumentoRespuesta(mensaje, idChat, idUsuario)
+            this.iaRepository.guardarDocumentoRespuesta(mensaje, (await key) ,idChat, idUsuario)
         }
         return mensaje;
     }

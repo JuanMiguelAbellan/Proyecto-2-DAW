@@ -16,5 +16,8 @@ export default class IaController{
         console.error("Error llamando a Ollama:", error);
         return null
       }
-  }  
+  }
+  async guardarDocS3(documento:any):Promise<String>{
+    return ""//key
+  }
 }
