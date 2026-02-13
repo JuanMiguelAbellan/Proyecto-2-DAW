@@ -42,7 +42,7 @@ export default class IaUseCases{
                 rol:"ia",
                 contenido:textoDevolver
             }
-            this.iaRepository.guardarRespuesta(mensaje, idChat)
+            this.iaRepository.guardarRespuesta(mensaje, idChat, idUsuario)
         }
         else if(texto.includes("[[{{")){
             const preferencias = texto.substring(texto.indexOf("[[{{"), texto.indexOf("}}]]"))
@@ -54,7 +54,7 @@ export default class IaUseCases{
                 rol:"ia",
                 contenido:textoDevolver
             }
-            this.iaRepository.guardarRespuesta(mensaje, idChat)
+            this.iaRepository.guardarRespuesta(mensaje, idChat, idUsuario)
         }
         else if(texto.includes("//*")){
             const docInsert = texto.substring(texto.indexOf("//*"), texto.indexOf("*//"))
@@ -67,7 +67,7 @@ export default class IaUseCases{
                 contenido:textoDevolver,
                 contenidoDoc:docInsert
             }
-            this.iaRepository.guardarDocumentoRespuesta(mensaje, idChat)
+            this.iaRepository.guardarDocumentoRespuesta(mensaje, idChat, idUsuario)
         }
         return mensaje;
     }
