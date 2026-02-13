@@ -22,9 +22,8 @@ CREATE TABLE subscripcion (
     inicio_periodo      TIMESTAMP WITHOUT TIME ZONE NOT NULL,
     final_periodo       TIMESTAMP WITHOUT TIME ZONE NOT NULL,
     PRIMARY KEY (id_subscripcion, id_usuario),
-    CONSTRAINT fk_subscripcion_usuario
-        FOREIGN KEY (id_usuario) REFERENCES usuarios (id_usuario)
-        ON DELETE CASCADE
+    FOREIGN KEY (id_usuario) REFERENCES usuarios (id_usuario)
+    ON DELETE CASCADE
 );
 
 CREATE TABLE chats (
@@ -32,33 +31,30 @@ CREATE TABLE chats (
     id_usuario  INTEGER NOT NULL,
     titulo VARCHAR(255),
     creado_en TIMESTAMP NOT NULL DEFAULT NOW(),
-    context JSONB DEFAULT '[]', -- Tokens devueltos por Ollama
-    PRIMARY KEY (id_chat, id_usuario),
-    CONSTRAINT fk_chat_usuario
-        FOREIGN KEY (id_usuario) REFERENCES usuarios (id_usuario)
-        ON DELETE CASCADE
+    context JSONB DEFAULT '[]', -- //Tokens devueltos por Ollama
+    PRIMARY KEY (id_chat),
+    FOREIGN KEY (id_usuario) REFERENCES usuarios (id_usuario)
+    ON DELETE CASCADE
 );
 
 CREATE TABLE mensajes (
     id_mensaje   SERIAL PRIMARY KEY,
-    id_chat      INTEGER NOT NULL REFERENCES chats(id_chat) ON DELETE CASCADE,
+    id_chat      INTEGER NOT NULL,
     rol          VARCHAR(20) NOT NULL,
     contenido    TEXT NOT NULL,
     creado_en    TIMESTAMP NOT NULL DEFAULT NOW(),
-    CONSTRAINT fk_mensaje_chat
-        FOREIGN KEY (id_chat) REFERENCES chats (id_chat)
-        ON DELETE CASCADE
+    FOREIGN KEY (id_chat) REFERENCES chats (id_chat)
+    ON DELETE CASCADE
 );
 
 
 CREATE TABLE documentos (
     id_documento    SERIAL,
-    id_chat         INTEGER NOT NULL,
+    id_mensaje         INTEGER NOT NULL,
     tipo            tipo_documento NOT NULL,
     s3_key          VARCHAR(500) NOT NULL,
-    creado_en TIMESTAMP NOT NULL DEFAULT NOW()
-    PRIMARY KEY (id_documento, id_chat),
-    CONSTRAINT fk_documento_chat
-        FOREIGN KEY (id_chat) REFERENCES chats (id_chat)
-        ON DELETE CASCADE
+    creado_en TIMESTAMP NOT NULL DEFAULT NOW(),
+    PRIMARY KEY (id_documento),
+    FOREIGN KEY (id_mensaje) REFERENCES mensajes (id_mensaje)
+    ON DELETE CASCADE
 );
