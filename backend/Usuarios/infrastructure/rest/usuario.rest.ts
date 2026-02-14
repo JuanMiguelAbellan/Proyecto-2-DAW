@@ -1,4 +1,4 @@
-import {createToken} from "../../../context/security/auth"
+import {createToken, isAuth} from "../../../context/security/auth"
 import express, { Request, Response } from "express";
 import UsuarioUseCases from "../../application/usuario.usecases";
 import UsuarioRepositoryPostgres from "../db/usuario.repository.Postgres"
@@ -15,6 +15,7 @@ routerUsuario.post("/registro", (req : Request, res: Response)=>{
         password: password,
         nombre: nombre,
         preferencias: preferencias,
+        rol:rol,
         apellidos: apellidos
     }
     usuarioUseCases.registro(usuario)
@@ -28,6 +29,7 @@ routerUsuario.post("/login", async(req : Request, res: Response)=>{
         password: password,
         nombre: nombre,
         preferencias: preferencias,
+        rol:rol,
         apellidos: apellidos
     }
     const usuario = await usuarioUseCases.login(usuarioAPI)
@@ -41,4 +43,11 @@ routerUsuario.post("/login", async(req : Request, res: Response)=>{
     res.json({ token });
 })
 
+routerUsuario.post("/guardarDoc", isAuth,(req: Request, res: Response)=>{
+
+})
+
+routerUsuario.post("/editarPreferncias", isAuth, (req:Request, res:Response)=>{
+    
+})
 export default routerUsuario

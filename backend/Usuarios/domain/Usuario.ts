@@ -6,6 +6,6 @@ export default interface Usuario{
     id?: Number
     nombre?: string
     apellidos?: string
-    rol?:Rol
+    rol?:Rol | string
     preferencias?:JSON | string
 }
