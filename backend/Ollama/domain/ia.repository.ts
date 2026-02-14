@@ -1,4 +1,3 @@
-import Chat from "../domain/Chat"
 import Mensaje from "../domain/Mensaje"
 export default interface IaReposiroty{
     //Hay que mirar que hacer con las preferencias y como tratarlas
