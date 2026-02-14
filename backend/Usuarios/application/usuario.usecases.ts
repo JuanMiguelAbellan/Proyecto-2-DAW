@@ -25,4 +25,8 @@ export default class UsuarioUseCases{
         usuario.password = cifrada;
         return this.usuarioRepository.registro(usuario);
     }
+
+    insertarDoc(){}
+
+    editarPreferencias(){}
 }

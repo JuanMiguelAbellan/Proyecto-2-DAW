@@ -3,6 +3,12 @@ import Usuario from "../../domain/Usuario";
 import UsuarioRepository from "../../domain/usuario.repository";
 
 export default class UsuarioRepositoryPostgres implements UsuarioRepository{
+    insertarDoc() {
+        throw new Error("Method not implemented.");
+    }
+    editarPrefencias() {
+        throw new Error("Method not implemented.");
+    }
     async login(usuario: Usuario): Promise<Usuario | null> {
         const query = `SELECT * FROM usuarios WHERE email = '${usuario.email}'`;
 
