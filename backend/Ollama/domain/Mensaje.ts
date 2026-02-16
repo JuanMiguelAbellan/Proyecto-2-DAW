@@ -7,5 +7,6 @@ export default interface Mensaje{
     rol?:string
     contenido?:string
     contenidoDoc?:string
+    tipoDoc?:string
     fechaCreacion?:Date
 }

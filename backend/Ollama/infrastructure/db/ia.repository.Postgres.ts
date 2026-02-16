@@ -21,14 +21,8 @@ export default class IaRepositoryPostgres implements IaReposiroty{
             throw new Error("Error guardando las respuestas");
         }
     }
-    async guardarDocumentoRespuesta(documento: Mensaje, key:String, idChat?: Number, idUsuario?:Number): Promise<void> {
-        let idChatNuevo
-        if(idChat == null && idUsuario != null){
-            idChatNuevo=this.crearChat(idUsuario)
-        }else{
-            idChatNuevo=idChat
-        }
-        const query=`INSERT INTO documentos_respuesta (id_chat, key, contenido) VALUES ('${idChatNuevo}', '${key}', '${documento.contenidoDoc}')`
+    async guardarDocumentoRespuesta(documento: Mensaje, key:String): Promise<void> {
+        const query=`INSERT INTO documentos (id_mensaje, s3_key, tipo) VALUES ('${documento.id}', '${key}', '${documento.tipoDoc}')`
         const rows: any[] = await executeQuery(query);
         if (!rows) {
             throw new Error("Error guardando el documento de respuesta");
@@ -51,15 +45,5 @@ export default class IaRepositoryPostgres implements IaReposiroty{
         }
         const respuesta = rows[0]
         return respuesta
-    }
-    async contarDocumentosMesActual(idUsuario:Number): Promise<Number> { 
-        const query = ` SELECT COUNT(*) AS total FROM documentos d
-        JOIN chats c ON d.id_chat = c.id_chat
-        WHERE c.id_usuario = '${idUsuario}'
-        AND date_trunc('month', d.creado_en) = date_trunc('month', NOW()); `;
-
-        const result = await executeQuery(query); 
-        return Number(result.rows[0].total);
-
     }
 }

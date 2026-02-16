@@ -2,10 +2,12 @@ import Usuario from "../domain/Usuario";
 import UsuarioRepository from "../domain/usuario.repository";
 import { hash } from "../../context/security/encrypter";
 import { compare } from "bcrypt";
+import Mensaje from "../../Ollama/domain/Mensaje";
+import UsuarioController from "../infrastructure/rest/usuario.controller";
 
 
 export default class UsuarioUseCases{
-    constructor(private usuarioRepository: UsuarioRepository){}
+    constructor(private usuarioRepository: UsuarioRepository, private usuarioController : UsuarioController){}
 
     async login(usuario: Usuario): Promise<Usuario | null>{
         if (!usuario.password) throw new Error("Falta password");
@@ -26,7 +28,27 @@ export default class UsuarioUseCases{
         return this.usuarioRepository.registro(usuario);
     }
 
-    insertarDoc(){}
+    getUsuario(idUser: Number):Promise<Usuario>{
+        return this.getUsuario(idUser)
+    }
 
-    editarPreferencias(){}
+    async insertarDoc(usuario: Usuario, documento:Mensaje){
+        let cantidad:Number = 5
+        if(usuario.planSubscripcion == "free"){
+            cantidad=5
+        }else if(usuario.planSubscripcion == "pro"){
+            cantidad=50
+        }
+        const count = await this.usuarioRepository.contarDocsMes(usuario.id)
+        if(count >= cantidad){
+            throw new Error("Se ha superado el límite de documentos por mes")
+        }else{
+            let key:string = await this.usuarioController.guardarDocsS3()
+            this.usuarioRepository.insertarDoc(documento, key)
+        }
+    }
+
+    editarPreferencias(preferencias, idUser:Number){
+        this.usuarioRepository.editarPrefencias(preferencias, idUser)
+    }
 }
