@@ -8,4 +8,5 @@ export default interface Usuario{
     apellidos?: string
     rol?:Rol | string
     preferencias?:JSON | string
+    planSubscripcion?:string
 }

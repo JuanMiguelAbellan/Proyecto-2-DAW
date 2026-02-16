@@ -54,7 +54,7 @@ export default class IaUseCases{
         else if(texto.includes("//*")){
             const docInsert = texto.substring(texto.indexOf("//*"), texto.indexOf("*//"))
             const textoDevolver = texto.substring(texto.indexOf("*//"))
-            let key = this.insertDocumento({tipo:"documento", contenidoDoc:docInsert}, cantidad, idUsuario)
+            let key = this.insertDocumento({tipo:"documento", contenidoDoc:docInsert})
             mensaje={
                 idChat:idChat,
                 tipo:"documento",
@@ -62,7 +62,7 @@ export default class IaUseCases{
                 contenido:textoDevolver,
                 contenidoDoc:docInsert
             }
-            this.iaRepository.guardarDocumentoRespuesta(mensaje, (await key) ,idChat, idUsuario)
+            this.iaRepository.guardarDocumentoRespuesta(mensaje, (await key))
         }
         return mensaje;
     }
@@ -73,12 +73,9 @@ export default class IaUseCases{
         return this.iaRepository.editPreferencia(preferencais, id)
     }
 
-    async insertDocumento(documento:Mensaje, cantidad:Number, idUsuario:Number):Promise<String>{
+    async insertDocumento(documento:Mensaje):Promise<String>{
         //Esto creo que deberia ir en el usuario Comprobar cuantos documento lleva este mes y si se ha pasado del limite
-        const count = await this.iaRepository.contarDocumentosMesActual(idUsuario)
-        if(count >= cantidad){
-            throw new Error("Se ha superado el límite de documentos por mes")
-        }
+        
         let key = this.iaController.guardarDocS3(documento).then((e)=>{return e})
         this.iaRepository.guardarDocumentoRespuesta(documento, (await key) )
         return key

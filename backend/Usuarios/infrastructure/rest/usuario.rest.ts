@@ -3,8 +3,9 @@ import express, { Request, Response } from "express";
 import UsuarioUseCases from "../../application/usuario.usecases";
 import UsuarioRepositoryPostgres from "../db/usuario.repository.Postgres"
 import Usuario from "../../domain/Usuario";
+import UsuarioController from "./usuario.controller";
 
-const usuarioUseCases = new UsuarioUseCases(new UsuarioRepositoryPostgres)
+const usuarioUseCases = new UsuarioUseCases(new UsuarioRepositoryPostgres, new UsuarioController)
 
 const routerUsuario = express.Router();
 
@@ -43,11 +44,17 @@ routerUsuario.post("/login", async(req : Request, res: Response)=>{
     res.json({ token });
 })
 
-routerUsuario.post("/guardarDoc", isAuth,(req: Request, res: Response)=>{
+routerUsuario.post("/guardarDoc", isAuth, async(req: Request, res: Response)=>{
+    const {documento}=req.body
+    const idUser = req.body.idUser
+    const usuario=await usuarioUseCases.getUsuario(idUser)
 
+    usuarioUseCases.insertarDoc(usuario, documento)
 })
 
-routerUsuario.post("/editarPreferncias", isAuth, (req:Request, res:Response)=>{
-    
+routerUsuario.post("/editarPreferencias", isAuth, (req:Request, res:Response)=>{
+    const idUser = req.body.idUser
+    const {preferencias}= req.body
+    usuarioUseCases.editarPreferencias(preferencias, idUser)
 })
 export default routerUsuario
