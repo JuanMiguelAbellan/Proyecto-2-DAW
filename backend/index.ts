@@ -1,6 +1,6 @@
 import express from "express";
 import routerUsuario from "./Usuarios/infrastructure/rest/usuario.rest"
-import routerIA from "./Ollama/infrastructure/rest/ia.controller"
+import routerIA from "./Ollama/infrastructure/rest/ia.rest"
 import dotenv from "dotenv";
 
 dotenv.config();

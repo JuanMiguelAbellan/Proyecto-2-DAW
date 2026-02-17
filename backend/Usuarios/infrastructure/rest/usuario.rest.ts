@@ -19,8 +19,12 @@ routerUsuario.post("/registro", (req : Request, res: Response)=>{
         rol:rol,
         apellidos: apellidos
     }
-    usuarioUseCases.registro(usuario)
-    res.status(200).send(usuario)
+    if(usuarioUseCases.registro(usuario)){
+        res.status(200).send(usuario)
+    }
+    else{
+        res.status(400).send("Error al registrar el usuario")
+    }
 })
 
 routerUsuario.post("/login", async(req : Request, res: Response)=>{
