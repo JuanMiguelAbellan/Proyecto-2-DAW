@@ -67,6 +67,8 @@ export default class UsuarioRepositoryPostgres implements UsuarioRepository{
     async registro(usuario: Usuario): Promise<Usuario> {
         const query = `INSERT INTO usuarios (email, password, nombre, apellidos, rol, preferencais) 
         VALUES ('${usuario.email}', '${usuario.password}', '${usuario.nombre}', '${usuario.apellidos}', '${usuario.rol}', '${usuario.preferencias}')`;
+        console.log(query);
+        
         const rows: any[] = await executeQuery(query);
         if (!rows) {
             throw new Error("Error guardando usuario");
