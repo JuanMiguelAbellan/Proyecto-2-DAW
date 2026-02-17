@@ -4,8 +4,8 @@
   "requiresCompatibilities": ["FARGATE"],
   "cpu": "256",
   "memory": "512",
-  "executionRoleArn": "arn:aws:iam::808668160477:role/LabRole",
-  "taskRoleArn": "arn:aws:iam::808668160477:role/LabRole",
+  "executionRoleArn": "arn:aws:iam::573703223746:role/LabRole",
+  "taskRoleArn": "arn:aws:iam::573703223746:role/LabRole",
   "containerDefinitions": [
     {
       "name": "Main",
