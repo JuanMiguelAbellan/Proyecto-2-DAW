@@ -9,7 +9,7 @@ const usuarioUseCases = new UsuarioUseCases(new UsuarioRepositoryPostgres, new U
 
 const routerUsuario = express.Router();
 
-routerUsuario.post("/registro", (req : Request, res: Response)=>{
+routerUsuario.post("/registro", async (req : Request, res: Response)=>{
     const {email, password, nombre, apellidos, rol, preferencias} = req.body
     const usuario:Usuario ={
         email: email,
@@ -19,23 +19,19 @@ routerUsuario.post("/registro", (req : Request, res: Response)=>{
         rol:rol,
         apellidos: apellidos
     }
-    if(usuarioUseCases.registro(usuario)){
-        res.status(200).send(usuario)
-    }
-    else{
+    const usuarioRegistrado = await usuarioUseCases.registro(usuario)
+    if(usuarioRegistrado != null){
+        res.status(200).send(usuarioRegistrado)
+    } else{
         res.status(400).send("Error al registrar el usuario")
     }
 })
 
 routerUsuario.post("/login", async(req : Request, res: Response)=>{
-    const {email, password, nombre, apellidos, rol, preferencias} = req.body
+    const {email, password} = req.body
     const usuarioAPI:Usuario ={
         email: email,
-        password: password,
-        nombre: nombre,
-        preferencias: preferencias,
-        rol:rol,
-        apellidos: apellidos
+        password: password
     }
     const usuario = await usuarioUseCases.login(usuarioAPI)
     if(usuario == null){

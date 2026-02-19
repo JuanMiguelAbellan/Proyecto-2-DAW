@@ -13,10 +13,13 @@ routerIA.post("/generate", isAuth, async (req: Request, res: Response)=>{
     const { prompt, tipo, idChat} = req.body;
     const idUsuario = req.body.idUser
     const respuesta=await iaUsecases.getRespuesta(prompt, tipo, idUsuario, idChat)
+    console.log(respuesta);
+    
     if(respuesta.contenido == null || respuesta.contenido == ""){
         res.status(500).send("Error al contactar con Ollama")
     }
     res.status(200).send(respuesta)
+    return;//Para que no pete despues de haber enviado la respuesta
 });
 
 routerIA.post("/nuevo", async (req: Request, res: Response)=>{
