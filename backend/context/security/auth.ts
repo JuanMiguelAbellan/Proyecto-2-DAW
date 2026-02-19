@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import jwt, { Secret } from "jsonwebtoken";
 import Usuario from "../../Usuarios/domain/Usuario";
-const SECRET_KEY: Secret = "miclave";
+const SECRET_KEY: Secret = process.env.SECRET_KEY || "clave_secreta";
 
 const decode = (token: string) => {
   return jwt.decode(token);

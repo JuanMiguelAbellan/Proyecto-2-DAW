@@ -50,36 +50,42 @@ export default class UsuarioRepositoryPostgres implements UsuarioRepository{
         const query = `SELECT * FROM usuarios WHERE email = '${usuario.email}'`;
 
         const result: any[] = await executeQuery(query);
-        if (result.length === 0) {
+        if (!result || result.length === 0) {
             return null;
         }
-        const user = result[0];
+        const row = result[0];
         
-        return {
-            id: user.id,
-            email: user.email,
-            password: user.password,
-            nombre:user.nombre,
-            rol:user.rol,
-            preferencias:user.preferencias
+        const usuarioDB: Usuario = {
+            email: row.email,
+            password: row.password_hash,
+            id: row.id_usuario,
+            nombre: row.nombre,
+            rol: row.rol,
+            preferencias: row.preferencias
         };
+        return usuarioDB;
     }
     async registro(usuario: Usuario): Promise<Usuario> {
-        const query = `INSERT INTO usuarios (email, password, nombre, apellidos, rol, preferencais) 
-        VALUES ('${usuario.email}', '${usuario.password}', '${usuario.nombre}', '${usuario.apellidos}', '${usuario.rol}', '${usuario.preferencias}')`;
-        console.log(query);
+        const preferenciasJson = JSON.stringify(usuario.preferencias);
+        const query = `INSERT INTO usuarios (email, password_hash, nombre, apellidos, rol, preferencias) 
+        VALUES ('${usuario.email}', '${usuario.password}', '${usuario.nombre}', '${usuario.apellidos}', '${usuario.rol}', '${preferenciasJson}')
+        RETURNING *`;
         
-        const rows: any[] = await executeQuery(query);
-        if (!rows) {
+        const result = await executeQuery(query);
+
+        if (!result || result.length === 0) {
             throw new Error("Error guardando usuario");
         }
+
+        const row = result[0];
+        
         const usuarioDB: Usuario = {
-            email: rows[0].alias,
-            password: rows[0].password,
-            id: rows[0].id,
-            nombre: rows[0].nombre,
-            rol: rows[0].rol,
-            preferencias: rows[0].preferencias
+            email: row.email,
+            password: row.password_hash,
+            id: row.id_usuario,
+            nombre: row.nombre,
+            rol: row.rol,
+            preferencias: row.preferencias
         };
         return usuarioDB;
     }

@@ -1,6 +1,6 @@
 
 export default class IaController{
-  async generate(json):Promise<String>{
+  async generate(json):Promise<any>{
     try {
         const response = await fetch(`http://${process.env.OLLAMA_HOST}:11434/api/generate`, {
           method: "POST",
@@ -10,7 +10,7 @@ export default class IaController{
   
         const data = await response.json();
         
-        return data.json(data);
+        return data;
     
       } catch (error) {
         console.error("Error llamando a Ollama:", error);

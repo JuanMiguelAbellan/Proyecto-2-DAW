@@ -7,7 +7,7 @@ import IaController from "../infrastructure/rest/ia.controller"
 
 export default class IaUseCases{
 
-    constructor(private iaRepository: IaRepositoryPostgres, private iaController: IaController){}
+    constructor(private iaRepository: IaReposiroty, private iaController: IaController){}
 
     async getRespuesta(prompt:string, tipoSub:string, idUsuario:Number, idChat?:Number):Promise<Mensaje>{
         let json = {
@@ -25,45 +25,44 @@ export default class IaUseCases{
             cantidad=50
             json.model="gemma3:latest" //Poner un modelo mejor
         }
-        const texto = await this.iaController.generate(json);
-        let mensaje:Mensaje={};
-        if(texto.includes("[{")){
-            const preferencia = texto.substring(texto.indexOf("[{"), texto.indexOf("}]"))
+        const respuesta = (await this.iaController.generate(json));
+        //console.log(respuesta);
+        
+        let mensaje:Mensaje={
+            idChat:idChat,
+            tipo:"normal",
+            rol:"ia",
+            contenido:respuesta.response,
+            fechaCreacion:respuesta.created_at
+        };
+        if(respuesta.response.includes("[{")){
+            const preferencia = respuesta.response.substring(respuesta.response.indexOf("[{"), respuesta.response.indexOf("}]"))
             this.addPreferencia(preferencia, idUsuario)
-            const textoDevolver = texto.substring(texto.indexOf("}]"))
+            const respuestaDevolver = respuesta.response.substring(respuesta.response.indexOf("}]")+2)
             mensaje={
-                idChat:idChat,
-                tipo:"texto",
-                rol:"ia",
-                contenido:textoDevolver
+                contenido:respuestaDevolver
             }
-            this.iaRepository.guardarRespuesta(mensaje, idChat, idUsuario)
         }
-        else if(texto.includes("[[{{")){
-            const preferencias = texto.substring(texto.indexOf("[[{{"), texto.indexOf("}}]]"))
+        else if(respuesta.response.includes("[[{{")){
+            const preferencias = respuesta.response.substring(respuesta.response.indexOf("[[{{"), respuesta.response.indexOf("}}]]"))
             this.editPreferencia(preferencias, idUsuario)
-            const textoDevolver = texto.substring(texto.indexOf("}}]]"))
+            const respuestaDevolver = respuesta.response.substring(respuesta.response.indexOf("}}]]")+4)
             mensaje={
-                idChat:idChat,
-                tipo:"texto",
-                rol:"ia",
-                contenido:textoDevolver
+                contenido:respuestaDevolver
             }
-            this.iaRepository.guardarRespuesta(mensaje, idChat, idUsuario)
         }
-        else if(texto.includes("//*")){
-            const docInsert = texto.substring(texto.indexOf("//*"), texto.indexOf("*//"))
-            const textoDevolver = texto.substring(texto.indexOf("*//"))
+        else if(respuesta.response.includes("//*")){
+            const docInsert = respuesta.response.substring(respuesta.response.indexOf("//*"), respuesta.response.indexOf("*//"))
+            const respuestaDevolver = respuesta.response.substring(respuesta.response.indexOf("*//")+3)
             let key = this.insertDocumento({tipo:"documento", contenidoDoc:docInsert})
             mensaje={
-                idChat:idChat,
                 tipo:"documento",
-                rol:"ia",
-                contenido:textoDevolver,
+                contenido:respuestaDevolver,
                 contenidoDoc:docInsert
             }
             this.iaRepository.guardarDocumentoRespuesta(mensaje, (await key))
         }
+        this.iaRepository.guardarRespuesta(mensaje, idChat, idUsuario)
         return mensaje;
     }
     addPreferencia(preferencia: String, id:Number): Promise<String> {

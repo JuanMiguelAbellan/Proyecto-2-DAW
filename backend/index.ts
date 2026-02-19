@@ -10,7 +10,7 @@ const api = "/api/";
 
 app.use(express.json())
 app.use(`${api}usuarios`, routerUsuario);
-app.use(`${api}tareas`, routerIA)
+app.use(`${api}ia`, routerIA)
 
 app.listen(port, () => {
   console.log(`Application started on port ${port}`);
