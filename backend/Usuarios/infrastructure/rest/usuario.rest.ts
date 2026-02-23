@@ -46,15 +46,20 @@ routerUsuario.post("/login", async(req : Request, res: Response)=>{
 
 routerUsuario.post("/guardarDoc", isAuth, async(req: Request, res: Response)=>{
     const {documento}=req.body
-    const idUser = req.body.idUser
+    const idUser = req.body.id
+    
     const usuario=await usuarioUseCases.getUsuario(idUser)
 
     usuarioUseCases.insertarDoc(usuario, documento)
+    res.send("Documento guardado correctamente")
 })
 
 routerUsuario.post("/editarPreferencias", isAuth, (req:Request, res:Response)=>{
-    const idUser = req.body.idUser
+    const idUser = req.body.id
     const {preferencias}= req.body
+    //console.log(preferencias+idUser);
+    
     usuarioUseCases.editarPreferencias(preferencias, idUser)
+    res.send("Cambios realizados con exito")
 })
 export default routerUsuario
