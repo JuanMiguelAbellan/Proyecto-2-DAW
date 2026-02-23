@@ -41,12 +41,13 @@ export default class UsuarioUseCases{
 
     async insertarDoc(usuario: Usuario, documento:Mensaje){
         let cantidad:Number = 5
-        if(usuario.planSubscripcion == "free"){
+        if(usuario.planSubscripcion != null && usuario.planSubscripcion == "free"){
             cantidad=5
-        }else if(usuario.planSubscripcion == "pro"){
+        }else if(usuario.planSubscripcion != null && usuario.planSubscripcion == "pro"){
             cantidad=50
         }
-        const count = await this.usuarioRepository.contarDocsMes(usuario.id)
+        let count:Number=0;
+        count = await this.usuarioRepository.contarDocsMes(usuario.id)
         if(count >= cantidad){
             throw new Error("Se ha superado el límite de documentos por mes")
         }else{
