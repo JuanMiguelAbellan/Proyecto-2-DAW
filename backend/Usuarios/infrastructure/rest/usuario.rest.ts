@@ -58,9 +58,19 @@ routerUsuario.post("/editarPreferencias", isAuth, (req:Request, res:Response)=>{
     const idUser = req.body.id
     const {nuevasPreferencias}= req.body
 
-    console.log(nuevasPreferencias);
-
     usuarioUseCases.editarPreferencias(nuevasPreferencias, idUser)
     res.send("Cambios realizados con exito")
+})
+
+routerUsuario.get("/getChats", isAuth, async(req:Request, res:Response)=>{
+    const idUser = req.body.id
+    
+    const chats = await usuarioUseCases.getChats(idUser)
+    
+    res.json({chats})
+})
+
+routerUsuario.get("", (req:Request, res:Response)=>{
+    res.send("API de usuarios")
 })
 export default routerUsuario
