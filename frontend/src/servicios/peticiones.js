@@ -1,7 +1,15 @@
-const URL_SERVER="http://34.224.104.164:3000/"
+const URL_SERVER="http://localhost:8080/"
 export function get(url, callback, callbackError){
-    
-    fetch(URL_SERVER+url)
+    const myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+    myHeaders.append("Authorization", "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Imp1YW5AZXhhbXBsZS5jb20iLCJpZCI6MSwibm9tYnJlIjoiSnVhbiIsInByZWZlcmVuY2lhcyI6eyJ0ZW1hIjoiY2xhcm8ifSwiaWF0IjoxNzcxOTYxMjM2LCJleHAiOjE3NzIwNDc2MzZ9.iAVTyKpJTwMS56HNsE0PhyPT8ycLqEWI8FSO4y7zllA");
+
+    const requestOptions = {
+        method: "GET",
+        headers: myHeaders,
+        redirect: "follow"
+    };
+    fetch(URL_SERVER+url, requestOptions)
     .then((response)=>{
         if(response.ok){
             return response.json()

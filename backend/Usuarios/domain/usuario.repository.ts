@@ -8,4 +8,5 @@ export default interface UsuarioRepository{
     editarPrefencias(preferencias, idUser:Number):Promise<void>
     contarDocsMes(idUsuario: Number): Promise<Number>
     getUsuario(idUsuario:Number):Promise<Usuario>
+    getChats(idUsuario:Number):Promise<any>
 }

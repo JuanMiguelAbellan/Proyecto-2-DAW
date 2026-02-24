@@ -4,6 +4,11 @@ import UsuarioRepository from "../../domain/usuario.repository";
 import Mensaje from "../../../Ollama/domain/Mensaje"
 
 export default class UsuarioRepositoryPostgres implements UsuarioRepository{
+    async getChats(idUsuario: Number): Promise<any> {
+        const query = `SELECT * FROM chats WHERE id_usuario = ${idUsuario} ORDER BY creado_en DESC`;
+        const result: any[] = await executeQuery(query);
+        return result || [];
+    }
     async getUsuario(idUsuario: Number): Promise<Usuario> {
         const query = `SELECT * FROM usuarios u 
         JOIN  subscripcion s ON u.id_usuario = s.id_usuario
@@ -53,7 +58,7 @@ export default class UsuarioRepositoryPostgres implements UsuarioRepository{
         }
     }
     async editarPrefencias(preferencias:any, id:Number):Promise<void> {
-        const preferenciasJSon = JSON.stringify(preferencias);
+        const preferenciasJSon = JSON.stringify(preferencias ?? {});
         //console.log(preferenciasJSon);
         
         const query = `UPDATE usuarios SET preferencias = '${preferenciasJSon}' WHERE id_usuario = '${id}'`

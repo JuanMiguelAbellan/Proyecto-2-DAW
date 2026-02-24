@@ -59,4 +59,8 @@ export default class UsuarioUseCases{
     editarPreferencias(preferencias, idUser:Number){
         this.usuarioRepository.editarPrefencias(preferencias, idUser)
     }
+
+    getChats(idUser:Number):Promise<any>{
+        return this.usuarioRepository.getChats(idUser)
+    }
 }
