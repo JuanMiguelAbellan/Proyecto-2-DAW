@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react'
 import AsideChats from './componentes/AsideChats'
 import {get} from "./servicios/peticiones"
+import Conversacion from './componentes/Conversacion';
+import './root.css'
+import './styles.css'
 
 function App() {
   const [chats, setChats] = useState([]);
@@ -16,6 +19,7 @@ function App() {
   return (
     <>
       <AsideChats chats={chats} />
+      <Conversacion></Conversacion>
     </>
   )
 }
