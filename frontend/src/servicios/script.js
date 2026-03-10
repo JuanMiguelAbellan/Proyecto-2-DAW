@@ -52,7 +52,7 @@ function getRespuesta(pregunta){
     const json = {
         "model": "gemma3:latest",
         "prompt": pregunta,
-        "stream": false, //false --> Para recibir una respuesta unica
+        "stream": true, //false --> Para recibir una respuesta unica
         //"format": "json" 
         //"context": [105, 2364, 107, ...] //--> Para continuar una conversacion sin tener que enviar todo el historial (que lo devuelve al final de la respuesta)
         //"system": "Eres un asistente especializado en..." //--> Instrucciones del sistema
@@ -96,7 +96,7 @@ function getRespuestaStream(pregunta){
         model: "gemma3:latest",
         prompt: pregunta,
         stream: true,
-        format: "json"
+        //format: "json"
         //"system": "Eres un asistente especializado en..." //--> Instrucciones del sistema,
         //"context": [105, 2364, 107, ...] //--> Para continuar una conversacion sin tener que enviar todo el historial (que lo devuelve al final de la respuesta)
     };

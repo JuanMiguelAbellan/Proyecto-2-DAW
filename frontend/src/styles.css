@@ -44,6 +44,10 @@ nav > .menu_izq{
 details {
     position: relative;
 }
+details > button{
+    background-color: black;
+    border: 1px solid var(--background-color-text-ia);
+}
 
 .dropdown {
     width: max-content;
