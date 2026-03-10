@@ -1,12 +1,19 @@
 import BarraInferior from "./BarraInferior";
 import ChatPrincipal from "./ChatPrincipal";
 import '../servicios/script'
+import AsideChats from "./AsideChats";
 
-export default function Conversacion({chat}){
+export default function Conversacion({chat, chats}){
     return(
-        <>
-            <ChatPrincipal chat={chat}><div className="mensajes"/></ChatPrincipal>
-            <BarraInferior></BarraInferior>
+        <> <main>
+            <AsideChats chats={chats}></AsideChats>
+            <section className="conversacion">
+                
+                <ChatPrincipal chat={chat}></ChatPrincipal>
+                <BarraInferior></BarraInferior>
+             </section>
+           
+            </main>
         </>
     )
 }

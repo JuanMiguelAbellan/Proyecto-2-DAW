@@ -4,7 +4,7 @@ export default function Chat({chat}){
         <>
             <button onClick={()=>{
                 
-            }}>{chat.titulo}</button>
+            }}>{/*chat.titulo*/}Titulo Chat</button>
         </>
     )
 }
