@@ -83,3 +83,4 @@ export function pacth(url, datos, callback, callbackError){
     .then((data)=>{callback(data)})
     .catch((error)=>{callbackError(error)})
 }
+

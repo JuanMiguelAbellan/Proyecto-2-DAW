@@ -28,26 +28,26 @@ function crearMensaje(clase, contenido){
         let mensaje = document.createElement("p")
         mensaje.setAttribute("class", clase)
         mensaje.append(document.createElement("span"))
-        document.querySelector(".mensajes").before(mensaje)
+        document.querySelector(".mensajes").append(mensaje)
         input.value = ""
     }else if(clase === "mensaje_ia"){
         let mensaje = document.createElement("p")
         document.querySelector(".mensaje_ia_wait").remove()
         mensaje.textContent = contenido
         mensaje.setAttribute("class", clase)
-        document.querySelector(".mensajes").before(mensaje)
+        document.querySelector(".mensajes").append(mensaje)
         input.value = ""
     }else{
         let mensaje = document.createElement("p")
         mensaje.textContent = contenido
         mensaje.setAttribute("class", clase)
-        document.querySelector(".mensajes").before(mensaje)
+        document.querySelector(".mensajes").append(mensaje)
         input.value = ""
     }
 }
 
 function getRespuesta(pregunta){
-    const URL = "http://localhost:11434/api/generate"
+    const URL = "http://54.211.44.229:11434/api/generate"
     const myHeaders = new Headers();
     const json = {
         "model": "gemma3:latest",
@@ -79,19 +79,26 @@ function getRespuesta(pregunta){
     };
     fetch(URL, requestOptions)
     .then(response => {
-        leer()
+        if(response.ok){
+            return response.json()
+        }else{
+            throw new Error
+        }
     })
     .then(data => crearMensaje("mensaje_ia", data.response))
     .catch(error => console.log(error))
 }
 
 function getRespuestaStream(pregunta){
-    const URL = "http://localhost:11434/api/generate";
+    const URL = "http://54.211.44.229:11434/api/generate";
 
     const json = {
         model: "gemma3:latest",
         prompt: pregunta,
-        stream: true
+        stream: true,
+        format: "json"
+        //"system": "Eres un asistente especializado en..." //--> Instrucciones del sistema,
+        //"context": [105, 2364, 107, ...] //--> Para continuar una conversacion sin tener que enviar todo el historial (que lo devuelve al final de la respuesta)
     };
 
     fetch(URL, {
@@ -101,35 +108,34 @@ function getRespuestaStream(pregunta){
     })
     .then(response => {
         const reader = response.body.getReader();
-        const decoder = new TextDecoder();
 
         let mensajeIA = crearMensajeStream();
 
-        function leer() {
-            reader.read().then(({done, value}) => {
-                if (done) return;
+        leer(reader, mensajeIA);
+    });
+}
+function leer(reader, mensajeIA) {
+    const decoder = new TextDecoder();
+    reader.read().then(({done, value}) => {
+        if (done) return;
 
-                const texto = decoder.decode(value, {stream: true});
+        const texto = decoder.decode(value, {stream: true});
 
-                texto.split("\n").forEach(linea => {
-                    if (!linea.trim()) return;
+        texto.split("\n").forEach(linea => {
+            if (!linea.trim()) return;
 
-                    const obj = JSON.parse(linea);
+            const obj = JSON.parse(linea);
 
-                    if (obj.response) {
-                        mensajeIA.append(obj.response);
-                    }
+            if (obj.response) {
+                mensajeIA.append(obj.response);
+            }
 
-                    if (obj.done) {
-                        console.log("Stream finalizado");
-                    }
-                });
+            if (obj.done) {
+                console.log("Stream finalizado");
+            }
+        });
 
-                leer();
-            });
-        }
-
-        leer();
+        leer(reader, mensajeIA);
     });
 }
 

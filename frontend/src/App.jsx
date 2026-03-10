@@ -21,7 +21,7 @@ function App() {
     <>
     <NavBar></NavBar>
       
-      <Conversacion>
+      <Conversacion chats={chats}>
       
       </Conversacion>
       

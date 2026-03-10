@@ -165,16 +165,23 @@ main{
     border-radius: 25px;
     border-top-right-radius: 0;
     display: flex; 
-    flex-direction: column; 
-    overflow: visible; 
+    flex-direction: column;
+    overflow: scroll;
     position: sticky;
 }
 
 .mensajes{ 
-    flex: 1; 
+    flex: 1;
+    height: 90%;
     overflow-y: auto; 
     padding: 1rem; 
-    box-sizing: border-box; 
+    box-sizing: border-box;
+    overflow: scroll;
+}
+
+.titulo{
+    max-height: 40px;
+    text-align: center;
 }
 
 .mensaje_usuario{
@@ -196,9 +203,10 @@ main{
     padding: 0.5rem 1rem;
 }
 .barra_inferior{
-    position: relative;
-    display: flex; 
-    align-items: center; 
+    position: sticky;
+    display: flex;
+    align-items: center;
+    max-height: 30px;
     gap: 1rem; 
     padding: 0.7rem 1rem; 
     background-color: var(--background-color-menu); 
@@ -218,8 +226,6 @@ main{
     padding: 10px;
     border-radius: 10px;
 }
-
-
 
 .input_text{
     flex: 1; 
