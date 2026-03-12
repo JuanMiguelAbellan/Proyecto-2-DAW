@@ -8,7 +8,7 @@ function listeners(){
         let text = input.value
         crearMensaje("mensaje_usuario", text)
         crearMensaje("mensaje_ia_wait")
-        getRespuesta(text)
+        getRespuestaStream(text)
     })
 
     input.addEventListener("keydown", function(e){
@@ -16,7 +16,7 @@ function listeners(){
             let text = input.value
             crearMensaje("mensaje_usuario", text)
             crearMensaje("mensaje_ia_wait")
-            getRespuesta(text)
+            getRespuestaStream(text)
         }
     })
 }
@@ -46,6 +46,7 @@ function crearMensaje(clase, contenido){
     }
 }
 
+//deprecated
 function getRespuesta(pregunta){
     const URL = "http://54.211.44.229:11434/api/generate"
     const myHeaders = new Headers();

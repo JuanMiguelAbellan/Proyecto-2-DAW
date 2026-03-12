@@ -8,18 +8,19 @@ export default function BarraInferior(){
     return(
         <>
             <div className="barra_inferior">
-                <MenuHamburguesa className={"emoji"} img={"./public/images/emojis.svg"} opciones={
+                {/* <MenuHamburguesa className={"emoji"} img={"./public/images/emojis.svg"} opciones={
                     [{texto: "Hogar", funcion: () => {}}, {texto: "Llamada telefónica", funcion: () => {
 
                     }}]}/>
                 <MenuHamburguesa className={"teclado"} img={"./public/images/teclado.svg"} opciones={
                     [{texto: "Hogar", funcion: () => {}}, {texto: "Llamada telefónica", funcion: () => {
 
-                    }}]}/>
+                    }}]}/> */}
                 <MenuHamburguesa className={"adjuntar"} img={"./public/images/adjuntar.svg"} opciones={
-                    [{texto: "Hogar", funcion: () => {}}, {texto: "Llamada telefónica", funcion: () => {
-                        
-                    }}]}/>
+                    [<input type="file" onChange={(e)=>{
+                        //Comprobar que files no este vacio, y que sea de tipo correcto y si todo ok enviarlo
+
+                        }} accept=".txt" ></input>]}/>
                 <input type="text" className="input_text" id="campo"/>
                 <button className="enviar" onClick={(e)=>{
                     const texto=e.target.parentElement.parentElement.querySelector("#campo").value

@@ -7,9 +7,7 @@ export default function MenuHamburguesa({className, img, opciones = []}){
                     <summary><img src={img}/></summary>
                     <div className="dropdown">
                         {opciones.map((opcion)=>{
-                            return <button key={id++} onClick={()=>{
-                                opcion.funcion()
-                            }}>{opcion.texto}</button>
+                            return opcion
                         })}
                     </div>
                 </details>

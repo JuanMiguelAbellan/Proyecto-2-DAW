@@ -10,11 +10,11 @@ export default function NavBar(){
                     onClick={()=>{
                         //Landing
                     }}/>
-                    <MenuHamburguesa className={"menu_hamburguesa"} img="./public/images/menu-hamburguesa.svg" opciones={[
+                    {/* <MenuHamburguesa className={"menu_hamburguesa"} img="./public/images/menu-hamburguesa.svg" opciones={[
                         {texto: "Opción 1", funcion: () => console.log("Opción 1 seleccionada")},
                         {texto: "Opción 2", funcion: () => console.log("Opción 2 seleccionada")},
                         {texto: "Opción 3", funcion: () => console.log("Opción 3 seleccionada")}
-                    ]}></MenuHamburguesa>
+                    ]}></MenuHamburguesa> */}
                 </div>
                 <div className="menu_drc">
                     <img src="./public/images/accesibilidad.svg" className="img_nav"
@@ -25,11 +25,11 @@ export default function NavBar(){
                     onClick={()=>{
 
                     }}></img>
-                    <MenuHamburguesa className={"menu_ajustes"} img="./public/images/ajustes.svg" opciones={[
+                    {/* <MenuHamburguesa className={"menu_ajustes"} img="./public/images/ajustes.svg" opciones={[
                         {texto: "Ajuste 1", funcion: () => console.log("Ajuste 1 seleccionado")},
                         {texto: "Ajuste 2", funcion: () => console.log("Ajuste 2 seleccionado")},
                         {texto: "Ajuste 3", funcion: () => console.log("Ajuste 3 seleccionado")}
-                    ]}></MenuHamburguesa>
+                    ]}></MenuHamburguesa> */}
                 </div>
             </nav>
         </>
