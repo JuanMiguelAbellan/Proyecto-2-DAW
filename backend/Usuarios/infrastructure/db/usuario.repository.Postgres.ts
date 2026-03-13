@@ -8,7 +8,7 @@ export default class UsuarioRepositoryPostgres implements UsuarioRepository{
     async getHistorial(idUsuario: Number, idChat: Number): Promise<[{}]> {
         const query = `SELECT * FROM mensajes m 
         JOIN chats c ON m.id_chat = c.id_chat
-        WHERE id_chat = ${idChat} ORDER BY creado_en DESC`;
+        WHERE m.id_chat = ${idChat} ORDER BY m.creado_en DESC`;
         const result: any[] = await executeQuery(query);
         
         if(result.length==0){
