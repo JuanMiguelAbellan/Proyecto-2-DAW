@@ -1,0 +1,19 @@
+.cambio{
+    height: 90vh !important;
+    width: 100% !important;
+    background-color: aquamarine;
+}
+
+.normal{
+    height: 100000px !important;
+    width: 100% !important;
+    position:relative;
+    z-index: 10;
+    background-color: transparent;
+}
+
+.input{
+    height: 100vh !important;
+    width: 1px !important;
+    background-color: red;
+}

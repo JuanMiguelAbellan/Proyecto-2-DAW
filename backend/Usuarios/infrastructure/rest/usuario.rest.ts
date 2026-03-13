@@ -4,6 +4,7 @@ import UsuarioUseCases from "../../application/usuario.usecases";
 import UsuarioRepositoryPostgres from "../db/usuario.repository.Postgres"
 import Usuario from "../../domain/Usuario";
 import UsuarioController from "./usuario.controller";
+import Mensaje from "../../../Ollama/domain/Mensaje";
 
 const usuarioUseCases = new UsuarioUseCases(new UsuarioRepositoryPostgres, new UsuarioController)
 
@@ -45,8 +46,12 @@ routerUsuario.post("/login", async(req : Request, res: Response)=>{
 })
 
 routerUsuario.post("/guardarDoc", isAuth, async(req: Request, res: Response)=>{
-    const {documento}=req.body
+    const {tiulo, contenido}=req.body
     const idUser = req.body.id
+    const documento:Mensaje={
+        titulo:tiulo,
+        contenido:contenido
+    }
     
     const usuario=await usuarioUseCases.getUsuario(idUser)
 

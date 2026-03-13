@@ -8,6 +8,7 @@ import NavBar from './componentes/NavBar';
 
 function App() {
   const [chats, setChats] = useState([{titulo: "Chat de prueba", id_chat: 1}]);
+  const [usuario, setUsuario] = useState(JSON.parse(sessionStorage.getItem("usuario")) || null);
 
   // useEffect(() => {
   //   get("api/usuarios/getChats", (data) => {

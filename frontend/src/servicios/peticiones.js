@@ -1,4 +1,4 @@
-const URL_SERVER="http://localhost:8080/"
+const URL_SERVER="http://localhost:8080/api/"
 export function get(url, callback, callbackError){
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
@@ -20,16 +20,38 @@ export function get(url, callback, callbackError){
     .then((data)=>{callback(data)})
     .catch((error)=>{callbackError(error)})
 }
-
 export function post(url, datos, callback, callbackError){
     const options={
         method:"POST",
-        headers:{
-            "Content_Type": "application/json"
+        headers: {
+            "Content-Type": "application/json",
         },
         body: JSON.stringify(datos)
     }
-    console.log(options.body);
+    
+    fetch(URL_SERVER+url, options)
+    .then((response)=>{
+        if(response.ok){
+            return response.json()
+        }else{
+            throw new Error
+        }
+    })
+    .then((data)=>{callback(data)})
+    .catch((error)=>{callbackError(error)})
+}
+export function postToken(url, datos, usuario, callback, callbackError){
+    if(usuario==null){
+        usuario=JSON.parse(sessionStorage.getItem("usuario"))
+    }
+    const options={
+        method:"POST",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${usuario.token}`,
+        },
+        body: JSON.stringify(datos)
+    }
     
     fetch(URL_SERVER+url, options)
     .then((response)=>{
