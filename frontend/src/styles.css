@@ -177,7 +177,8 @@ main{
     flex: 1;
     height: 90vh;
     width: 90vw;
-    z-index: 0;
+    top: 40px;
+    z-index: 1;
     position: absolute;
     overflow-y: visible; 
     padding: 1rem; 
@@ -191,27 +192,29 @@ main{
 }
 
 .mensaje_usuario{
-    max-width: 70%;
-    margin-left: auto;
-    margin-right: 1rem;
+    max-width: 50%;
+    margin-left: 40%;
     background-color: var(--background-color-text-user);
     border-radius: 20px;
     border-bottom-right-radius: 0;
     padding: 0.5rem 1rem;
+    z-index: 2;
 }
 
 .mensaje_ia{
     max-width: 80%;
-    margin-left: 1rem;
+    margin-left: -1rem;
     background-color: var(--background-color-text-ia);
     border-radius: 20px;
     border-bottom-left-radius: 0;
     padding: 0.5rem 1rem;
+    z-index: 2;
 }
 .barra_inferior{
     position: sticky;
     display: flex;
     align-items: center;
+    top: 100vh;
     max-height: 30px;
     gap: 1rem; 
     padding: 0.7rem 1rem; 
@@ -265,12 +268,13 @@ main{
 }
 .mensaje_ia_wait{
     max-width: 5rem;
-    margin-left: 1rem;
+    margin-left: -1rem;
     font-size: xx-large;
     border-radius: 20px;
     border-bottom-left-radius: 0;
     padding: 0.5rem 1rem;
     position: relative;
+    z-index: 2;
 }
 
 .mensaje_ia_wait:before{

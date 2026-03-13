@@ -1,14 +1,31 @@
-.cambio{
-    height: 90vh !important;
-    width: 100% !important;
-    background-color: aquamarine;
+.mensajes_cambio{
+    flex: 1;
+    height: 90vh;
+    width: 90vw;
+    top: 40px;
+    z-index: 0;
+    position: absolute;
+    overflow-y: visible; 
+    padding: 1rem; 
+    box-sizing: border-box;
+    overflow-y: scroll;
+    background-color: var(--background-color-text-ia-doc);
 }
 
-.normal{
-    height: 100000px !important;
+.mensajes{
+    /* height: 100000px !important;
     width: 100% !important;
     position:relative;
     z-index: 10;
+    background-color: transparent; */
+    flex: 1 !important;
+    height: 90vh !important;
+    width: 100% !important;
+    z-index: 1;
+    position: absolute;
+    padding: 1rem; 
+    box-sizing: border-box;
+    overflow-y: scroll;
     background-color: transparent;
 }
 

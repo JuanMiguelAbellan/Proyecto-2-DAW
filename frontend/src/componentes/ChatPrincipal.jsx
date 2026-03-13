@@ -1,4 +1,4 @@
-import React, {Fragment, useCallback} from 'react'
+import React, {Fragment, useCallback, useState} from 'react'
 import {useDropzone} from 'react-dropzone'
 import styles from './dragndrop.module.css'
 
@@ -11,7 +11,7 @@ export default function ChatPrincipal({chat}){
         console.log(await acceptedFiles[0].text())
     }, [])
     const {getRootProps, getInputProps, isDragActive} = useDropzone({onDrop})
-    let mensajes=<div  className="mensajes" {...getRootProps()}/>;
+    let mensajes=useState(<div  className="mensajes" {...getRootProps()}/>)
     return (
         <>
             <h1 className="titulo">{chat.titulo}</h1>
@@ -19,9 +19,9 @@ export default function ChatPrincipal({chat}){
                 <input {...getInputProps()} className={styles.input}/>
                     {
                         isDragActive ?
-                        <p className={styles.cambio}></p> 
+                        mensajes=<div  className={styles.mensajes_cambio} {...getRootProps()}/>
                         :
-                        <p className={styles.normal}></p>
+                        mensajes=<div  className={styles.mensajes} {...getRootProps()}/>
                     }
         </>
     )
