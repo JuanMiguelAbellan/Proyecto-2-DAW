@@ -63,4 +63,8 @@ export default class UsuarioUseCases{
     getChats(idUser:Number):Promise<any>{
         return this.usuarioRepository.getChats(idUser)
     }
+
+    getHistorial(idUser:Number, idChat:Number):Promise<[{}]>{
+        return this.usuarioRepository.getHistorial(idUser, idChat)
+    }
 }

@@ -7,7 +7,12 @@ import './styles.css'
 import NavBar from './componentes/NavBar';
 
 function App() {
-  const [chats, setChats] = useState([{titulo: "Chat de prueba", id_chat: 1}]);
+  const [chats, setChats] = useState([
+    {titulo: "Chat de prueba", id_chat: 1, mensajesUsuario:["Hola que tal?", "Adios"], mensajesIa:["Bien y tu?", "Hasta Luego"]}
+      , 
+      {titulo: "Chat de prueba 2 ", id_chat: 2, mensajesUsuario:["Hola buenas tardes", "Gracias"], mensajesIa:["Hola buenas tardes", "A ti guapo"]}
+  ]);
+  const [chat, setChat] = useState(chats[0])
   const [usuario, setUsuario] = useState(JSON.parse(sessionStorage.getItem("usuario")) || null);
 
   // useEffect(() => {
@@ -22,7 +27,7 @@ function App() {
     <>
     <NavBar></NavBar>
       
-      <Conversacion chats={chats}>
+      <Conversacion chats={chats} chat={chat} setChat={setChat}>
       
       </Conversacion>
       

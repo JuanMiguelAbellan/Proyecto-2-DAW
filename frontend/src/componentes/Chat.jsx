@@ -1,10 +1,11 @@
 
-export default function Chat({chat}){
+export default function Chat({chat, setChat}){
     return(
         <>
-            <button onClick={()=>{
-                
-            }}>{/*chat.titulo*/}Titulo Chat</button>
+            <button onClick={(e)=>{
+                //console.log(chat)
+                setChat(chat)
+            }}>{chat.titulo}</button>
         </>
     )
 }

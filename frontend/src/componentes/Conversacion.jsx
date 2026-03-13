@@ -3,10 +3,10 @@ import ChatPrincipal from "./ChatPrincipal";
 import '../servicios/script'
 import AsideChats from "./AsideChats";
 
-export default function Conversacion({chat, chats}){
+export default function Conversacion({chat, chats, setChat}){
     return(
         <> <main>
-            <AsideChats chats={chats}></AsideChats>
+            <AsideChats chats={chats} setChat={setChat}></AsideChats>
             <section className="conversacion">
                 
                 <ChatPrincipal chat={chat}></ChatPrincipal>

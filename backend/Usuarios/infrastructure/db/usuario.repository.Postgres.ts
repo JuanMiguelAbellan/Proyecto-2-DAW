@@ -2,8 +2,28 @@ import executeQuery from "../../../context/db/postgres.connector";
 import Usuario from "../../domain/Usuario";
 import UsuarioRepository from "../../domain/usuario.repository";
 import Mensaje from "../../../Ollama/domain/Mensaje"
+import { Result } from "pg";
 
 export default class UsuarioRepositoryPostgres implements UsuarioRepository{
+    async getHistorial(idUsuario: Number, idChat: Number): Promise<[{}]> {
+        const query = `SELECT * FROM mensajes m 
+        JOIN chats c ON m.id_chat = c.id_chat
+        WHERE id_chat = ${idChat} ORDER BY creado_en DESC`;
+        const result: any[] = await executeQuery(query);
+        
+        if(result.length==0){
+            return null
+        }
+        result.map((mensaje)=>{
+            return {
+                idChat:mensaje.id_chat,
+                idMensaje:mensaje.id_mensaje,
+                rol:mensaje.rol,
+                contenido:mensaje.contenido,
+                titulo:mensaje.titulo
+            }
+        })
+    }
     async getChats(idUsuario: Number): Promise<any> {
         const query = `SELECT * FROM chats WHERE id_usuario = ${idUsuario} ORDER BY creado_en DESC`;
         const result: any[] = await executeQuery(query);
@@ -107,5 +127,5 @@ export default class UsuarioRepositoryPostgres implements UsuarioRepository{
         };
         return usuarioDB;
     }
-
+    
 }

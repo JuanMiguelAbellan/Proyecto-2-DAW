@@ -78,4 +78,17 @@ routerUsuario.get("/getChats", isAuth, async(req:Request, res:Response)=>{
 routerUsuario.get("", (req:Request, res:Response)=>{
     res.send("API de usuarios")
 })
+
+routerUsuario.post("/getHistorial", isAuth, async(req:Request, res:Response)=>{
+    const idUser = req.body.id
+    const {idChat} = req.body.idChat
+
+    const historial = await usuarioUseCases.getChats(idUser)
+    
+    res.json({historial})
+})
+
+routerUsuario.get("", (req:Request, res:Response)=>{
+    res.send("API de usuarios")
+})
 export default routerUsuario
