@@ -19,6 +19,7 @@ export default function BarraInferior(){
                 <MenuHamburguesa className={"adjuntar"} img={"./public/images/adjuntar.svg"} opciones={
                     [<input key="adjuntar" type="file" onChange={async(e)=>{
                         //Comprobar que files no este vacio, y que sea de tipo correcto y si todo ok enviarlo
+                        //Deberia ser useState
                         const files = e.target.files
                         if(files == null || files.length == 0){
                             console.log("No has elegido ningún archivo")

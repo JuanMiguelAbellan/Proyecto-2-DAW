@@ -15,6 +15,9 @@ function App() {
   const [chat, setChat] = useState(chats[0])
   const [usuario, setUsuario] = useState(JSON.parse(sessionStorage.getItem("usuario")) || null);
 
+  //UseState para los documentos
+  //Hay que cambiar los menus desplegables
+
   // useEffect(() => {
   //   get("api/usuarios/getChats", (data) => {
   //     setChats(data.chats);
