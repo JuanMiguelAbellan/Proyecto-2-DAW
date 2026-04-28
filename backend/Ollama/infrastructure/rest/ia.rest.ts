@@ -3,40 +3,46 @@ import IaUseCases from "../../application/ia.usecases"
 import { isAuth } from "../../../context/security/auth";
 import IaRepositoryPostgres from "../db/ia.repository.Postgres";
 import IaController from "./ia.controller";
-import Mensaje from "../../domain/Mensaje";
 
 const iaUsecases = new IaUseCases(new IaRepositoryPostgres, new IaController)
 
 const routerIA = express.Router();
 
-routerIA.post("/generate", isAuth, async (req: Request, res: Response)=>{
-    const { prompt, tipo, idChat} = req.body;
-    const idUsuario = req.body.idUser
-    const respuesta=await iaUsecases.getRespuesta(prompt, tipo, idUsuario, idChat)
+routerIA.post("/generate", isAuth, async (req: Request, res: Response) => {
+    const { prompt, tipo, idChat } = req.body;
+    const idUsuario = req.body.id;
+    const respuesta = await iaUsecases.getRespuesta(prompt, tipo, idUsuario, idChat)
     console.log(respuesta);
-    
-    if(respuesta.contenido == null || respuesta.contenido == ""){
+
+    if (respuesta.contenido == null || respuesta.contenido == "") {
         res.status(500).send("Error al contactar con Ollama")
+        return;
     }
     res.status(200).send(respuesta)
-    return;//Para que no pete despues de haber enviado la respuesta
 });
 
-routerIA.post("/nuevo", async (req: Request, res: Response)=>{
-    const {usuario} = req.body;
-    let prompt = "Comportamiento + info usuario"
-    const respuesta=await iaUsecases.getRespuesta(prompt, usuario.tipo, usuario.id)
-    if(respuesta.contenido == null || respuesta.contenido == ""){
-        res.status(500).send("Error al contactar con Ollama")
-    }
-    res.status(200).send(respuesta)
-})
+routerIA.post("/nuevo", isAuth, async (req: Request, res: Response) => {
+    const idUsuario = req.body.id;
+    const idChat = await iaUsecases.nuevoChat(idUsuario)
+    res.json({ chat: { id_chat: idChat, titulo: "Nuevo chat" } })
+});
 
-routerIA.post("/testDoc", async(req:Request, res: Response)=>{
-    const {documento}= req.body
-    const doc:Mensaje=documento
-    const urLRespuesta=await iaUsecases.insertDocumento(doc)
+routerIA.get("/mensajes/:idChat", isAuth, async (req: Request, res: Response) => {
+    const idChat = Number(req.params.idChat)
+    const mensajes = await iaUsecases.getMensajes(idChat)
+    res.json({ mensajes })
+});
+
+routerIA.delete("/chat/:idChat", isAuth, async (req: Request, res: Response) => {
+    const idChat = Number(req.params.idChat)
+    await iaUsecases.eliminarChat(idChat)
+    res.json({ ok: true })
+});
+
+routerIA.post("/testDoc", async (req: Request, res: Response) => {
+    const { documento } = req.body
+    const urLRespuesta = await iaUsecases.insertDocumento(documento)
     res.send(urLRespuesta)
-})
+});
 
 export default routerIA;

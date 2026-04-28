@@ -1,10 +1,18 @@
+export default function ChatPrincipal({ mensajes, esperando }) {
+  mensajes = mensajes || []
 
-export default function ChatPrincipal({chat}){
-
-    return (
-        <>
-            <h1>Chat Principal</h1>
-            <div className="mensajes"></div>
-        </>
-    )
+  return (
+    <div className="mensajes">
+      {mensajes.map((mensaje, index) => (
+        <p key={index} className={mensaje.rol === "usuario" ? "mensaje_usuario" : "mensaje_ia"}>
+          {mensaje.contenido}
+        </p>
+      ))}
+      {esperando && (
+        <div className="mensaje_ia_wait">
+          <span></span><span></span><span></span>
+        </div>
+      )}
+    </div>
+  )
 }
