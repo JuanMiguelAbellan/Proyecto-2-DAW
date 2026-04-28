@@ -5,7 +5,11 @@ import dotenv from "dotenv";
 import cors from "cors";
 
 dotenv.config();
-const allowedOrigins = ["http://localhost:5173"];
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost",
+  process.env.FRONTEND_URL
+].filter(Boolean);
 const options: cors.CorsOptions = {
   origin: allowedOrigins,
 };

@@ -8,13 +8,13 @@ const dbPassword = process.env.POSTGRES_PASSWORD;
 const dbName = process.env.POSTGRES_DB;
 const pgPort = process.env.POSTGRES_PORT
 
+const isLocal = dbHost === "localhost" || dbHost === "postgres"
+
 const pool = new Pool({
   max: 1000,
   connectionString: `postgres://${dbUser}:${dbPassword}@${dbHost}:${pgPort}/${dbName}`,
   idleTimeoutMillis: 30000,
-  ssl:{
-    rejectUnauthorized: false
-  }
+  ssl: isLocal ? false : { rejectUnauthorized: false }
 });
 
 const executeQuery = async (sql: any, data?: any[]): Promise<any> => {

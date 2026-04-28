@@ -1,3 +1,13 @@
+:root[data-tema="oscuro"]{
+    --background-color-body: hsla(229, 46%, 9%, 100%);
+    --background-color-chats: var(--background-color-chats-oscuro);
+    --background-color-chat-selected: var(--background-color-text-ia-selected-oscuro);
+    --background-color-menu: hsla(229, 30%, 15%, 100%);
+    --background-color-menu-oscuro: hsla(229, 30%, 15%, 100%);
+    --color-text: hsla(0, 0%, 90%, 100%);
+    --button-color: hsla(197, 77%, 44%, 100%);
+}
+
 :root{
     --background-color: hsla(219, 34%, 62%, 100%);
     --background-color-chats: hsla(198, 31%, 67%, 100%);
