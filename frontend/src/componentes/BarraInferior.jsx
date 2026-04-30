@@ -15,7 +15,8 @@ export default function BarraInferior({ chatActivo, setMensajes, onTituloGenerad
   }
 
   function handleArchivoSeleccionado(e) {
-    const validos = [], rechazados = []
+    const validos = []
+    const rechazados = []
     Array.from(e.target.files).forEach(f => {
       if (f.size > MAX_FILE_MB * 1024 * 1024) rechazados.push(f.name)
       else validos.push(f)
@@ -26,12 +27,14 @@ export default function BarraInferior({ chatActivo, setMensajes, onTituloGenerad
   }
 
   async function leerArchivos(files) {
-    const contenidos = await Promise.all(files.map(f => new Promise((resolve) => {
-      const reader = new FileReader()
-      reader.onload = (ev) => resolve(`[Documento: ${f.name}]\n${ev.target.result}`)
-      reader.onerror = () => resolve(`[Documento: ${f.name} - error al leer]`)
-      reader.readAsText(f)
-    })))
+    const contenidos = await Promise.all(
+      files.map(f => new Promise((resolve) => {
+        const reader = new FileReader()
+        reader.onload = (ev) => resolve(`[Documento: ${f.name}]\n${ev.target.result}`)
+        reader.onerror = () => resolve(`[Documento: ${f.name} - error al leer]`)
+        reader.readAsText(f)
+      }))
+    )
     return contenidos.join('\n\n')
   }
 
@@ -41,6 +44,7 @@ export default function BarraInferior({ chatActivo, setMensajes, onTituloGenerad
     const textoActual = texto
     const mensajeVisible = textoActual || '📄 Documento adjunto'
     const archivosCopy = [...archivos]
+
     setTexto('')
     setArchivos([])
 
@@ -53,9 +57,7 @@ export default function BarraInferior({ chatActivo, setMensajes, onTituloGenerad
           setEsperando(true)
           const contenidoArchivos = archivosCopy.length > 0 ? await leerArchivos(archivosCopy) : ''
           const promptCompleto = contenidoArchivos ? `${textoActual}\n\n${contenidoArchivos}` : textoActual
-          post(
-            'api/ia/generate',
-            { prompt: promptCompleto, tipo: 'free', idChat: nuevoChat.id_chat },
+          post('api/ia/generate', { prompt: promptCompleto, tipo: 'free', idChat: nuevoChat.id_chat },
             (respuesta) => {
               setEsperando(false)
               setMensajes((prev) => [...prev, { rol: 'ia', contenido: respuesta.contenido }])
@@ -71,9 +73,7 @@ export default function BarraInferior({ chatActivo, setMensajes, onTituloGenerad
       setEsperando(true)
       const contenidoArchivos = archivosCopy.length > 0 ? await leerArchivos(archivosCopy) : ''
       const promptCompleto = contenidoArchivos ? `${textoActual}\n\n${contenidoArchivos}` : textoActual
-      post(
-        'api/ia/generate',
-        { prompt: promptCompleto, tipo: 'free', idChat: chatActivo.id_chat },
+      post('api/ia/generate', { prompt: promptCompleto, tipo: 'free', idChat: chatActivo.id_chat },
         (respuesta) => {
           setEsperando(false)
           setMensajes((prev) => [...prev, { rol: 'ia', contenido: respuesta.contenido }])
@@ -108,7 +108,7 @@ export default function BarraInferior({ chatActivo, setMensajes, onTituloGenerad
           onKeyDown={(e) => e.key === 'Enter' && enviar()}
         />
         <button className="enviar" onClick={enviar}>
-          <img className="enviar_imagen" src="./public/images/enviar.svg" alt="Enviar" />
+          <img src="./public/images/enviar.svg" alt="Enviar" />
         </button>
         <img className="microfono" src="./public/images/microfono-circular-apagado.svg" alt="Micrófono" />
       </div>

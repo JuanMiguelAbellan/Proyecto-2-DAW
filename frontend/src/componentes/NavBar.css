@@ -64,3 +64,27 @@ nav > .menu_drc {
     background-color: var(--background-color-text-ia-selected);
     color: white;
 }
+
+.boton_plan_pro {
+    border-color: #f0b429;
+    color: #c8860a;
+    background: hsla(42, 95%, 50%, 0.08);
+}
+
+.boton_plan_pro:hover {
+    background-color: #f0b429 !important;
+    border-color: #f0b429 !important;
+    color: white !important;
+}
+
+.boton_plan_empresa {
+    border-color: #9b59b6;
+    color: #7d3c98;
+    background: hsla(280, 50%, 50%, 0.08);
+}
+
+.boton_plan_empresa:hover {
+    background-color: #9b59b6 !important;
+    border-color: #9b59b6 !important;
+    color: white !important;
+}

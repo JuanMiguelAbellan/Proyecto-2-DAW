@@ -1,0 +1,192 @@
+.pasarela_overlay {
+    position: fixed;
+    inset: 0;
+    background-color: hsla(0, 0%, 0%, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    backdrop-filter: blur(2px);
+}
+
+.pasarela_modal {
+    background-color: var(--background-color-menu);
+    border-radius: 20px;
+    padding: 2rem;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 20px 60px hsla(0, 0%, 0%, 0.3);
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+}
+
+.pasarela_header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.pasarela_header h2 {
+    margin: 0;
+    font-family: var(--family-font-conversacion);
+    font-size: 1.2rem;
+    color: var(--color-text);
+}
+
+.pasarela_subtitulo {
+    margin: 0.2rem 0 0;
+    font-size: 11px;
+    font-family: var(--family-font-conversacion);
+    color: hsla(0, 0%, 50%, 1);
+}
+
+.pasarela_cerrar {
+    background: none;
+    border: none;
+    font-size: 1rem;
+    cursor: pointer;
+    color: var(--color-text);
+    padding: 0;
+    opacity: 0.6;
+}
+
+.pasarela_cerrar:hover { opacity: 1; }
+
+.pasarela_resumen {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--background-color-chats);
+    border-radius: 12px;
+    padding: 0.75rem 1rem;
+}
+
+.pasarela_plan_nombre {
+    font-family: var(--family-font-conversacion);
+    font-weight: 600;
+    color: var(--color-text);
+    font-size: var(--font-size-chat);
+}
+
+.pasarela_plan_precio {
+    font-family: var(--family-font-conversacion);
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--background-color-text-ia-selected);
+}
+
+.pasarela_form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+}
+
+.pasarela_campo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.pasarela_campo label {
+    font-size: 12px;
+    font-family: var(--family-font-conversacion);
+    color: var(--color-text);
+    opacity: 0.8;
+}
+
+.pasarela_campo input {
+    height: 42px;
+    border-radius: 10px;
+    border: 1px solid var(--background-color-chat-selected);
+    padding: 0 0.9rem;
+    background-color: var(--background-color-body);
+    font-family: var(--family-font-conversacion);
+    font-size: var(--font-size-chat);
+    color: var(--color-text);
+    outline: none;
+    box-sizing: border-box;
+    transition: border-color 0.15s;
+}
+
+.pasarela_campo input:focus {
+    border-color: var(--background-color-text-ia-selected);
+    box-shadow: 0 0 0 2px hsla(183, 59%, 45%, 0.2);
+}
+
+.pasarela_campo input:disabled { opacity: 0.6; }
+
+.pasarela_fila {
+    display: flex;
+    gap: 1rem;
+}
+
+.pasarela_fila .pasarela_campo { flex: 1; }
+
+.pasarela_boton {
+    width: 100%;
+    padding: 0.85rem;
+    border-radius: 12px;
+    border: 0;
+    background-color: var(--background-color-text-ia);
+    color: white;
+    font-family: var(--family-font-conversacion);
+    font-size: var(--font-size-chat);
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.15s;
+    margin-top: 0.3rem;
+}
+
+.pasarela_boton:hover:not(:disabled) {
+    background-color: var(--background-color-text-ia-selected);
+}
+
+.pasarela_boton:disabled { opacity: 0.7; cursor: not-allowed; }
+
+.pasarela_spinner span {
+    animation: pasarela_dot 1.2s infinite ease-in-out;
+    opacity: 0;
+}
+.pasarela_spinner span:nth-child(2) { animation-delay: 0.2s; }
+.pasarela_spinner span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes pasarela_dot {
+    0%, 80%, 100% { opacity: 0; }
+    40% { opacity: 1; }
+}
+
+.pasarela_exito {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 1rem 0;
+    text-align: center;
+}
+
+.pasarela_exito_icono {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: var(--background-color-text-ia);
+    color: white;
+    font-size: 1.8rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pasarela_exito h2 {
+    margin: 0;
+    font-family: var(--family-font-conversacion);
+    color: var(--color-text);
+}
+
+.pasarela_exito p {
+    margin: 0;
+    font-family: var(--family-font-conversacion);
+    font-size: var(--font-size-menu);
+    color: var(--color-text);
+    opacity: 0.8;
+}

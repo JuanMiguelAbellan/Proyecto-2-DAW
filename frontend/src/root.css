@@ -1,3 +1,31 @@
+:root[data-movimiento="reducido"] * {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+}
+
+:root[data-contraste="alto"] {
+    --background-color-body: #ffffff;
+    --background-color-menu: #f0f0f0;
+    --background-color-chats: #c0c0c0;
+    --background-color-chat-selected: #888888;
+    --background-color-text-user: #5500bb;
+    --background-color-text-ia: #005599;
+    --background-color-text-ia-selected: #004488;
+    --color-text: #000000;
+    --button-color: #000000;
+}
+
+:root[data-tema="oscuro"][data-contraste="alto"] {
+    --background-color-body: #000000;
+    --background-color-menu: #111111;
+    --background-color-chats: #222222;
+    --background-color-chat-selected: #444444;
+    --background-color-text-user: #aa44ff;
+    --background-color-text-ia: #0088ff;
+    --color-text: #ffffff;
+    --button-color: #ffffff;
+}
+
 :root[data-tema="oscuro"]{
     --background-color-body: hsla(229, 46%, 9%, 100%);
     --background-color-chats: var(--background-color-chats-oscuro);
