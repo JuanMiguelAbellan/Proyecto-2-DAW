@@ -13,7 +13,7 @@ Cuando el usuario adjunte documentos (indicados con [Documento: nombre]), analí
 
     async getRespuesta(prompt: string, tipoSub: string, idUsuario: Number, idChat?: Number): Promise<Mensaje> {
         const json = {
-            model: "gemma3:latest",
+            model: "llama3.2:1b",
             system: this.SYSTEM_PROMPT,
             prompt: prompt,
             stream: false
@@ -70,7 +70,7 @@ Cuando el usuario adjunte documentos (indicados con [Documento: nombre]), analí
 
     private async generarTitulo(prompt: string): Promise<string | null> {
         const json = {
-            model: "gemma3:latest",
+            model: "llama3.2:1b",
             prompt: `Genera un título muy corto (máximo 4 palabras) para una conversación que empieza con: "${prompt}". Responde ÚNICAMENTE el título, sin comillas ni puntos.`,
             stream: false
         }

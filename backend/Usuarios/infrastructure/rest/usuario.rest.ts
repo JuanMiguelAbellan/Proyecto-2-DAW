@@ -9,6 +9,31 @@ const usuarioUseCases = new UsuarioUseCases(new UsuarioRepositoryPostgres, new U
 
 const routerUsuario = express.Router();
 
+/**
+ * @swagger
+ * /api/usuarios/registro:
+ *   post:
+ *     summary: Registrar un nuevo usuario
+ *     tags: [Usuarios]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email: { type: string }
+ *               password: { type: string }
+ *               nombre: { type: string }
+ *               apellidos: { type: string }
+ *               rol: { type: string }
+ *               preferencias: { type: object }
+ *     responses:
+ *       200:
+ *         description: Usuario registrado correctamente
+ *       400:
+ *         description: Error al registrar el usuario
+ */
 routerUsuario.post("/registro", async (req : Request, res: Response)=>{
     const {email, password, nombre, apellidos, rol, preferencias} = req.body
     const usuario:Usuario ={
@@ -27,6 +52,33 @@ routerUsuario.post("/registro", async (req : Request, res: Response)=>{
     }
 })
 
+/**
+ * @swagger
+ * /api/usuarios/login:
+ *   post:
+ *     summary: Iniciar sesión
+ *     tags: [Usuarios]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email: { type: string }
+ *               password: { type: string }
+ *     responses:
+ *       200:
+ *         description: Token JWT
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 token: { type: string }
+ *       404:
+ *         description: Usuario no encontrado
+ */
 routerUsuario.post("/login", async(req : Request, res: Response)=>{
     const {email, password} = req.body
     const usuarioAPI:Usuario ={
@@ -62,6 +114,26 @@ routerUsuario.post("/editarPreferencias", isAuth, (req:Request, res:Response)=>{
     res.send("Cambios realizados con exito")
 })
 
+/**
+ * @swagger
+ * /api/usuarios/getChats:
+ *   get:
+ *     summary: Obtener todos los chats del usuario autenticado
+ *     tags: [Usuarios]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Lista de chats
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 chats: { type: array, items: { type: object } }
+ *       401:
+ *         description: No autorizado
+ */
 routerUsuario.get("/getChats", isAuth, async(req:Request, res:Response)=>{
     const idUser = req.body.id
 
@@ -79,6 +151,31 @@ routerUsuario.post("/getHistorial", isAuth, async(req:Request, res:Response)=>{
     res.json({historial})
 })
 
+/**
+ * @swagger
+ * /api/usuarios/me:
+ *   get:
+ *     summary: Obtener datos del usuario autenticado
+ *     tags: [Usuarios]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Datos del usuario (sin password)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 email: { type: string }
+ *                 nombre: { type: string }
+ *                 apellidos: { type: string }
+ *                 preferencias: { type: object }
+ *       401:
+ *         description: No autorizado
+ *       404:
+ *         description: Usuario no encontrado
+ */
 routerUsuario.get("/me", isAuth, async(req: Request, res: Response) => {
     try {
         const idUser = req.body.id
@@ -91,6 +188,32 @@ routerUsuario.get("/me", isAuth, async(req: Request, res: Response) => {
     }
 })
 
+/**
+ * @swagger
+ * /api/usuarios/me:
+ *   patch:
+ *     summary: Editar datos del usuario autenticado
+ *     tags: [Usuarios]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               nombre: { type: string }
+ *               apellidos: { type: string }
+ *               email: { type: string }
+ *     responses:
+ *       200:
+ *         description: Datos actualizados
+ *       401:
+ *         description: No autorizado
+ *       500:
+ *         description: Error interno
+ */
 routerUsuario.patch("/me", isAuth, async(req: Request, res: Response) => {
     try {
         const idUser = req.body.id
@@ -102,6 +225,31 @@ routerUsuario.patch("/me", isAuth, async(req: Request, res: Response) => {
     }
 })
 
+/**
+ * @swagger
+ * /api/usuarios/cambiarPassword:
+ *   post:
+ *     summary: Cambiar contraseña del usuario autenticado
+ *     tags: [Usuarios]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               passwordActual: { type: string }
+ *               passwordNueva: { type: string }
+ *     responses:
+ *       200:
+ *         description: Contraseña cambiada correctamente
+ *       400:
+ *         description: Error (contraseña incorrecta, etc.)
+ *       401:
+ *         description: No autorizado
+ */
 routerUsuario.post("/cambiarPassword", isAuth, async(req: Request, res: Response) => {
     try {
         const idUser = req.body.id
@@ -113,6 +261,30 @@ routerUsuario.post("/cambiarPassword", isAuth, async(req: Request, res: Response
     }
 })
 
+/**
+ * @swagger
+ * /api/usuarios/subscripcion:
+ *   patch:
+ *     summary: Cambiar el plan de suscripción del usuario
+ *     tags: [Usuarios]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               plan: { type: string, enum: [free, pro, enterprise] }
+ *     responses:
+ *       200:
+ *         description: Plan actualizado correctamente
+ *       401:
+ *         description: No autorizado
+ *       500:
+ *         description: Error interno
+ */
 routerUsuario.patch("/subscripcion", isAuth, async(req: Request, res: Response) => {
     try {
         const idUser = req.body.id

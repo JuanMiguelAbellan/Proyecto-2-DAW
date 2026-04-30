@@ -2,12 +2,14 @@ import { useState } from 'react'
 import BarraInferior from './BarraInferior'
 import ChatPrincipal from './ChatPrincipal'
 import AsideChats from './AsideChats'
+import VisorPDF from './VisorPDF'
 import './Conversacion.css'
 
 export default function Conversacion({ chats, chatActivo, setChatActivo, mensajes, setMensajes, onNuevoChat, onTituloGenerado, onEliminarChat }) {
   const [esperando, setEsperando] = useState(false)
   const [archivos, setArchivos] = useState([])
   const [dragging, setDragging] = useState(false)
+  const [visorPDF, setVisorPDF] = useState(null)
 
   function handleDrop(e) {
     e.preventDefault()
@@ -25,7 +27,10 @@ export default function Conversacion({ chats, chatActivo, setChatActivo, mensaje
       </span>
       {archivos.map((f, i) => (
         <div key={i} className="archivo_chip">
-          <span>📄 {f.name}</span>
+          <span
+            style={{ cursor: f.type === 'application/pdf' || f.name.endsWith('.pdf') ? 'pointer' : 'default' }}
+            onClick={() => (f.type === 'application/pdf' || f.name.endsWith('.pdf')) && setVisorPDF({ fuente: f, nombre: f.name })}
+          >📄 {f.name}</span>
           <button className="archivo_chip_remove" onClick={() => setArchivos(prev => prev.filter((_, j) => j !== i))}>✕</button>
         </div>
       ))}
@@ -49,7 +54,7 @@ export default function Conversacion({ chats, chatActivo, setChatActivo, mensaje
       >
         {mensajes.length > 0
           ? <>
-              <ChatPrincipal mensajes={mensajes} esperando={esperando} />
+              <ChatPrincipal mensajes={mensajes} esperando={esperando} onVerPDF={setVisorPDF} />
               {archivosChips}
               <BarraInferior
                 chatActivo={chatActivo}
@@ -75,6 +80,7 @@ export default function Conversacion({ chats, chatActivo, setChatActivo, mensaje
               />
             </div>
         }
+      {visorPDF && <VisorPDF fuente={visorPDF.fuente} nombre={visorPDF.nombre} onCerrar={() => setVisorPDF(null)} />}
       </section>
     </main>
   )

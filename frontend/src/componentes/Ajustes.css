@@ -254,3 +254,7 @@
     border-color: var(--background-color-text-ia);
     background-color: hsla(183, 59%, 45%, 0.08);
 }
+
+.ajustes_paletas { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.ajustes_paleta_btn { padding: 0.4rem 0.9rem; border-radius: 12px; border: 2px solid transparent; cursor: pointer; font-size: 13px; background-color: var(--background-color-chats); color: white; text-transform: capitalize; transition: transform 0.15s; }
+.ajustes_paleta_btn.activo { border-color: var(--button-color); transform: scale(1.05); }
