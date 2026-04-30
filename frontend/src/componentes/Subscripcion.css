@@ -1,0 +1,152 @@
+.subscripcion {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem 1rem;
+    min-height: calc(100vh - 65px);
+    background-color: var(--background-color-body);
+}
+
+.subscripcion_header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+    position: relative;
+    width: 100%;
+}
+
+.subscripcion_volver {
+    position: absolute;
+    left: 0;
+    top: 0;
+    border: 0;
+    background: none;
+    font-family: var(--family-font-conversacion);
+    font-size: var(--font-size-menu);
+    cursor: pointer;
+    color: var(--background-color-text-ia-selected);
+}
+
+.subscripcion_volver:hover {
+    text-decoration: underline;
+}
+
+.subscripcion_header h1 {
+    margin: 0 0 0.5rem;
+    font-size: 2rem;
+}
+
+.subscripcion_header p {
+    margin: 0;
+    color: hsla(0, 0%, 40%, 100%);
+    font-size: var(--font-size-menu);
+}
+
+.subscripcion_planes {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+    max-width: 900px;
+}
+
+.plan {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--background-color-menu);
+    border-radius: 20px;
+    padding: 2rem 1.5rem;
+    width: 240px;
+    box-shadow: 0 4px 16px hsla(229, 46%, 9%, 0.1);
+    position: relative;
+}
+
+.plan_destacado {
+    border: 2px solid var(--background-color-text-ia);
+    transform: scale(1.04);
+}
+
+.plan_etiqueta {
+    position: absolute;
+    top: -14px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: var(--background-color-text-ia);
+    color: white;
+    font-size: 12px;
+    padding: 0.2rem 0.8rem;
+    border-radius: 20px;
+    white-space: nowrap;
+}
+
+.plan_etiqueta_ahorro {
+    background-color: var(--background-color-text-user);
+}
+
+.plan h2 {
+    margin: 0 0 0.5rem;
+    font-size: 1.4rem;
+}
+
+.plan_precio {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0 0 1.5rem;
+    color: var(--button-color);
+}
+
+.plan_precio span {
+    font-size: 1rem;
+    font-weight: 400;
+    color: hsla(0, 0%, 40%, 100%);
+}
+
+.plan ul {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    flex: 1;
+    font-size: var(--font-size-menu);
+}
+
+.plan ul li::before {
+    content: "✓ ";
+    color: var(--background-color-text-ia-selected);
+    font-weight: 700;
+}
+
+.plan_no {
+    color: hsla(0, 0%, 60%, 100%);
+}
+
+.plan_no::before {
+    content: "✗ " !important;
+    color: hsla(0, 0%, 60%, 100%) !important;
+}
+
+.plan_boton {
+    width: 100%;
+    padding: 0.7rem;
+    border-radius: 12px;
+    border: 0;
+    font-family: var(--family-font-conversacion);
+    font-size: var(--font-size-chat);
+    cursor: pointer;
+}
+
+.plan_boton_actual {
+    background-color: var(--background-color-chats);
+    color: hsla(0, 0%, 40%, 100%);
+}
+
+.plan_boton_pro {
+    background-color: var(--button-color);
+    color: var(--background-color-body);
+}
+
+.plan_boton_pro:hover {
+    background-color: var(--background-color-chats-oscuro);
+}

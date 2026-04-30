@@ -17,7 +17,7 @@ export default class UsuarioUseCases{
         if (usuarioBD == null) {
             throw new Error("Usuario no encontrado");
         }
-        
+
         const iguales = await compare(usuario.password, String(usuarioBD.password));
         if (iguales) {
             return usuarioBD;
@@ -62,5 +62,26 @@ export default class UsuarioUseCases{
 
     getChats(idUser:Number):Promise<any>{
         return this.usuarioRepository.getChats(idUser)
+    }
+
+    getHistorial(idUser:Number, idChat:Number):Promise<[{}]>{
+        return this.usuarioRepository.getHistorial(idUser, idChat)
+    }
+
+    async editarInfo(nombre: string, apellidos: string, email: string, id: Number): Promise<void> {
+        return this.usuarioRepository.editarInfo(nombre, apellidos, email, id)
+    }
+
+    async cambiarPassword(oldPassword: string, newPassword: string, id: Number): Promise<void> {
+        const usuario = await this.usuarioRepository.getUsuario(id)
+        if (!usuario) throw new Error("Usuario no encontrado")
+        const correcto = compare(oldPassword, String(usuario.password))
+        if (!correcto) throw new Error("Contraseña actual incorrecta")
+        const newHash = hash(newPassword)
+        return this.usuarioRepository.cambiarPassword(newHash, id)
+    }
+
+    async cambiarPlan(plan: string, id: Number): Promise<void> {
+        return this.usuarioRepository.cambiarPlan(plan, id)
     }
 }

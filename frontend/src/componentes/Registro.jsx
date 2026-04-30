@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { handleChange, handleSubmit } from "../servicios/registro"
+import './Login.css'
 
 export default function Registro({ onVolver }) {
   const [form, setForm] = useState({ nombre: "", apellidos: "", email: "", password: "", repetir: "" })

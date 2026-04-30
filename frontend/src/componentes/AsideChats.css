@@ -1,0 +1,34 @@
+.chats {
+    width: 15%;
+    min-width: 180px;
+    height: 100%;
+    background-color: var(--background-color-chats);
+    border-radius: 20px;
+    overflow-y: auto;
+}
+
+.chats > h2 {
+    margin: 0;
+    padding: 0.5rem;
+    background-color: var(--background-color-chat-selected);
+    border-top-right-radius: 20px;
+}
+
+.chats > .btn_nuevo_chat {
+    height: 2.5rem;
+    width: 80%;
+    margin: 0.5rem auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--background-color-chats);
+    border: 1px var(--background-color-chat-selected) solid;
+    border-radius: 10px;
+    cursor: pointer;
+    font-family: var(--family-font-conversacion);
+    font-size: var(--font-size-menu);
+}
+
+.chats > .btn_nuevo_chat:hover {
+    background-color: var(--background-color-chat-selected);
+}

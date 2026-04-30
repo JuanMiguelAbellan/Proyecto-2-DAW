@@ -1,13 +1,15 @@
-export default function Suscripcion({ onVolver }) {
+import './Subscripcion.css'
+
+export default function Subscripcion({ onVolver }) {
   return (
-    <div className="suscripcion">
-      <div className="suscripcion_header">
-        <button className="suscripcion_volver" onClick={onVolver}>← Volver</button>
+    <div className="subscripcion">
+      <div className="subscripcion_header">
+        <button className="subscripcion_volver" onClick={onVolver}>← Volver</button>
         <h1>Elige tu plan</h1>
         <p>Procesa tus documentos con inteligencia artificial</p>
       </div>
 
-      <div className="suscripcion_planes">
+      <div className="subscripcion_planes">
 
         <div className="plan">
           <h2>Free</h2>
@@ -33,7 +35,7 @@ export default function Suscripcion({ onVolver }) {
             <li>Sin marca de agua</li>
             <li>Prioridad en cola</li>
           </ul>
-          <button className="plan_boton plan_boton_pro">Suscribirse</button>
+          <button className="plan_boton plan_boton_pro">Subscribirse</button>
         </div>
 
         <div className="plan">
@@ -47,7 +49,7 @@ export default function Suscripcion({ onVolver }) {
             <li>Sin marca de agua</li>
             <li>Prioridad en cola</li>
           </ul>
-          <button className="plan_boton plan_boton_pro">Suscribirse</button>
+          <button className="plan_boton plan_boton_pro">Subscribirse</button>
         </div>
 
       </div>

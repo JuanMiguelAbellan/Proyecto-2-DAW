@@ -20,11 +20,14 @@ export default function Conversacion({ chats, chatActivo, setChatActivo, mensaje
 
   const archivosChips = archivos.length > 0 && (
     <div className="archivos_adjuntos">
+      <span className="archivos_contador">
+        {archivos.length} archivo{archivos.length > 1 ? 's' : ''} adjunto{archivos.length > 1 ? 's' : ''}
+      </span>
       {archivos.map((f, i) => (
-        <span key={i} className="archivo_chip">
-          📄 {f.name}
-          <button onClick={() => setArchivos(prev => prev.filter((_, j) => j !== i))}>✕</button>
-        </span>
+        <div key={i} className="archivo_chip">
+          <span>📄 {f.name}</span>
+          <button className="archivo_chip_remove" onClick={() => setArchivos(prev => prev.filter((_, j) => j !== i))}>✕</button>
+        </div>
       ))}
     </div>
   )

@@ -6,9 +6,15 @@ export default class IaUseCases {
 
     constructor(private iaRepository: IaReposiroty, private iaController: IaController) {}
 
+    private readonly SYSTEM_PROMPT = `Eres IADocuments, un asistente de IA especializado en análisis y procesamiento de documentos.
+Ayudas a los usuarios a comprender, resumir y extraer información de documentos PDF y ODT.
+Responde siempre en el mismo idioma que el usuario.
+Cuando el usuario adjunte documentos (indicados con [Documento: nombre]), analízalos en detalle y proporciona respuestas precisas basadas en su contenido.`
+
     async getRespuesta(prompt: string, tipoSub: string, idUsuario: Number, idChat?: Number): Promise<Mensaje> {
         const json = {
             model: "gemma3:latest",
+            system: this.SYSTEM_PROMPT,
             prompt: prompt,
             stream: false
         }

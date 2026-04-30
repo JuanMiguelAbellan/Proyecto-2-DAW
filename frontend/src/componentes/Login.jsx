@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { handleChange, handleSubmit } from "../servicios/login"
+import './Login.css'
 
 export default function Login({ onLogin, onRegistro }) {
   const [form, setForm] = useState({ email: "", password: "" })

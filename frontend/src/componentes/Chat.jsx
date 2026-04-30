@@ -1,11 +1,10 @@
+import './Chat.css'
+
 export default function Chat({ chat, activo, setChatActivo, onEliminar }) {
   return (
-    <div className={`chat_item${activo ? " chat_activo" : ""}`}>
-      <button
-        className="chat_titulo"
-        onClick={() => setChatActivo(chat)}
-      >
-        {chat.titulo || "Nuevo chat"}
+    <div className={`chat_item${activo ? ' chat_activo' : ''}`}>
+      <button className="chat_titulo" onClick={() => setChatActivo(chat)}>
+        {chat.titulo || 'Nuevo chat'}
       </button>
       <button
         className="chat_eliminar"

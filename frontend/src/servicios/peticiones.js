@@ -14,14 +14,11 @@ export function get(url, callback, callbackError) {
   }
   fetch(URL_SERVER + url, options)
     .then((response) => {
-      if (response.ok) {
-        return response.json()
-      } else {
-        throw new Error()
-      }
+      if (response.ok) return response.json()
+      else throw new Error()
     })
-    .then((data) => { callback(data) })
-    .catch((error) => { callbackError(error) })
+    .then((data) => callback(data))
+    .catch((error) => callbackError(error))
 }
 
 export function post(url, datos, callback, callbackError) {
@@ -35,14 +32,11 @@ export function post(url, datos, callback, callbackError) {
   }
   fetch(URL_SERVER + url, options)
     .then((response) => {
-      if (response.ok) {
-        return response.json()
-      } else {
-        throw new Error()
-      }
+      if (response.ok) return response.json()
+      else throw new Error()
     })
-    .then((data) => { callback(data) })
-    .catch((error) => { callbackError(error) })
+    .then((data) => callback(data))
+    .catch((error) => callbackError(error))
 }
 
 export function delet(url, callback, callbackError) {
@@ -54,14 +48,11 @@ export function delet(url, callback, callbackError) {
   }
   fetch(URL_SERVER + url, options)
     .then((response) => {
-      if (response.ok) {
-        return response.json()
-      } else {
-        throw new Error()
-      }
+      if (response.ok) return response.json()
+      else throw new Error()
     })
-    .then((data) => { callback(data) })
-    .catch((error) => { callbackError(error) })
+    .then((data) => callback(data))
+    .catch((error) => callbackError(error))
 }
 
 export function pacth(url, datos, callback, callbackError) {
@@ -75,12 +66,9 @@ export function pacth(url, datos, callback, callbackError) {
   }
   fetch(URL_SERVER + url, options)
     .then((response) => {
-      if (response.ok) {
-        return response.json()
-      } else {
-        throw new Error()
-      }
+      if (response.ok) return response.json()
+      else throw new Error()
     })
-    .then((data) => { callback(data) })
-    .catch((error) => { callbackError(error) })
+    .then((data) => callback(data))
+    .catch((error) => callbackError(error))
 }
