@@ -4,10 +4,14 @@ import UsuarioRepository from "../../domain/usuario.repository";
 import Mensaje from "../../../Ollama/domain/Mensaje"
 
 export default class UsuarioRepositoryPostgres implements UsuarioRepository{
+    getHistorial(idUsuario: Number, idChat: Number): Promise<[{}]> {
+        throw new Error("Method not implemented.");
+    }
     async getChats(idUsuario: Number): Promise<any> {
         const query = `SELECT * FROM chats WHERE id_usuario = ${idUsuario} ORDER BY creado_en DESC`;
         const result: any[] = await executeQuery(query);
         return result || [];
+        
     }
     async getUsuario(idUsuario: Number): Promise<Usuario> {
         const query = `SELECT u.*, s.plan FROM usuarios u

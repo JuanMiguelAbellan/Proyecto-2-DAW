@@ -6,11 +6,15 @@ import 'dotenv/config';
 export default class IaController{
   async generate(json):Promise<any>{
     try {
+        const controller = new AbortController()
+        const timeout = setTimeout(() => controller.abort(), 5 * 60 * 1000)
         const response = await fetch(`http://${process.env.OLLAMA_HOST}:11434/api/generate`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(json)
-        });
+          body: JSON.stringify(json),
+          signal: controller.signal
+        })
+        clearTimeout(timeout);
   
         const data = await response.json();
         

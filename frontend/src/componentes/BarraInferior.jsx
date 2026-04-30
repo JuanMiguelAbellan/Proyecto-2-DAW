@@ -1,6 +1,8 @@
 import { useState, useRef } from 'react'
 import { post } from '../servicios/peticiones'
 import './BarraInferior.css'
+import * as pdfjsLib from 'pdfjs-dist'
+pdfjsLib.GlobalWorkerOptions.workerSrc = new URL('pdfjs-dist/build/pdf.worker.mjs', import.meta.url).href
 
 const MAX_FILE_MB = 20
 
@@ -28,11 +30,30 @@ export default function BarraInferior({ chatActivo, setMensajes, onTituloGenerad
 
   async function leerArchivos(files) {
     const contenidos = await Promise.all(
-      files.map(f => new Promise((resolve) => {
-        const reader = new FileReader()
-        reader.onload = (ev) => resolve(`[Documento: ${f.name}]\n${ev.target.result}`)
-        reader.onerror = () => resolve(`[Documento: ${f.name} - error al leer]`)
-        reader.readAsText(f)
+      files.map(f => new Promise(async (resolve) => {
+        try {
+          if (f.type === 'application/pdf' || f.name.endsWith('.pdf')) {
+            const arrayBuffer = await f.arrayBuffer()
+            const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise
+            let texto = ''
+            for (let i = 1; i <= pdf.numPages; i++) {
+              const page = await pdf.getPage(i)
+              const content = await page.getTextContent()
+              texto += content.items.map(item => item.str).join(' ') + '\n'
+            }
+            resolve(`[Documento: ${f.name}]\n${texto.trim()}`)
+          } else {
+            const reader = new FileReader()
+            reader.onload = (ev) => {
+              const texto = ev.target.result.replace(/\0/g, '').replace(/[\x01-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '')
+              resolve(`[Documento: ${f.name}]\n${texto}`)
+            }
+            reader.onerror = () => resolve(`[Documento: ${f.name} - error al leer]`)
+            reader.readAsText(f)
+          }
+        } catch(e) {
+          resolve(`[Documento: ${f.name} - error al leer]`)
+        }
       }))
     )
     return contenidos.join('\n\n')
