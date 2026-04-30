@@ -3,10 +3,10 @@ import { get, post } from '../servicios/peticiones'
 import './Ajustes.css'
 
 const TAMANOS = {
-  'pequeño': '0.8rem',
-  'normal': '1rem',
-  'grande': '1.15rem',
-  'muy grande': '1.3rem',
+  'pequeño':   { chat: '13px', menu: '11px' },
+  'normal':    { chat: '16px', menu: '14px' },
+  'grande':    { chat: '19px', menu: '17px' },
+  'muy grande':{ chat: '22px', menu: '20px' },
 }
 
 export default function AjustesAccesibilidad({ onVolver }) {
@@ -20,7 +20,7 @@ export default function AjustesAccesibilidad({ onVolver }) {
     get('api/usuarios/me',
       (data) => {
         const prefs = data.preferencias || {}
-        if (prefs.tamano) setTamano(prefs.tamano)
+        if (prefs.tamano && TAMANOS[prefs.tamano]) setTamano(prefs.tamano)
         if (prefs.altoContraste !== undefined) setAltoContraste(prefs.altoContraste)
         if (prefs.reducirMovimiento !== undefined) setReducirMovimiento(prefs.reducirMovimiento)
         if (prefs.idioma) setIdioma(prefs.idioma)
@@ -30,7 +30,9 @@ export default function AjustesAccesibilidad({ onVolver }) {
   }, [])
 
   useEffect(() => {
-    document.documentElement.style.setProperty('--font-size-chat', TAMANOS[tamano])
+    const t = TAMANOS[tamano]
+    document.documentElement.style.setProperty('--font-size-chat', t.chat)
+    document.documentElement.style.setProperty('--font-size-menu', t.menu)
   }, [tamano])
 
   useEffect(() => {

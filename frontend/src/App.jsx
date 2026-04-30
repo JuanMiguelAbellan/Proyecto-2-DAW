@@ -32,7 +32,10 @@ function App() {
         (data) => setChats(data.chats),
         (error) => console.error('Error cargando chats:', error)
       )
-      get('api/usuarios/me', (data) => setPlanActual(data.planSubscripcion || 'gratis'), () => {})
+      get('api/usuarios/me',
+        (data) => setPlanActual(data.planSubscripcion || 'gratis'),
+        () => {}
+      )
     }
   }, [token])
 
@@ -98,7 +101,10 @@ function App() {
     subscripcion: <Subscripcion onVolver={() => setVistaApp('chat')} />,
     cuenta: <AjustesCuenta onVolver={() => setVistaApp('chat')} />,
     ajustesSubscripcion: (
-      <AjustesSubscripcion onVolver={() => setVistaApp('chat')} onPlanCambiado={setPlanActual} />
+      <AjustesSubscripcion
+        onVolver={() => setVistaApp('chat')}
+        onPlanCambiado={setPlanActual}
+      />
     ),
     accesibilidad: <AjustesAccesibilidad onVolver={() => setVistaApp('chat')} />,
   }

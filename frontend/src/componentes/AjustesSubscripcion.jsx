@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { get, pacth } from '../servicios/peticiones'
+import PasarelaPago from './PasarelaPago'
 import './Ajustes.css'
 
 const PLANES = [
@@ -8,18 +9,16 @@ const PLANES = [
   { id: 'empresa', nombre: 'Empresa', precio: '24,99 €/mes', docs: 'Documentos ilimitados', mensajes: 'Mensajes ilimitados' },
 ]
 
-export default function AjustesSubscripcion({ onVolver }) {
+export default function AjustesSubscripcion({ onVolver, onPlanCambiado }) {
   const [planActual, setPlanActual] = useState('gratis')
   const [cargando, setCargando] = useState(true)
   const [guardando, setGuardando] = useState(false)
   const [toast, setToast] = useState(null)
+  const [planPendiente, setPlanPendiente] = useState(null)
 
   useEffect(() => {
     get('api/usuarios/me',
-      (data) => {
-        setPlanActual(data.planSubscripcion || 'gratis')
-        setCargando(false)
-      },
+      (data) => { setPlanActual(data.planSubscripcion || 'gratis'); setCargando(false) },
       () => setCargando(false)
     )
   }, [])
@@ -29,19 +28,20 @@ export default function AjustesSubscripcion({ onVolver }) {
     setTimeout(() => setToast(null), 3000)
   }
 
-  function cambiarPlan(plan) {
-    if (plan.id === planActual) return
-    if (!window.confirm(`¿Cambiar al plan ${plan.nombre} (${plan.precio})?`)) return
+  function confirmarPago(plan) {
     setGuardando(true)
     pacth('api/usuarios/subscripcion', { plan: plan.id },
       () => {
         setGuardando(false)
         setPlanActual(plan.id)
+        setPlanPendiente(null)
+        onPlanCambiado?.(plan.id)
         mostrarToast(`Plan ${plan.nombre} activado correctamente`)
       },
       () => {
         setGuardando(false)
-        mostrarToast('Error al cambiar el plan')
+        setPlanPendiente(null)
+        mostrarToast('Error al activar el plan')
       }
     )
   }
@@ -54,12 +54,10 @@ export default function AjustesSubscripcion({ onVolver }) {
       () => {
         setGuardando(false)
         setPlanActual('gratis')
+        onPlanCambiado?.('gratis')
         mostrarToast('Subscripción cancelada. Plan gratuito activado.')
       },
-      () => {
-        setGuardando(false)
-        mostrarToast('Error al cancelar la subscripción')
-      }
+      () => { setGuardando(false); mostrarToast('Error al cancelar') }
     )
   }
 
@@ -70,6 +68,14 @@ export default function AjustesSubscripcion({ onVolver }) {
   return (
     <div className="ajustes_pagina">
       {toast && <div className="ajustes_toast">{toast}</div>}
+      {planPendiente && (
+        <PasarelaPago
+          plan={planPendiente}
+          onExito={() => confirmarPago(planPendiente)}
+          onCancelar={() => setPlanPendiente(null)}
+        />
+      )}
+
       <div className="ajustes_header">
         <button className="ajustes_volver" onClick={onVolver}>← Volver</button>
         <h1>Subscripción</h1>
@@ -85,14 +91,8 @@ export default function AjustesSubscripcion({ onVolver }) {
             </span>
             <span className="ajustes_plan_badge">{planActual === 'gratis' ? 'GRATIS' : 'ACTIVO'}</span>
           </div>
-          <div className="ajustes_info_fila">
-            <span>Documentos</span>
-            <span>{planInfo?.docs}</span>
-          </div>
-          <div className="ajustes_info_fila">
-            <span>Mensajes</span>
-            <span>{planInfo?.mensajes}</span>
-          </div>
+          <div className="ajustes_info_fila"><span>Documentos</span><span>{planInfo?.docs}</span></div>
+          <div className="ajustes_info_fila"><span>Mensajes</span><span>{planInfo?.mensajes}</span></div>
         </section>
 
         <section className="ajustes_seccion">
@@ -109,7 +109,7 @@ export default function AjustesSubscripcion({ onVolver }) {
                 <span style={{ fontFamily: 'var(--family-font-conversacion)', color: 'var(--color-text)', whiteSpace: 'nowrap' }}>{plan.precio}</span>
                 {plan.id === planActual
                   ? <span className="ajustes_plan_badge">Actual</span>
-                  : <button className="ajustes_boton_guardar" onClick={() => cambiarPlan(plan)} disabled={guardando}>
+                  : <button className="ajustes_boton_guardar" onClick={() => setPlanPendiente(plan)} disabled={guardando}>
                       {guardando ? '...' : 'Elegir'}
                     </button>
                 }
