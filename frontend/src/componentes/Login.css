@@ -1,0 +1,92 @@
+.login {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 100vh;
+    background-color: var(--button-color);
+}
+
+.login > h1 {
+    font-size: 2.5rem;
+    margin: 0;
+    margin-bottom: 1rem;
+    color: var(--background-color-body);
+    font-family: var(--family-font-conversacion);
+}
+
+.logo_login {
+    height: 80px;
+    width: auto;
+    margin-bottom: 2rem;
+    filter: brightness(0) invert(1);
+}
+
+.login form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+    max-width: 360px;
+    background-color: var(--background-color-menu);
+    padding: 2rem;
+    border-radius: 20px;
+    box-shadow: 0 8px 32px hsla(229, 46%, 5%, 0.5);
+}
+
+.login form input {
+    height: 42px;
+    border-radius: 12px;
+    border: 1px solid var(--background-color-chat-selected);
+    padding: 0 1rem;
+    background-color: var(--background-color-body);
+    font-family: var(--family-font-conversacion);
+    font-size: var(--font-size-chat);
+    outline: none;
+    box-sizing: border-box;
+}
+
+.login form input:focus {
+    border-color: var(--background-color-text-ia-selected);
+    box-shadow: 0 0 0 2px hsla(183, 59%, 45%, 0.25);
+}
+
+.login form button {
+    height: 42px;
+    border-radius: 12px;
+    border: 0;
+    background-color: var(--button-color);
+    color: var(--background-color-body);
+    font-family: var(--family-font-conversacion);
+    font-size: var(--font-size-chat);
+    cursor: pointer;
+    margin-top: 0.5rem;
+}
+
+.login form button:hover {
+    background-color: var(--background-color-chats-oscuro);
+}
+
+.login > button {
+    margin-top: 1.5rem;
+    border: 0;
+    background: none;
+    color: var(--background-color-body);
+    font-family: var(--family-font-conversacion);
+    font-size: var(--font-size-menu);
+    cursor: pointer;
+    text-decoration: underline;
+    opacity: 0.8;
+}
+
+.login > button:hover {
+    opacity: 1;
+}
+
+.error {
+    color: hsla(0, 70%, 55%, 100%);
+    font-size: var(--font-size-menu);
+    margin: 0;
+    text-align: center;
+}

@@ -1,0 +1,66 @@
+nav {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    height: auto;
+    max-height: 50px;
+    width: 100%;
+    padding: 0.5rem 1rem;
+    box-sizing: border-box;
+    border: 1px solid var(--background-color-chat-selected);
+    border-bottom: 0;
+    border-bottom-left-radius: 25px;
+    background-color: var(--background-color-body);
+}
+
+nav > .menu_izq {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
+    margin: 0.5rem;
+}
+
+nav > .menu_drc {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+    margin-left: auto;
+    gap: 1rem;
+}
+
+.menu_drc > * {
+    margin: 0.5rem;
+}
+
+#logo {
+    height: var(--logo-height-menu);
+    margin-top: 0.5vh;
+    cursor: pointer;
+}
+
+.img_nav {
+    height: var(--img-height-menu);
+    cursor: pointer;
+}
+
+.boton_premium {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.3rem 0.9rem;
+    border-radius: 20px;
+    border: 1.5px solid var(--background-color-text-ia-selected);
+    background: none;
+    color: var(--background-color-text-ia-selected);
+    font-family: var(--family-font-conversacion);
+    font-size: var(--font-size-menu);
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.boton_premium:hover {
+    background-color: var(--background-color-text-ia-selected);
+    color: white;
+}

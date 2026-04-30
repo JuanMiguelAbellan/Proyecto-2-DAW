@@ -10,27 +10,38 @@ export default class UsuarioRepositoryPostgres implements UsuarioRepository{
         return result || [];
     }
     async getUsuario(idUsuario: Number): Promise<Usuario> {
-        const query = `SELECT * FROM usuarios u 
-        JOIN  subscripcion s ON u.id_usuario = s.id_usuario
-        WHERE u.id_usuario = ${idUsuario}
-        `
-        //AND s.estado = 'activa'
+        const query = `SELECT u.*, s.plan FROM usuarios u
+        LEFT JOIN subscripcion s ON u.id_usuario = s.id_usuario
+        WHERE u.id_usuario = ${idUsuario}`
         const result: any[] = await executeQuery(query);
-        if (result.length === 0) {
-            return null;
-        }
-        const user = result[0]; 
-        
+        if (result.length === 0) return null;
+        const user = result[0];
         return {
             id: user.id_usuario,
             email: user.email,
-            password: user.password,
-            nombre:user.nombre,
-            rol:user.rol,
-            preferencias:user.preferencias,
-            planSubscripcion: user.plan
+            password: user.password_hash,
+            nombre: user.nombre,
+            apellidos: user.apellidos,
+            rol: user.rol,
+            preferencias: user.preferencias,
+            planSubscripcion: user.plan || 'gratis'
         };
+    }
 
+    async editarInfo(nombre: string, apellidos: string, email: string, id: Number): Promise<void> {
+        const query = `UPDATE usuarios SET nombre = '${nombre}', apellidos = '${apellidos}', email = '${email}' WHERE id_usuario = ${id}`
+        await executeQuery(query)
+    }
+
+    async cambiarPassword(newPasswordHash: string, id: Number): Promise<void> {
+        const query = `UPDATE usuarios SET password_hash = '${newPasswordHash}' WHERE id_usuario = ${id}`
+        await executeQuery(query)
+    }
+
+    async cambiarPlan(plan: string, id: Number): Promise<void> {
+        const query = `INSERT INTO subscripcion (id_usuario, plan, estado) VALUES (${id}, '${plan}', 'activa')
+        ON CONFLICT (id_usuario) DO UPDATE SET plan = '${plan}', estado = 'activa'`
+        await executeQuery(query)
     }
     async contarDocsMes(idUsuario : Number):Promise<Number> {
         const query = ` SELECT COUNT(*) AS total FROM documentos d

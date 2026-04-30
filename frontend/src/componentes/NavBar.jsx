@@ -13,12 +13,19 @@ export default function NavBar({ onNavegar, onLogout, temaOscuro, setTemaOscuro,
   return (
     <nav className="navbar">
       <div className="menu_izq">
-        <img src="./public/images/iadocs_logo.svg" alt="Logotipo de la empresa" className="img_nav" id="logo" />
-        <MenuHamburguesa className={"menu_hamburguesa"} img="./public/images/menu-hamburguesa.svg" opciones={[
-          { texto: "Mi suscripción", funcion: () => onNavegar('ajustesSubscripcion') },
-          { texto: "Mi cuenta", funcion: () => onNavegar('cuenta') },
-          { texto: "Accesibilidad", funcion: () => onNavegar('accesibilidad') },
-          { texto: "Cerrar sesión", funcion: onLogout }
+        <img
+          src="./public/images/iadocs_logo.svg"
+          alt="IADocs"
+          className="img_nav"
+          id="logo"
+          style={{ cursor: 'pointer' }}
+          onClick={() => onNavegar('chat')}
+        />
+        <MenuHamburguesa className="menu_hamburguesa" img="./public/images/menu-hamburguesa.svg" opciones={[
+          { texto: 'Mi subscripción', funcion: () => onNavegar('ajustesSubscripcion') },
+          { texto: 'Cuenta', funcion: () => onNavegar('cuenta') },
+          { texto: 'Accesibilidad', funcion: () => onNavegar('accesibilidad') },
+          { texto: 'Cerrar sesión', funcion: onLogout },
         ]} />
       </div>
       <div className="menu_drc">
@@ -36,18 +43,18 @@ export default function NavBar({ onNavegar, onLogout, temaOscuro, setTemaOscuro,
           alt="Accesibilidad"
         />
         <img
-          src={temaOscuro ? "./public/images/sol.svg" : "./public/images/luna.svg"}
+          src={temaOscuro ? './public/images/sol.svg' : './public/images/luna.svg'}
           className="img_nav"
           id="luna"
           style={{ cursor: 'pointer' }}
           onClick={() => setTemaOscuro(!temaOscuro)}
           alt="Tema"
         />
-        <MenuHamburguesa className={"menu_ajustes"} img="./public/images/ajustes.svg" opciones={[
-          { texto: "Mi cuenta", funcion: () => onNavegar('cuenta') },
-          { texto: "Mi suscripción", funcion: () => onNavegar('ajustesSubscripcion') },
-          { texto: "Accesibilidad", funcion: () => onNavegar('accesibilidad') },
-          { texto: "Cerrar sesión", funcion: onLogout }
+        <MenuHamburguesa className="menu_ajustes" img="./public/images/ajustes.svg" opciones={[
+          { texto: 'Cuenta', funcion: () => onNavegar('cuenta') },
+          { texto: 'Subscripciones', funcion: () => onNavegar('ajustesSubscripcion') },
+          { texto: 'Accesibilidad', funcion: () => onNavegar('accesibilidad') },
+          { texto: 'Cerrar sesión', funcion: onLogout },
         ]} />
       </div>
     </nav>

@@ -45,33 +45,38 @@ export default function BarraInferior({ chatActivo, setMensajes, onTituloGenerad
     setArchivos([])
 
     if (!chatActivo) {
-      post('api/ia/nuevo', {}, async (data) => {
-        const nuevoChat = data.chat
-        onNuevoChat(nuevoChat)
-        setMensajes([{ rol: 'usuario', contenido: mensajeVisible }])
-        setEsperando(true)
-        const contenidoArchivos = archivosCopy.length > 0 ? await leerArchivos(archivosCopy) : ''
-        const promptCompleto = contenidoArchivos ? `${textoActual}\n\n${contenidoArchivos}` : textoActual
-        post('api/ia/generate',
-          { prompt: promptCompleto, tipo: 'free', idChat: nuevoChat.id_chat },
-          (respuesta) => {
-            setEsperando(false)
-            setMensajes(prev => [...prev, { rol: 'ia', contenido: respuesta.contenido }])
-            if (respuesta.titulo) onTituloGenerado(nuevoChat.id_chat, respuesta.titulo)
-          },
-          (error) => { setEsperando(false); console.error('Error:', error) }
-        )
-      }, (error) => console.error('Error creando chat:', error))
+      post('api/ia/nuevo', {},
+        async (data) => {
+          const nuevoChat = data.chat
+          onNuevoChat(nuevoChat)
+          setMensajes([{ rol: 'usuario', contenido: mensajeVisible }])
+          setEsperando(true)
+          const contenidoArchivos = archivosCopy.length > 0 ? await leerArchivos(archivosCopy) : ''
+          const promptCompleto = contenidoArchivos ? `${textoActual}\n\n${contenidoArchivos}` : textoActual
+          post(
+            'api/ia/generate',
+            { prompt: promptCompleto, tipo: 'free', idChat: nuevoChat.id_chat },
+            (respuesta) => {
+              setEsperando(false)
+              setMensajes((prev) => [...prev, { rol: 'ia', contenido: respuesta.contenido }])
+              if (respuesta.titulo) onTituloGenerado(nuevoChat.id_chat, respuesta.titulo)
+            },
+            (error) => { setEsperando(false); console.error('Error:', error) }
+          )
+        },
+        (error) => console.error('Error creando chat:', error)
+      )
     } else {
-      setMensajes(prev => [...prev, { rol: 'usuario', contenido: mensajeVisible }])
+      setMensajes((prev) => [...prev, { rol: 'usuario', contenido: mensajeVisible }])
       setEsperando(true)
       const contenidoArchivos = archivosCopy.length > 0 ? await leerArchivos(archivosCopy) : ''
       const promptCompleto = contenidoArchivos ? `${textoActual}\n\n${contenidoArchivos}` : textoActual
-      post('api/ia/generate',
+      post(
+        'api/ia/generate',
         { prompt: promptCompleto, tipo: 'free', idChat: chatActivo.id_chat },
         (respuesta) => {
           setEsperando(false)
-          setMensajes(prev => [...prev, { rol: 'ia', contenido: respuesta.contenido }])
+          setMensajes((prev) => [...prev, { rol: 'ia', contenido: respuesta.contenido }])
           if (respuesta.titulo) onTituloGenerado(chatActivo.id_chat, respuesta.titulo)
         },
         (error) => { setEsperando(false); console.error('Error:', error) }

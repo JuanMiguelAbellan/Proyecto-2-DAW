@@ -47,7 +47,7 @@ routerUsuario.post("/login", async(req : Request, res: Response)=>{
 routerUsuario.post("/guardarDoc", isAuth, async(req: Request, res: Response)=>{
     const {documento}=req.body
     const idUser = req.body.id
-    
+
     const usuario=await usuarioUseCases.getUsuario(idUser)
 
     usuarioUseCases.insertarDoc(usuario, documento)
@@ -64,13 +64,68 @@ routerUsuario.post("/editarPreferencias", isAuth, (req:Request, res:Response)=>{
 
 routerUsuario.get("/getChats", isAuth, async(req:Request, res:Response)=>{
     const idUser = req.body.id
-    
+
     const chats = await usuarioUseCases.getChats(idUser)
-    
+
     res.json({chats})
+})
+
+routerUsuario.post("/getHistorial", isAuth, async(req:Request, res:Response)=>{
+    const idUser = req.body.id
+    const {idChat} = req.body.idChat
+
+    const historial = await usuarioUseCases.getChats(idUser)
+
+    res.json({historial})
+})
+
+routerUsuario.get("/me", isAuth, async(req: Request, res: Response) => {
+    try {
+        const idUser = req.body.id
+        const usuario = await usuarioUseCases.getUsuario(idUser)
+        if (!usuario) return res.status(404).json({ error: "Usuario no encontrado" })
+        const { password, ...datos } = usuario
+        res.json(datos)
+    } catch(e) {
+        res.status(500).json({ error: e.message })
+    }
+})
+
+routerUsuario.patch("/me", isAuth, async(req: Request, res: Response) => {
+    try {
+        const idUser = req.body.id
+        const { nombre, apellidos, email } = req.body
+        await usuarioUseCases.editarInfo(nombre, apellidos, email, idUser)
+        res.json({ ok: true })
+    } catch(e) {
+        res.status(500).json({ error: e.message })
+    }
+})
+
+routerUsuario.post("/cambiarPassword", isAuth, async(req: Request, res: Response) => {
+    try {
+        const idUser = req.body.id
+        const { passwordActual, passwordNueva } = req.body
+        await usuarioUseCases.cambiarPassword(passwordActual, passwordNueva, idUser)
+        res.json({ ok: true })
+    } catch(e) {
+        res.status(400).json({ error: e.message })
+    }
+})
+
+routerUsuario.patch("/subscripcion", isAuth, async(req: Request, res: Response) => {
+    try {
+        const idUser = req.body.id
+        const { plan } = req.body
+        await usuarioUseCases.cambiarPlan(plan, idUser)
+        res.json({ ok: true })
+    } catch(e) {
+        res.status(500).json({ error: e.message })
+    }
 })
 
 routerUsuario.get("", (req:Request, res:Response)=>{
     res.send("API de usuarios")
 })
+
 export default routerUsuario

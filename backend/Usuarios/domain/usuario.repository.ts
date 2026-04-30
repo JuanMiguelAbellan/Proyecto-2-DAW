@@ -9,4 +9,8 @@ export default interface UsuarioRepository{
     contarDocsMes(idUsuario: Number): Promise<Number>
     getUsuario(idUsuario:Number):Promise<Usuario>
     getChats(idUsuario:Number):Promise<any>
+    getHistorial(idUsuario:Number, idChat:Number):Promise<[{}]>
+    editarInfo(nombre: string, apellidos: string, email: string, id: Number): Promise<void>
+    cambiarPassword(newPasswordHash: string, id: Number): Promise<void>
+    cambiarPlan(plan: string, id: Number): Promise<void>
 }

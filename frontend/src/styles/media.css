@@ -1,0 +1,46 @@
+@media (max-width: 1024px) {
+    nav { border: 0; }
+
+    main {
+        flex-direction: column;
+        height: 94.5vh;
+    }
+
+    .chats { display: none; }
+
+    .conversacion {
+        width: 100%;
+        margin: 0;
+        border-radius: 0;
+        border: 0;
+    }
+}
+
+@media (max-width: 768px) {
+    nav {
+        flex-direction: row;
+        justify-content: space-between;
+    }
+
+    .menu_drc { display: none; }
+    .chats { display: none; }
+
+    .conversacion {
+        width: 100%;
+        height: calc(100vh - 60px);
+        border-radius: 0;
+    }
+
+    .mensaje_usuario,
+    .mensaje_ia {
+        max-width: 90%;
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .mensaje_usuario,
+    .mensaje_ia {
+        max-width: 95%;
+    }
+}

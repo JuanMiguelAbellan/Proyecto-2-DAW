@@ -28,14 +28,20 @@ function App() {
 
   useEffect(() => {
     if (token) {
-      get('api/usuarios/getChats', (data) => setChats(data.chats), (error) => console.error(error))
+      get('api/usuarios/getChats',
+        (data) => setChats(data.chats),
+        (error) => console.error('Error cargando chats:', error)
+      )
       get('api/usuarios/me', (data) => setPlanActual(data.planSubscripcion || 'gratis'), () => {})
     }
   }, [token])
 
   useEffect(() => {
     if (chatActivo) {
-      get(`api/ia/mensajes/${chatActivo.id_chat}`, (data) => setMensajes(data.mensajes), (error) => console.error(error))
+      get(`api/ia/mensajes/${chatActivo.id_chat}`,
+        (data) => setMensajes(data.mensajes),
+        (error) => console.error('Error cargando mensajes:', error)
+      )
     }
   }, [chatActivo])
 
@@ -52,7 +58,7 @@ function App() {
   }
 
   function handleNuevoChat(chat) {
-    setChats(prev => [chat, ...prev])
+    setChats((prev) => [chat, ...prev])
     setChatActivo(chat)
     setMensajes([])
   }
@@ -70,7 +76,9 @@ function App() {
   }
 
   if (!token) {
-    if (pantalla === 'registro') return <Registro onVolver={() => setPantalla('login')} />
+    if (pantalla === 'registro') {
+      return <Registro onVolver={() => setPantalla('login')} />
+    }
     return <Login onLogin={handleLogin} onRegistro={() => setPantalla('registro')} />
   }
 
@@ -89,7 +97,9 @@ function App() {
     ),
     subscripcion: <Subscripcion onVolver={() => setVistaApp('chat')} />,
     cuenta: <AjustesCuenta onVolver={() => setVistaApp('chat')} />,
-    ajustesSubscripcion: <AjustesSubscripcion onVolver={() => setVistaApp('chat')} onPlanCambiado={setPlanActual} />,
+    ajustesSubscripcion: (
+      <AjustesSubscripcion onVolver={() => setVistaApp('chat')} onPlanCambiado={setPlanActual} />
+    ),
     accesibilidad: <AjustesAccesibilidad onVolver={() => setVistaApp('chat')} />,
   }
 
