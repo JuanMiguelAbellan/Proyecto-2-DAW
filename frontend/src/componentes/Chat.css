@@ -12,6 +12,11 @@
     background-color: var(--background-color-chat-selected);
 }
 
+.chat_item:not(.chat_activo):hover {
+    background-color: var(--background-color-chat-selected);
+    opacity: 0.85;
+}
+
 .chat_titulo {
     flex: 1;
     height: 2.5rem;
