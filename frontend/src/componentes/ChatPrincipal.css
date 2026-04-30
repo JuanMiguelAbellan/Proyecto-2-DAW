@@ -6,22 +6,32 @@
 }
 
 .mensaje_usuario {
+    width: fit-content;
     max-width: 70%;
     margin-left: auto;
     margin-right: 1rem;
+    margin-bottom: 0.5rem;
     background-color: var(--background-color-text-user);
     border-radius: 20px;
     border-bottom-right-radius: 0;
     padding: 0.5rem 1rem;
+    font-size: var(--font-size-chat);
+    font-family: var(--family-font-conversacion);
+    color: white;
 }
 
 .mensaje_ia {
+    width: fit-content;
     max-width: 80%;
     margin-left: 1rem;
+    margin-bottom: 0.5rem;
     background-color: var(--background-color-text-ia);
     border-radius: 20px;
     border-bottom-left-radius: 0;
     padding: 0.5rem 1rem;
+    font-size: var(--font-size-chat);
+    font-family: var(--family-font-conversacion);
+    color: white;
 }
 
 @keyframes parpadeo {
