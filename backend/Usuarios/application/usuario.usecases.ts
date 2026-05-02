@@ -56,8 +56,8 @@ export default class UsuarioUseCases{
         }
     }
 
-    editarPreferencias(preferencias, idUser:Number){
-        this.usuarioRepository.editarPrefencias(preferencias, idUser)
+    async editarPreferencias(preferencias, idUser:Number): Promise<void> {
+        await this.usuarioRepository.editarPrefencias(preferencias, idUser)
     }
 
     getChats(idUser:Number):Promise<any>{

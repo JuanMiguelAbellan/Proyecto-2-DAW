@@ -1,4 +1,4 @@
-name: Deploy Frontend to ECS Express
+name: Deploy Frontend to ECS
 
 on:
   push:
@@ -29,20 +29,25 @@ jobs:
 
       - name: Tag image
         run: |
-          docker tag ${{ secrets.ECS_REPOSITORY_FRONT }}:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECS_REPOSITORY_FRONT }}:latest
+          docker tag ${{ secrets.ECS_REPOSITORY_FRONT }}:latest \
+          ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECS_REPOSITORY_FRONT }}:latest
+
       - name: Push image to ECR
         run: |
           docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECS_REPOSITORY_FRONT }}:latest
-      - name: Render new task definition 
-        id: taskdef 
-        uses: aws-actions/amazon-ecs-render-task-definition@v1 
-        with: 
+
+      - name: Render new task definition
+        id: taskdef
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
           task-definition: despliegue/ecs-task-definition-front.json
-          container-name: Main 
+          container-name: Main
           image: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECS_REPOSITORY_FRONT }}:latest
-      - name: Deploy new task definition to ECS 
-        uses: aws-actions/amazon-ecs-deploy-task-definition@v1 
-        with: 
-          task-definition: ${{ steps.taskdef.outputs.task-definition }} 
+
+      - name: Deploy new task definition to ECS
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.taskdef.outputs.task-definition }}
           service: ${{ secrets.ECS_SERVICE_FRONT }}
           cluster: ${{ secrets.ECS_CLUSTER }}
+          wait-for-service-stability: true

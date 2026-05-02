@@ -11,7 +11,20 @@ Ayudas a los usuarios a comprender, resumir y extraer información de documentos
 Responde siempre en el mismo idioma que el usuario.
 Cuando el usuario adjunte documentos (indicados con [Documento: nombre]), analízalos en detalle y proporciona respuestas precisas basadas en su contenido.`
 
-    async getRespuesta(prompt: string, tipoSub: string, idUsuario: Number, idChat?: Number): Promise<Mensaje> {
+    private detectarTipoDoc(texto: string): string {
+        const t = texto.toLowerCase()
+        const contar = (terms: string[]) => terms.filter(w => t.includes(w)).length
+        const scores: Record<string, number> = {
+            médico:    contar(['diagnóstico','paciente','clínico','médico','hospital','enfermedad','síntoma','dosis','cirugía','fármaco','receta','anamnesis','patología','historia clínica']),
+            legal:     contar(['contrato','cláusula','tribunal','demanda','sentencia','juzgado','jurídico','firmante','notario','legislación','decreto','parte contratante']),
+            educativo: contar(['alumno','profesor','asignatura','examen','universidad','escuela','tesis','aprendizaje','currículo','matrícula','académico','docente','calificación','expediente']),
+        }
+        const max = Math.max(...Object.values(scores))
+        if (max < 2) return 'general'
+        return Object.keys(scores).find(k => scores[k] === max) || 'general'
+    }
+
+    async getRespuesta(prompt: string, mensajeVisible: string, tipoSub: string, idUsuario: Number, idChat?: Number): Promise<Mensaje> {
         const json = {
             model: "llama3.2:1b",
             system: this.SYSTEM_PROMPT,
@@ -23,8 +36,11 @@ Cuando el usuario adjunte documentos (indicados con [Documento: nombre]), analí
         if (idChat != null) {
             const total = await this.iaRepository.contarMensajes(idChat)
             esPrimerMensaje = total === 0
-            await this.iaRepository.guardarMensajeUsuario(prompt, idChat)
+            await this.iaRepository.guardarMensajeUsuario(mensajeVisible || prompt, idChat)
         }
+
+        const esGeneracionDoc = /\bhaz(me)?\b|hacer\s+un|genera(r|me)?|crea(r|me|do)?|escrib(e|ir|eme)|redact(a|ar)|expand|ampl[íi]|reescrib|nuevo\s+doc|doc\s+nuevo|\bdoc(umento)?\b.*\b(sobre|acerca|de)\b/i.test(mensajeVisible || prompt)
+        const tipoDoc = prompt.includes('[Documento:') ? this.detectarTipoDoc(prompt) : undefined
 
         const respuesta = await this.iaController.generate(json)
 
@@ -37,7 +53,8 @@ Cuando el usuario adjunte documentos (indicados con [Documento: nombre]), analí
             tipo: "normal",
             rol: "ia",
             contenido: respuesta.response,
-            fechaCreacion: respuesta.created_at
+            fechaCreacion: respuesta.created_at,
+            tipoDoc
         }
 
         if (respuesta.response.includes("[{")) {
@@ -49,13 +66,18 @@ Cuando el usuario adjunte documentos (indicados con [Documento: nombre]), analí
             this.editPreferencia(preferencias, idUsuario)
             mensaje = { contenido: respuesta.response.substring(respuesta.response.indexOf("}}]]") + 4) }
         } else if (respuesta.response.includes("//*")) {
-            const docInsert = respuesta.response.substring(respuesta.response.indexOf("//*"), respuesta.response.indexOf("*//"))
-            const key = this.insertDocumento({ tipo: "documento", contenidoDoc: docInsert })
-            mensaje = { tipo: "documento", contenido: respuesta.response.substring(respuesta.response.indexOf("*//") + 3), contenidoDoc: docInsert }
-            this.iaRepository.guardarDocumentoRespuesta(mensaje, (await key))
+            const docInsert = respuesta.response.substring(respuesta.response.indexOf("//*") + 3, respuesta.response.indexOf("*//"))
+            mensaje = { tipo: "documento", contenido: respuesta.response.substring(respuesta.response.indexOf("*//") + 3).trim() || "Documento generado.", contenidoDoc: docInsert, tipoDoc }
+        } else if (esGeneracionDoc) {
+            mensaje = { tipo: "documento", contenido: "Documento generado.", contenidoDoc: respuesta.response, tipoDoc }
         }
 
-        this.iaRepository.guardarRespuesta(mensaje, idChat, idUsuario)
+        const idMensaje = await this.iaRepository.guardarRespuesta(mensaje, idChat, idUsuario)
+
+        if (mensaje.tipo === 'documento') {
+            const key = await this.iaController.guardarDocS3(mensaje, mensaje.titulo || String(idMensaje)).catch(() => '')
+            await this.iaRepository.guardarDocumentoRespuesta(idMensaje, key || '', mensaje.tipoDoc)
+        }
 
         if (esPrimerMensaje && idChat != null) {
             const titulo = await this.generarTitulo(prompt)
@@ -99,9 +121,7 @@ Cuando el usuario adjunte documentos (indicados con [Documento: nombre]), analí
         return this.iaRepository.eliminarChat(idChat)
     }
 
-    async insertDocumento(documento: Mensaje): Promise<String> {
-        const key = this.iaController.guardarDocS3(documento, documento.titulo).then((e) => e)
-        this.iaRepository.guardarDocumentoRespuesta(documento, (await key))
-        return key
+    async getDocumentos(idUsuario: Number): Promise<any[]> {
+        return this.iaRepository.getDocumentos(idUsuario)
     }
 }

@@ -36,6 +36,20 @@ jobs:
         run: |
           docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPOSITORY }}:latest
 
+      - name: Inject environment variables into task definition
+        run: |
+          sed -i \
+            -e "s|<POSTGRES_HOST>|${{ secrets.POSTGRES_HOST }}|g" \
+            -e "s|<POSTGRES_USER>|${{ secrets.POSTGRES_USER }}|g" \
+            -e "s|<POSTGRES_PASSWORD>|${{ secrets.POSTGRES_PASSWORD }}|g" \
+            -e "s|<SECRET_KEY>|${{ secrets.SECRET_KEY }}|g" \
+            -e "s|<OLLAMA_HOST>|${{ secrets.OLLAMA_HOST }}|g" \
+            -e "s|<AWS_REGION>|${{ secrets.AWS_REGION }}|g" \
+            -e "s|<AWS_ACCESS_KEY_ID>|${{ secrets.AWS_ACCESS_KEY_ID }}|g" \
+            -e "s|<AWS_SECRET_ACCESS_KEY>|${{ secrets.AWS_SECRET_ACCESS_KEY }}|g" \
+            -e "s|<AWS_SESSION_TOKEN>|${{ secrets.AWS_SESSION_TOKEN }}|g" \
+            despliegue/ecs-task-definition-back.json
+
       - name: Render new task definition
         id: render
         uses: aws-actions/amazon-ecs-render-task-definition@v1
@@ -50,3 +64,4 @@ jobs:
           task-definition: ${{ steps.render.outputs.task-definition }}
           cluster: ${{ secrets.ECS_CLUSTER }}
           service: ${{ secrets.ECS_SERVICE }}
+          wait-for-service-stability: true

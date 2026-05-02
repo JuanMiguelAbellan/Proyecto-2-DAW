@@ -2,8 +2,8 @@
   "family": "backend-task",
   "networkMode": "awsvpc",
   "requiresCompatibilities": ["FARGATE"],
-  "cpu": "256",
-  "memory": "512",
+  "cpu": "512",
+  "memory": "1024",
   "executionRoleArn": "arn:aws:iam::573703223746:role/LabRole",
   "taskRoleArn": "arn:aws:iam::573703223746:role/LabRole",
   "containerDefinitions": [
@@ -13,11 +13,33 @@
       "essential": true,
       "portMappings": [
         {
-          "containerPort": 3000,
-          "hostPort": 3000,
+          "containerPort": 8080,
+          "hostPort": 8080,
           "protocol": "tcp"
         }
-      ]
+      ],
+      "environment": [
+        { "name": "POSTGRES_HOST",     "value": "<POSTGRES_HOST>" },
+        { "name": "POSTGRES_PORT",     "value": "5432" },
+        { "name": "POSTGRES_USER",     "value": "<POSTGRES_USER>" },
+        { "name": "POSTGRES_PASSWORD", "value": "<POSTGRES_PASSWORD>" },
+        { "name": "POSTGRES_DB",       "value": "IADocs" },
+        { "name": "SECRET_KEY",        "value": "<SECRET_KEY>" },
+        { "name": "OLLAMA_HOST",       "value": "<OLLAMA_HOST>" },
+        { "name": "AWS_REGION",        "value": "<AWS_REGION>" },
+        { "name": "AWS_ACCESS_KEY_ID",     "value": "<AWS_ACCESS_KEY_ID>" },
+        { "name": "AWS_SECRET_ACCES_KEY",  "value": "<AWS_SECRET_ACCESS_KEY>" },
+        { "name": "AWS_SESSION_TOKEN",     "value": "<AWS_SESSION_TOKEN>" },
+        { "name": "AWS_S3_BUCKET",         "value": "iadocss3" }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/backend-task",
+          "awslogs-region": "us-east-1",
+          "awslogs-stream-prefix": "ecs"
+        }
+      }
     }
   ]
 }

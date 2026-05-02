@@ -7,6 +7,7 @@ import Subscripcion from './componentes/Subscripcion'
 import AjustesCuenta from './componentes/AjustesCuenta'
 import AjustesSubscripcion from './componentes/AjustesSubscripcion'
 import AjustesAccesibilidad from './componentes/AjustesAccesibilidad'
+import DocumentosList from './componentes/DocumentosList'
 import NavBar from './componentes/NavBar'
 import './root.css'
 import './styles/base.css'
@@ -25,6 +26,12 @@ function App() {
   useEffect(() => {
     document.documentElement.setAttribute('data-tema', temaOscuro ? 'oscuro' : 'claro')
   }, [temaOscuro])
+
+  useEffect(() => {
+    const handler = () => handleLogout()
+    window.addEventListener('auth:logout', handler)
+    return () => window.removeEventListener('auth:logout', handler)
+  }, [])
 
   useEffect(() => {
     if (token) {
@@ -98,7 +105,7 @@ function App() {
         onEliminarChat={handleEliminarChat}
       />
     ),
-    subscripcion: <Subscripcion onVolver={() => setVistaApp('chat')} />,
+    subscripcion: <Subscripcion onVolver={() => setVistaApp('chat')} onPlanCambiado={setPlanActual} />,
     cuenta: <AjustesCuenta onVolver={() => setVistaApp('chat')} />,
     ajustesSubscripcion: (
       <AjustesSubscripcion
@@ -107,6 +114,7 @@ function App() {
       />
     ),
     accesibilidad: <AjustesAccesibilidad onVolver={() => setVistaApp('chat')} />,
+    documentos: <DocumentosList onVolver={() => setVistaApp('chat')} />,
   }
 
   return (

@@ -1,7 +1,16 @@
-const URL_SERVER = import.meta.env.VITE_API_URL || "http://localhost:8080/"
+const URL_SERVER = import.meta.env.VITE_API_URL || ''
 
 function getToken() {
   return localStorage.getItem("token")
+}
+
+function checkResponse(response) {
+  if (response.ok) return response.json()
+  if (response.status === 401) {
+    localStorage.removeItem('token')
+    window.dispatchEvent(new Event('auth:logout'))
+  }
+  throw new Error(`${response.status}`)
 }
 
 export function get(url, callback, callbackError) {
@@ -13,10 +22,7 @@ export function get(url, callback, callbackError) {
     }
   }
   fetch(URL_SERVER + url, options)
-    .then((response) => {
-      if (response.ok) return response.json()
-      else throw new Error()
-    })
+    .then(checkResponse)
     .then((data) => callback(data))
     .catch((error) => callbackError(error))
 }
@@ -31,10 +37,7 @@ export function post(url, datos, callback, callbackError) {
     body: JSON.stringify(datos)
   }
   fetch(URL_SERVER + url, options)
-    .then((response) => {
-      if (response.ok) return response.json()
-      else throw new Error()
-    })
+    .then(checkResponse)
     .then((data) => callback(data))
     .catch((error) => callbackError(error))
 }
@@ -47,10 +50,7 @@ export function delet(url, callback, callbackError) {
     }
   }
   fetch(URL_SERVER + url, options)
-    .then((response) => {
-      if (response.ok) return response.json()
-      else throw new Error()
-    })
+    .then(checkResponse)
     .then((data) => callback(data))
     .catch((error) => callbackError(error))
 }
@@ -65,10 +65,7 @@ export function pacth(url, datos, callback, callbackError) {
     body: JSON.stringify(datos)
   }
   fetch(URL_SERVER + url, options)
-    .then((response) => {
-      if (response.ok) return response.json()
-      else throw new Error()
-    })
+    .then(checkResponse)
     .then((data) => callback(data))
     .catch((error) => callbackError(error))
 }
