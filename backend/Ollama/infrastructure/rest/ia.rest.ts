@@ -1,8 +1,12 @@
 import express, { Request, Response } from "express";
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const multer = require("multer");
 import IaUseCases from "../../application/ia.usecases"
 import { isAuth } from "../../../context/security/auth";
 import IaRepositoryPostgres from "../db/ia.repository.Postgres";
 import IaController from "./ia.controller";
+
+const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 25 * 1024 * 1024 } });
 
 const iaUsecases = new IaUseCases(new IaRepositoryPostgres, new IaController)
 
@@ -42,9 +46,9 @@ const routerIA = express.Router();
  *         description: Error al contactar con Ollama
  */
 routerIA.post("/generate", isAuth, async (req: Request, res: Response) => {
-    const { prompt, tipo, idChat } = req.body;
+    const { prompt, mensajeVisible, tipo, idChat } = req.body;
     const idUsuario = req.body.id;
-    const respuesta = await iaUsecases.getRespuesta(prompt, tipo, idUsuario, idChat)
+    const respuesta = await iaUsecases.getRespuesta(prompt, mensajeVisible, tipo, idUsuario, idChat)
     console.log(respuesta);
 
     if (respuesta.contenido == null || respuesta.contenido == "") {
@@ -150,10 +154,25 @@ routerIA.delete("/chat/:idChat", isAuth, async (req: Request, res: Response) => 
     res.json({ ok: true })
 });
 
-routerIA.post("/testDoc", async (req: Request, res: Response) => {
-    const { documento } = req.body
-    const urLRespuesta = await iaUsecases.insertDocumento(documento)
-    res.send(urLRespuesta)
+routerIA.get("/documentos", isAuth, async (req: Request, res: Response) => {
+    const idUsuario = req.body.id
+    const documentos = await iaUsecases.getDocumentos(idUsuario)
+    res.json({ documentos })
 });
+
+routerIA.post("/extractText", isAuth, upload.single("file"), async (req: Request, res: Response) => {
+    try {
+        const file = (req as any).file
+        if (!file) { res.status(400).json({ error: "No file" }); return }
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        const pdfParse = require("pdf-parse")
+        const data = await pdfParse(file.buffer)
+        res.json({ texto: data.text })
+    } catch (e) {
+        console.error("Error extrayendo texto PDF:", e)
+        res.status(500).json({ texto: "" })
+    }
+});
+
 
 export default routerIA;

@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import * as pdfjsLib from 'pdfjs-dist'
 import './VisorPDF.css'
 
-pdfjsLib.GlobalWorkerOptions.workerSrc = new URL('pdfjs-dist/build/pdf.worker.mjs', import.meta.url).href
+pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs'
 
 export default function VisorPDF({ fuente, nombre, onCerrar }) {
   const [pdf, setPdf] = useState(null)

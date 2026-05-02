@@ -64,9 +64,11 @@ export default function AjustesAccesibilidad({ onVolver }) {
   }, [reducirMovimiento])
 
   useEffect(() => {
-    const vars = PALETAS[paleta] || {}
-    Object.entries(PALETAS['defecto']).forEach(([k]) => document.documentElement.style.removeProperty(k))
-    Object.entries(vars).forEach(([k, v]) => document.documentElement.style.setProperty(k, v))
+    if (paleta === 'defecto') {
+      document.documentElement.removeAttribute('data-paleta')
+    } else {
+      document.documentElement.setAttribute('data-paleta', paleta)
+    }
   }, [paleta])
 
   useEffect(() => {

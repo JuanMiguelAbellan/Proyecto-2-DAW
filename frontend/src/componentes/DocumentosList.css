@@ -1,0 +1,81 @@
+.docs_vacio {
+  color: var(--color-text);
+  opacity: 0.6;
+  text-align: center;
+  margin-top: 3rem;
+  font-family: var(--family-font-conversacion);
+}
+
+.docs_grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.doc_card {
+  background: var(--background-color-menu);
+  border-radius: 12px;
+  padding: 1rem 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-family: var(--family-font-conversacion);
+  color: var(--color-text);
+}
+
+.doc_card_top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.doc_badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 0.15rem 0.55rem;
+  border-radius: 20px;
+  text-transform: capitalize;
+}
+.doc_badge--medico    { background: rgba(239,68,68,0.25);  color: #fca5a5; }
+.doc_badge--legal     { background: rgba(234,179,8,0.25);  color: #fde68a; }
+.doc_badge--educativo { background: rgba(59,130,246,0.25); color: #93c5fd; }
+.doc_badge--otro      { background: rgba(148,163,184,0.2); color: #cbd5e1; }
+
+.doc_fecha {
+  font-size: 11px;
+  opacity: 0.55;
+}
+
+.doc_chat {
+  font-size: 12px;
+  opacity: 0.7;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.doc_preview {
+  font-size: 12px;
+  opacity: 0.85;
+  margin: 0;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.doc_descargar {
+  margin-top: auto;
+  align-self: flex-end;
+  padding: 0.3rem 0.8rem;
+  border-radius: 8px;
+  border: 1px solid currentColor;
+  background: none;
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--color-text);
+  opacity: 0.75;
+}
+.doc_descargar:hover { opacity: 1; }

@@ -1,8 +1,36 @@
+import { useState } from 'react'
+import { pacth } from '../servicios/peticiones'
+import PasarelaPago from './PasarelaPago'
 import './Subscripcion.css'
 
-export default function Subscripcion({ onVolver }) {
+export default function Subscripcion({ onVolver, onPlanCambiado }) {
+  const [planPendiente, setPlanPendiente] = useState(null)
+
+  function handleExito() {
+    pacth('api/usuarios/subscripcion',
+      { plan: planPendiente.id },
+      () => {
+        if (onPlanCambiado) onPlanCambiado(planPendiente.id)
+        setPlanPendiente(null)
+        onVolver()
+      },
+      () => {
+        setPlanPendiente(null)
+        onVolver()
+      }
+    )
+  }
+
   return (
     <div className="subscripcion">
+      {planPendiente && (
+        <PasarelaPago
+          plan={planPendiente}
+          onExito={handleExito}
+          onCancelar={() => setPlanPendiente(null)}
+        />
+      )}
+
       <div className="subscripcion_header">
         <button className="subscripcion_volver" onClick={onVolver}>← Volver</button>
         <h1>Elige tu plan</h1>
@@ -35,7 +63,12 @@ export default function Subscripcion({ onVolver }) {
             <li>Sin marca de agua</li>
             <li>Prioridad en cola</li>
           </ul>
-          <button className="plan_boton plan_boton_pro">Subscribirse</button>
+          <button
+            className="plan_boton plan_boton_pro"
+            onClick={() => setPlanPendiente({ nombre: 'Pro', precio: '4,99 €/mes', id: 'pro' })}
+          >
+            Subscribirse
+          </button>
         </div>
 
         <div className="plan">
@@ -49,7 +82,12 @@ export default function Subscripcion({ onVolver }) {
             <li>Sin marca de agua</li>
             <li>Prioridad en cola</li>
           </ul>
-          <button className="plan_boton plan_boton_pro">Subscribirse</button>
+          <button
+            className="plan_boton plan_boton_pro"
+            onClick={() => setPlanPendiente({ nombre: 'Pro Anual', precio: '49,90 €/año', id: 'pro_anual' })}
+          >
+            Subscribirse
+          </button>
         </div>
 
       </div>

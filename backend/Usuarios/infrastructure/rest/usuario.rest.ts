@@ -106,12 +106,15 @@ routerUsuario.post("/guardarDoc", isAuth, async(req: Request, res: Response)=>{
     res.send("Documento guardado correctamente")
 })
 
-routerUsuario.post("/editarPreferencias", isAuth, (req:Request, res:Response)=>{
-    const idUser = req.body.id
-    const {nuevasPreferencias}= req.body
-
-    usuarioUseCases.editarPreferencias(nuevasPreferencias, idUser)
-    res.send("Cambios realizados con exito")
+routerUsuario.post("/editarPreferencias", isAuth, async (req:Request, res:Response)=>{
+    try {
+        const idUser = req.body.id
+        const { nuevasPreferencias } = req.body
+        await usuarioUseCases.editarPreferencias(nuevasPreferencias, idUser)
+        res.json({ ok: true })
+    } catch(e) {
+        res.status(500).json({ error: e.message })
+    }
 })
 
 /**

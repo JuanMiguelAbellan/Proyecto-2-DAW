@@ -1,13 +1,22 @@
+FROM node:18-alpine AS build
+
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm install
+
+COPY . .
+RUN npx tsc --skipLibCheck
+
 FROM node:18-alpine
 
 WORKDIR /app
 
 COPY package*.json ./
+RUN npm install --omit=dev
 
-RUN npm install
-
-COPY . .
+COPY --from=build /app/dist ./dist
 
 EXPOSE 8080
 
-CMD ["npx", "ts-node", "index.ts"]
+CMD ["node", "dist/index.js"]

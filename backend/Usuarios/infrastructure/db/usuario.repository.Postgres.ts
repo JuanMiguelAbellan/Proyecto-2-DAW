@@ -43,9 +43,19 @@ export default class UsuarioRepositoryPostgres implements UsuarioRepository{
     }
 
     async cambiarPlan(plan: string, id: Number): Promise<void> {
-        const query = `INSERT INTO subscripcion (id_usuario, plan, estado) VALUES (${id}, '${plan}', 'activa')
-        ON CONFLICT (id_usuario) DO UPDATE SET plan = '${plan}', estado = 'activa'`
-        await executeQuery(query)
+        const planDB = plan === 'pro_anual' ? 'pro' : plan === 'gratis' ? 'free' : plan
+        const existe = await executeQuery(`SELECT id_subscripcion FROM subscripcion WHERE id_usuario = $1`, [id])
+        if (existe && existe.length > 0) {
+            await executeQuery(`UPDATE subscripcion SET plan = $1, estado = 'activa' WHERE id_usuario = $2`, [planDB, id])
+        } else {
+            const inicio = new Date()
+            const fin = new Date(inicio)
+            fin.setMonth(fin.getMonth() + (plan === 'pro_anual' ? 12 : 1))
+            await executeQuery(
+                `INSERT INTO subscripcion (id_usuario, plan, estado, inicio_periodo, final_periodo) VALUES ($1, $2, 'activa', $3, $4)`,
+                [id, planDB, inicio, fin]
+            )
+        }
     }
     async contarDocsMes(idUsuario : Number):Promise<Number> {
         const query = ` SELECT COUNT(*) AS total FROM documentos d
@@ -73,11 +83,8 @@ export default class UsuarioRepositoryPostgres implements UsuarioRepository{
         }
     }
     async editarPrefencias(preferencias:any, id:Number):Promise<void> {
-        const preferenciasJSon = JSON.stringify(preferencias ?? {});
-        //console.log(preferenciasJSon);
-        
-        const query = `UPDATE usuarios SET preferencias = '${preferenciasJSon}' WHERE id_usuario = '${id}'`
-        return await executeQuery(query)
+        const query = `UPDATE usuarios SET preferencias = $1::jsonb WHERE id_usuario = $2`
+        await executeQuery(query, [JSON.stringify(preferencias ?? {}), id])
     }
     async login(usuario: Usuario): Promise<Usuario | null> {
         const query = `SELECT * FROM usuarios WHERE email = '${usuario.email}'`;

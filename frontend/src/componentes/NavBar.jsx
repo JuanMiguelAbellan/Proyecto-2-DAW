@@ -24,6 +24,7 @@ export default function NavBar({ onNavegar, onLogout, temaOscuro, setTemaOscuro,
         <MenuHamburguesa className="menu_hamburguesa" img="./public/images/menu-hamburguesa.svg" opciones={[
           { texto: 'Mi subscripción', funcion: () => onNavegar('ajustesSubscripcion') },
           { texto: 'Cuenta', funcion: () => onNavegar('cuenta') },
+          { texto: 'Mis documentos', funcion: () => onNavegar('documentos') },
           { texto: 'Accesibilidad', funcion: () => onNavegar('accesibilidad') },
           { texto: 'Cerrar sesión', funcion: onLogout },
         ]} />
@@ -53,6 +54,7 @@ export default function NavBar({ onNavegar, onLogout, temaOscuro, setTemaOscuro,
         <MenuHamburguesa className="menu_ajustes" img="./public/images/ajustes.svg" opciones={[
           { texto: 'Cuenta', funcion: () => onNavegar('cuenta') },
           { texto: 'Subscripciones', funcion: () => onNavegar('ajustesSubscripcion') },
+          { texto: 'Mis documentos', funcion: () => onNavegar('documentos') },
           { texto: 'Accesibilidad', funcion: () => onNavegar('accesibilidad') },
           { texto: 'Cerrar sesión', funcion: onLogout },
         ]} />
