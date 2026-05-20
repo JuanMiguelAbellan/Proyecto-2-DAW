@@ -14,14 +14,14 @@ export default function NavBar({ onNavegar, onLogout, temaOscuro, setTemaOscuro,
     <nav className="navbar">
       <div className="menu_izq">
         <img
-          src="./public/images/iadocs_logo.svg"
+          src="/images/iadocs_logo.svg"
           alt="IADocs"
           className="img_nav"
           id="logo"
           style={{ cursor: 'pointer' }}
           onClick={() => onNavegar('chat')}
         />
-        <MenuHamburguesa className="menu_hamburguesa" img="./public/images/menu-hamburguesa.svg" opciones={[
+        <MenuHamburguesa className="menu_hamburguesa" img="/images/menu-hamburguesa.svg" opciones={[
           { texto: 'Mi subscripción', funcion: () => onNavegar('ajustesSubscripcion') },
           { texto: 'Cuenta', funcion: () => onNavegar('cuenta') },
           { texto: 'Mis documentos', funcion: () => onNavegar('documentos') },
@@ -37,21 +37,21 @@ export default function NavBar({ onNavegar, onLogout, temaOscuro, setTemaOscuro,
           {badge.texto}
         </button>
         <img
-          src="./public/images/accesibilidad.svg"
+          src="/images/accesibilidad.svg"
           className="img_nav"
           style={{ cursor: 'pointer' }}
           onClick={() => onNavegar('accesibilidad')}
           alt="Accesibilidad"
         />
         <img
-          src={temaOscuro ? './public/images/sol.svg' : './public/images/luna.svg'}
+          src={temaOscuro ? '/images/sol.svg' : '/images/luna.svg'}
           className="img_nav"
           id="luna"
           style={{ cursor: 'pointer' }}
           onClick={() => setTemaOscuro(!temaOscuro)}
           alt="Tema"
         />
-        <MenuHamburguesa className="menu_ajustes" img="./public/images/ajustes.svg" opciones={[
+        <MenuHamburguesa className="menu_ajustes" img="/images/ajustes.svg" opciones={[
           { texto: 'Cuenta', funcion: () => onNavegar('cuenta') },
           { texto: 'Subscripciones', funcion: () => onNavegar('ajustesSubscripcion') },
           { texto: 'Mis documentos', funcion: () => onNavegar('documentos') },

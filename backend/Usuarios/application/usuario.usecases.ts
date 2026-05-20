@@ -52,7 +52,7 @@ export default class UsuarioUseCases{
             throw new Error("Se ha superado el límite de documentos por mes")
         }else{
             let key:string = await this.usuarioController.guardarDocsS3(documento, documento.titulo)
-            this.usuarioRepository.insertarDoc(documento, key)
+            await this.usuarioRepository.insertarDoc(documento, key)
         }
     }
 
@@ -75,9 +75,9 @@ export default class UsuarioUseCases{
     async cambiarPassword(oldPassword: string, newPassword: string, id: Number): Promise<void> {
         const usuario = await this.usuarioRepository.getUsuario(id)
         if (!usuario) throw new Error("Usuario no encontrado")
-        const correcto = compare(oldPassword, String(usuario.password))
+        const correcto = await compare(oldPassword, String(usuario.password))
         if (!correcto) throw new Error("Contraseña actual incorrecta")
-        const newHash = hash(newPassword)
+        const newHash = await hash(newPassword)
         return this.usuarioRepository.cambiarPassword(newHash, id)
     }
 

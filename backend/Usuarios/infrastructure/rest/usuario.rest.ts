@@ -102,7 +102,7 @@ routerUsuario.post("/guardarDoc", isAuth, async(req: Request, res: Response)=>{
 
     const usuario=await usuarioUseCases.getUsuario(idUser)
 
-    usuarioUseCases.insertarDoc(usuario, documento)
+    await usuarioUseCases.insertarDoc(usuario, documento)
     res.send("Documento guardado correctamente")
 })
 
@@ -147,7 +147,7 @@ routerUsuario.get("/getChats", isAuth, async(req:Request, res:Response)=>{
 
 routerUsuario.post("/getHistorial", isAuth, async(req:Request, res:Response)=>{
     const idUser = req.body.id
-    const {idChat} = req.body.idChat
+    const idChat = req.body.idChat
 
     const historial = await usuarioUseCases.getChats(idUser)
 

@@ -8,7 +8,7 @@ export default function Login({ onLogin, onRegistro }) {
 
   return (
     <div className="login">
-      <img src="./public/images/logo.svg" alt="IADocs" className="logo_login" />
+      <img src="/images/logo.svg" alt="IADocs" className="logo_login" />
       <h1>IA Docs</h1>
       <form onSubmit={(e) => handleSubmit(e, form, setError, onLogin)}>
         <input type="text" name="email" placeholder="Email" value={form.email}

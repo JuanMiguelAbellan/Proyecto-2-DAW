@@ -284,7 +284,7 @@ export default function BarraInferior({ chatActivo, setMensajes, onTituloGenerad
             onChange={handleArchivoSeleccionado}
           />
           <button className="btn_adjuntar" onClick={() => inputFileRef.current.click()}>
-            <img src="./public/images/adjuntar.svg" alt="Adjuntar" />
+            <img src="/images/adjuntar.svg" alt="Adjuntar" />
           </button>
           <input
             type="text"
@@ -295,9 +295,9 @@ export default function BarraInferior({ chatActivo, setMensajes, onTituloGenerad
             onKeyDown={(e) => e.key === 'Enter' && !previstaDoc && enviar()}
           />
           <button className="enviar" onClick={enviar}>
-            <img src="./public/images/enviar.svg" alt="Enviar" />
+            <img src="/images/enviar.svg" alt="Enviar" />
           </button>
-          <img className="microfono" src="./public/images/microfono-circular-apagado.svg" alt="Micrófono" />
+          <img className="microfono" src="/images/microfono-circular-apagado.svg" alt="Micrófono" />
         </div>
       </div>
     </>

@@ -28,7 +28,12 @@ const swaggerOptions = {
     },
     security: [{ bearerAuth: [] }]
   },
-  apis: ['./Usuarios/infrastructure/rest/*.ts', './Ollama/infrastructure/rest/*.ts']
+  apis: [
+    './Usuarios/infrastructure/rest/*.ts',
+    './Ollama/infrastructure/rest/*.ts',
+    './dist/Usuarios/infrastructure/rest/*.js',
+    './dist/Ollama/infrastructure/rest/*.js'
+  ]
 }
 const swaggerSpec = swaggerJsdoc(swaggerOptions)
 app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec))

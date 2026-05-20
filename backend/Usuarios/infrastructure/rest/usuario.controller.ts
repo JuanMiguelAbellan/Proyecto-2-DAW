@@ -4,19 +4,16 @@ import 'dotenv/config';
 
 export default class UsuarioController{
     async guardarDocsS3(documento:Mensaje, nombreArchivo:string):Promise<string>{
-        // 1. Configuración del cliente
             const region=process.env.AWS_REGION
             const accessKeyId=process.env.AWS_ACCESS_KEY_ID
-            const secretAccessKey=process.env.AWS_SECRET_ACCES_KEY
+            const secretAccessKey=process.env.AWS_SECRET_ACCESS_KEY
             const sessionToken=process.env.AWS_SESSION_TOKEN
             const s3Client = new S3Client({
               region: region,
               credentials: {
-                accessKeyId: accessKeyId//${{ secrets.AWS_ACCESS_KEY_ID }}
-                ,
-                secretAccessKey: secretAccessKey //${{ secrets.AWS_SECRET_ACCESS_KEY }}
-                ,
-                sessionToken: sessionToken//${{ secrets.AWS_SESSION_TOKEN }}
+                accessKeyId: accessKeyId,
+                secretAccessKey: secretAccessKey,
+                sessionToken: sessionToken
               },
             });
             const s3Bucket=process.env.AWS_S3_BUCKET

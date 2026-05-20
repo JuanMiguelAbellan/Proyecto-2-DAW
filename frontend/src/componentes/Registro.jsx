@@ -9,7 +9,7 @@ export default function Registro({ onVolver }) {
 
   return (
     <div className="login">
-      <img src="./public/images/logo.svg" alt="IADocs" className="logo_login" />
+      <img src="/images/logo.svg" alt="IADocs" className="logo_login" />
       <h1>Crear cuenta</h1>
       <form onSubmit={(e) => handleSubmit(e, form, setErrores, setErrorServidor, onVolver)}>
         <input type="text" name="nombre" placeholder="Nombre" value={form.nombre}

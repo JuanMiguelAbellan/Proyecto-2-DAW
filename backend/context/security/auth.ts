@@ -21,21 +21,16 @@ const isAuth = (req: Request, response: Response, next: NextFunction) => {
   try {
     const authHeader = req.headers["authorization"];
     const token: string | undefined = authHeader && authHeader.split(" ")[1];
-    if (!token) { 
-      return response.status(401).json({ mensaje: "No autorizado" }); 
+    if (!token) {
+      return response.status(401).json({ mensaje: "No autorizado" });
     }
-    if (token) {
-      const decoded: any = jwt.verify(token, SECRET_KEY);
-      //Para que cree el body aunque no venga en la petición, y así poder usarlo en los get
-      if (!req.body) req.body = {};
-      req.body.email = decoded.email;
-      req.body.id= decoded.id;
-      req.body.nombre= decoded.nombre;
-      req.body.preferencias= decoded.preferencias;
-      next();
-    } else {
-      response.status(401).json({ mensaje: "No autorizado" });
-    }
+    const decoded: any = jwt.verify(token, SECRET_KEY);
+    if (!req.body) req.body = {};
+    req.body.email = decoded.email;
+    req.body.id= decoded.id;
+    req.body.nombre= decoded.nombre;
+    req.body.preferencias= decoded.preferencias;
+    next();
   } catch (err) {
     console.error(err);
     response.status(401).json({ mensaje: "No autorizado" });
