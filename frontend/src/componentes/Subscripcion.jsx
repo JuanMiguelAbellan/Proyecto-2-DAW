@@ -55,7 +55,7 @@ export default function Subscripcion({ onVolver, onPlanCambiado }) {
         <div className="plan plan_destacado">
           <span className="plan_etiqueta">Más popular</span>
           <h2>Pro</h2>
-          <p className="plan_precio">4,99 €<span>/mes</span></p>
+          <p className="plan_precio">9,99 €<span>/mes</span></p>
           <ul>
             <li>50 documentos al mes</li>
             <li>Hasta 50 MB por documento</li>
@@ -65,16 +65,16 @@ export default function Subscripcion({ onVolver, onPlanCambiado }) {
           </ul>
           <button
             className="plan_boton plan_boton_pro"
-            onClick={() => setPlanPendiente({ nombre: 'Pro', precio: '4,99 €/mes', id: 'pro' })}
+            onClick={() => setPlanPendiente({ nombre: 'Pro', precio: '9,99 €/mes', id: 'pro' })}
           >
             Subscribirse
           </button>
         </div>
 
         <div className="plan">
-          <span className="plan_etiqueta plan_etiqueta_ahorro">Ahorra 16%</span>
+          <span className="plan_etiqueta plan_etiqueta_ahorro">Ahorra 17%</span>
           <h2>Pro Anual</h2>
-          <p className="plan_precio">49,90 €<span>/año</span></p>
+          <p className="plan_precio">99,99 €<span>/año</span></p>
           <ul>
             <li>50 documentos al mes</li>
             <li>Hasta 50 MB por documento</li>
@@ -84,7 +84,7 @@ export default function Subscripcion({ onVolver, onPlanCambiado }) {
           </ul>
           <button
             className="plan_boton plan_boton_pro"
-            onClick={() => setPlanPendiente({ nombre: 'Pro Anual', precio: '49,90 €/año', id: 'pro_anual' })}
+            onClick={() => setPlanPendiente({ nombre: 'Pro Anual', precio: '99,99 €/año', id: 'pro_anual' })}
           >
             Subscribirse
           </button>
