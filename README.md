@@ -12,7 +12,7 @@ Nace como Trabajo de Fin de Grado (2º DAW) con un objetivo concreto: que analiz
 - **Gestión de documentos**: subida de PDF, extracción de texto (`pdf-parse`) y visor integrado (`VisorPDF`).
 - **Chats con contexto**: cada usuario puede tener varios chats, cada uno con su historial de mensajes persistido en PostgreSQL.
 - **Dos modos de respuesta**: conversación libre o respuesta anclada al contenido de un documento subido.
-- **IA autoalojada**: el backend habla con [Ollama](https://ollama.com) (modelos `llama3.2` / `gemma3`) en lugar de una API de pago de terceros — control total sobre coste, privacidad de los documentos y latencia.
+- **IA autoalojada**: el backend habla con [Ollama](https://ollama.com) (modelo `qwen2.5:3b`, elegido por su soporte de español) en lugar de una API de pago de terceros — control total sobre coste, privacidad de los documentos y latencia.
 - **Accesibilidad configurable** (`AjustesAccesibilidad`) y ajustes de cuenta.
 - **Flujo de suscripción/pago** modelado en el frontend (`PasarelaPago`, `Subscripcion`), pensado como un producto con plan de negocio real, no solo una demo técnica.
 - **Documentación de API** autogenerada con Swagger (`/api/docs`).
@@ -40,7 +40,7 @@ Cliente (React + Vite)
       ▼
 Express + TypeScript API  ──►  PostgreSQL (usuarios, chats, mensajes)
       │
-      └──────────────►  Ollama (EC2) — llama3.2 / gemma3
+      └──────────────►  Ollama (Railway) — qwen2.5:3b
                               │
                               └──►  S3 — almacenamiento de PDFs subidos
 ```
@@ -53,7 +53,7 @@ Express + TypeScript API  ──►  PostgreSQL (usuarios, chats, mensajes)
 | Backend | Node.js, Express 5, TypeScript |
 | Base de datos | PostgreSQL |
 | Autenticación | JWT + bcrypt |
-| IA | Ollama autoalojado (`llama3.2`, `gemma3`) |
+| IA | Ollama autoalojado (`qwen2.5:3b`) |
 | Almacenamiento | AWS S3 (`@aws-sdk/client-s3`) |
 | Documentación API | Swagger / OpenAPI |
 | Tests | Jest + Supertest |
