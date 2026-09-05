@@ -1,5 +1,11 @@
 const URL_SERVER = import.meta.env.VITE_API_URL || ''
 
+function buildUrl(path) {
+  const base = URL_SERVER.replace(/\/$/, '')
+  const cleanPath = path.replace(/^\//, '')
+  return base ? `${base}/${cleanPath}` : `/${cleanPath}`
+}
+
 function getToken() {
   return localStorage.getItem("token")
 }
@@ -21,7 +27,7 @@ export function get(url, callback, callbackError) {
       "Authorization": `Bearer ${getToken()}`
     }
   }
-  fetch(URL_SERVER + url, options)
+  fetch(buildUrl(url), options)
     .then(checkResponse)
     .then((data) => callback(data))
     .catch((error) => callbackError(error))
@@ -36,7 +42,7 @@ export function post(url, datos, callback, callbackError) {
     },
     body: JSON.stringify(datos)
   }
-  fetch(URL_SERVER + url, options)
+  fetch(buildUrl(url), options)
     .then(checkResponse)
     .then((data) => callback(data))
     .catch((error) => callbackError(error))
@@ -49,7 +55,7 @@ export function delet(url, callback, callbackError) {
       "Authorization": `Bearer ${getToken()}`
     }
   }
-  fetch(URL_SERVER + url, options)
+  fetch(buildUrl(url), options)
     .then(checkResponse)
     .then((data) => callback(data))
     .catch((error) => callbackError(error))
@@ -64,7 +70,7 @@ export function pacth(url, datos, callback, callbackError) {
     },
     body: JSON.stringify(datos)
   }
-  fetch(URL_SERVER + url, options)
+  fetch(buildUrl(url), options)
     .then(checkResponse)
     .then((data) => callback(data))
     .catch((error) => callbackError(error))
