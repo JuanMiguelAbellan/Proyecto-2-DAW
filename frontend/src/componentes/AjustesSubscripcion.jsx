@@ -29,21 +29,15 @@ export default function AjustesSubscripcion({ onVolver, onPlanCambiado }) {
   }
 
   function confirmarPago(plan) {
-    setGuardando(true)
-    pacth('api/usuarios/subscripcion', { plan: plan.id },
-      () => {
-        setGuardando(false)
-        setPlanActual(plan.id)
-        setPlanPendiente(null)
-        onPlanCambiado?.(plan.id)
-        mostrarToast(`Plan ${plan.nombre} activado correctamente`)
-      },
-      () => {
-        setGuardando(false)
-        setPlanPendiente(null)
-        mostrarToast('Error al activar el plan')
-      }
-    )
+    // El pago ya lo ha confirmado Stripe (PasarelaPago solo llama a esto tras
+    // un pago con éxito) y es el webhook del backend quien activa el plan de
+    // verdad en la base de datos — no se manda un PATCH directo con el plan
+    // elegido, para que esta pantalla no pueda usarse para auto-asignarse un
+    // plan de pago sin pagar.
+    setPlanActual(plan.id)
+    setPlanPendiente(null)
+    onPlanCambiado?.(plan.id)
+    mostrarToast(`Plan ${plan.nombre} activado correctamente`)
   }
 
   function cancelarSubscripcion() {

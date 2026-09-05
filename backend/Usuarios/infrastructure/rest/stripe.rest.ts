@@ -11,8 +11,9 @@ const getStripe = () => new Stripe(process.env.STRIPE_SECRET_KEY || "");
 
 // Precios fijados en el servidor: el cliente solo elige el plan, nunca el importe.
 const PRECIOS: Record<string, number> = {
-    pro: 999,        // 9,99 € / mes
-    pro_anual: 9999, // 99,99 € / año
+    pro: 999,          // 9,99 € / mes
+    pro_anual: 9999,   // 99,99 € / año
+    empresa: 2499,     // 24,99 € / mes
 };
 
 const routerStripe = express.Router();

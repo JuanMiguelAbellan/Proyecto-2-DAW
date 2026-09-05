@@ -1,5 +1,5 @@
 CREATE TYPE rol_usuario AS ENUM ('admin', 'usuario');
-CREATE TYPE plan_subscripcion AS ENUM ('free', 'pro');
+CREATE TYPE plan_subscripcion AS ENUM ('free', 'pro', 'empresa');
 CREATE TYPE estado_subscripcion AS ENUM ('activa', 'pendiente', 'cancelada', 'expirada');
 CREATE TYPE tipo_documento AS ENUM ('medico', 'legal', 'educativo', 'otro');
 

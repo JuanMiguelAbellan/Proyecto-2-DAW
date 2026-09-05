@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { pacth } from '../servicios/peticiones'
 import PasarelaPago from './PasarelaPago'
 import './Subscripcion.css'
 
@@ -7,18 +6,12 @@ export default function Subscripcion({ onVolver, onPlanCambiado }) {
   const [planPendiente, setPlanPendiente] = useState(null)
 
   function handleExito() {
-    pacth('api/usuarios/subscripcion',
-      { plan: planPendiente.id },
-      () => {
-        if (onPlanCambiado) onPlanCambiado(planPendiente.id)
-        setPlanPendiente(null)
-        onVolver()
-      },
-      () => {
-        setPlanPendiente(null)
-        onVolver()
-      }
-    )
+    // El pago ya lo confirmó Stripe (PasarelaPago solo llama a esto tras un
+    // pago con éxito); el webhook del backend es quien activa el plan de
+    // verdad en la base de datos, así que aquí no se manda ningún PATCH.
+    if (onPlanCambiado) onPlanCambiado(planPendiente.id)
+    setPlanPendiente(null)
+    onVolver()
   }
 
   return (

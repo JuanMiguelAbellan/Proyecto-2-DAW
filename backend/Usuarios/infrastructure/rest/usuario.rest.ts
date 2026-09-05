@@ -279,10 +279,12 @@ routerUsuario.post("/cambiarPassword", isAuth, async(req: Request, res: Response
  *           schema:
  *             type: object
  *             properties:
- *               plan: { type: string, enum: [free, pro, enterprise] }
+ *               plan: { type: string, enum: [gratis] }
  *     responses:
  *       200:
  *         description: Plan actualizado correctamente
+ *       400:
+ *         description: Se ha intentado activar un plan de pago sin pasar por Stripe
  *       401:
  *         description: No autorizado
  *       500:
@@ -292,6 +294,13 @@ routerUsuario.patch("/subscripcion", isAuth, async(req: Request, res: Response) 
     try {
         const idUser = req.body.id
         const { plan } = req.body
+        // Los planes de pago solo se activan desde el webhook de Stripe, tras
+        // un pago confirmado. Esta ruta solo puede usarse para cancelar/
+        // volver al plan gratuito, nunca para auto-asignarse un plan de pago.
+        if (plan !== 'gratis') {
+            res.status(400).json({ error: "Los planes de pago se activan a través de Stripe, no directamente" })
+            return
+        }
         await usuarioUseCases.cambiarPlan(plan, idUser)
         res.json({ ok: true })
     } catch(e) {
