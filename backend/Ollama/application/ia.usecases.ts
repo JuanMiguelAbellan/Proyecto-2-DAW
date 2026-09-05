@@ -6,35 +6,48 @@ export default class IaUseCases {
 
     constructor(private iaRepository: IaReposiroty, private iaController: IaController) {}
 
-    private readonly SYSTEM_PROMPT = `Eres IADocuments, un asistente de IA especializado en análisis y procesamiento de documentos.
+    private readonly SYSTEM_PROMPT = `Eres IADocuments, un asistente de IA especializado en análisis y procesamiento de documentos, con un estilo cercano y profesional a la vez.
 Ayudas a los usuarios a comprender, resumir y extraer información de documentos PDF y ODT.
 Responde siempre en el mismo idioma que el usuario.
-Cuando el usuario adjunte documentos (indicados con [Documento: nombre]), analízalos en detalle y proporciona respuestas precisas basadas en su contenido.`
+Cuando el usuario adjunte documentos (indicados con [Documento: nombre]), analízalos en detalle y proporciona respuestas precisas basadas en su contenido.
+Tienes memoria de toda la conversación: si el usuario se refiere a un documento o mensaje anterior, revisa el historial antes de decir que no tienes esa información.
+Da formato a tus respuestas en Markdown siempre que aporte claridad: usa ## y ### para encabezados, **negrita** para lo importante, listas con - o 1. cuando enumeres cosas, y > para citar fragmentos del documento. No abuses del formato en respuestas de una frase.`
 
-    private detectarTipoDoc(texto: string): string {
-        const t = texto.toLowerCase()
-        const contar = (terms: string[]) => terms.filter(w => t.includes(w)).length
-        const scores: Record<string, number> = {
-            médico:    contar(['diagnóstico','paciente','clínico','médico','hospital','enfermedad','síntoma','dosis','cirugía','fármaco','receta','anamnesis','patología','historia clínica']),
-            legal:     contar(['contrato','cláusula','tribunal','demanda','sentencia','juzgado','jurídico','firmante','notario','legislación','decreto','parte contratante']),
-            educativo: contar(['alumno','profesor','asignatura','examen','universidad','escuela','tesis','aprendizaje','currículo','matrícula','académico','docente','calificación','expediente']),
-        }
-        const max = Math.max(...Object.values(scores))
-        if (max < 2) return 'general'
-        return Object.keys(scores).find(k => scores[k] === max) || 'general'
-    }
+    private readonly HISTORIAL_MAX_MENSAJES = 12
+    private readonly HISTORIAL_MAX_CHARS_POR_MENSAJE = 2000
 
-    async getRespuesta(prompt: string, mensajeVisible: string, tipoSub: string, idUsuario: Number, idChat?: Number, urlPDF?: string): Promise<Mensaje> {
+    private async clasificarDocumento(textoDocumento: string): Promise<string> {
+        const CATEGORIAS = ['médico', 'legal', 'educativo', 'general']
+        const extracto = textoDocumento.slice(0, 1500)
         const json = {
             model: "qwen2.5:3b",
-            system: this.SYSTEM_PROMPT,
-            prompt: prompt,
+            prompt: `Clasifica el siguiente documento en UNA sola palabra de esta lista: médico, legal, educativo, general.\n\nDocumento:\n${extracto}\n\nResponde ÚNICAMENTE con la palabra de la categoría, sin nada más.`,
             stream: false,
             options: { num_thread: 8 }
         }
+        try {
+            const respuesta = await this.iaController.generate(json)
+            const texto = (respuesta?.response || '').toLowerCase()
+            return CATEGORIAS.find(c => texto.includes(c)) || 'general'
+        } catch {
+            return 'general'
+        }
+    }
+
+    private async construirHistorial(idChat: Number): Promise<{ role: string, content: string }[]> {
+        const mensajesPrevios = await this.iaRepository.getMensajes(idChat)
+        const recientes = mensajesPrevios.slice(-this.HISTORIAL_MAX_MENSAJES)
+        return recientes.map(m => {
+            const contenido = (m.contenidoDoc || m.contenido || '').slice(0, this.HISTORIAL_MAX_CHARS_POR_MENSAJE)
+            return { role: m.rol === 'usuario' ? 'user' : 'assistant', content: contenido }
+        })
+    }
+
+    async getRespuesta(prompt: string, mensajeVisible: string, tipoSub: string, idUsuario: Number, idChat?: Number, urlPDF?: string): Promise<Mensaje> {
+        const historial = idChat != null ? await this.construirHistorial(idChat) : []
+        const tipoDoc = prompt.includes('[Documento:') ? await this.clasificarDocumento(prompt) : undefined
 
         let esPrimerMensaje = false
-        const tipoDoc = prompt.includes('[Documento:') ? this.detectarTipoDoc(prompt) : undefined
         if (idChat != null) {
             const total = await this.iaRepository.contarMensajes(idChat)
             esPrimerMensaje = total === 0
@@ -46,34 +59,40 @@ Cuando el usuario adjunte documentos (indicados con [Documento: nombre]), analí
 
         const esGeneracionDoc = /\bhaz(me)?\b|hacer\s+un|genera(r|me)?|crea(r|me|do)?|escrib(e|ir|eme)|redact(a|ar)|expand|ampl[íi]|reescrib|nuevo\s+doc|doc\s+nuevo|\bdoc(umento)?\b.*\b(sobre|acerca|de)\b/i.test(mensajeVisible || prompt)
 
-        const respuesta = await this.iaController.generate(json)
+        const mensajesChat = [
+            { role: 'system', content: this.SYSTEM_PROMPT },
+            ...historial,
+            { role: 'user', content: prompt }
+        ]
+        const respuesta = await this.iaController.chat(mensajesChat)
 
-        if (!respuesta) {
+        if (!respuesta || !respuesta.message) {
             return { contenido: "Error al contactar con Ollama" }
         }
+        const textoRespuesta: string = respuesta.message.content
 
         let mensaje: Mensaje = {
             idChat: idChat,
             tipo: "normal",
             rol: "ia",
-            contenido: respuesta.response,
+            contenido: textoRespuesta,
             fechaCreacion: respuesta.created_at,
             tipoDoc
         }
 
-        if (respuesta.response.includes("[{")) {
-            const preferencia = respuesta.response.substring(respuesta.response.indexOf("[{"), respuesta.response.indexOf("}]"))
+        if (textoRespuesta.includes("[{")) {
+            const preferencia = textoRespuesta.substring(textoRespuesta.indexOf("[{"), textoRespuesta.indexOf("}]"))
             this.addPreferencia(preferencia, idUsuario)
-            mensaje = { contenido: respuesta.response.substring(respuesta.response.indexOf("}]") + 2) }
-        } else if (respuesta.response.includes("[[{{")) {
-            const preferencias = respuesta.response.substring(respuesta.response.indexOf("[[{{"), respuesta.response.indexOf("}}]]"))
+            mensaje = { contenido: textoRespuesta.substring(textoRespuesta.indexOf("}]") + 2) }
+        } else if (textoRespuesta.includes("[[{{")) {
+            const preferencias = textoRespuesta.substring(textoRespuesta.indexOf("[[{{"), textoRespuesta.indexOf("}}]]"))
             this.editPreferencia(preferencias, idUsuario)
-            mensaje = { contenido: respuesta.response.substring(respuesta.response.indexOf("}}]]") + 4) }
-        } else if (respuesta.response.includes("//*")) {
-            const docInsert = respuesta.response.substring(respuesta.response.indexOf("//*") + 3, respuesta.response.indexOf("*//"))
-            mensaje = { tipo: "documento", contenido: respuesta.response.substring(respuesta.response.indexOf("*//") + 3).trim() || "Documento generado.", contenidoDoc: docInsert, tipoDoc }
+            mensaje = { contenido: textoRespuesta.substring(textoRespuesta.indexOf("}}]]") + 4) }
+        } else if (textoRespuesta.includes("//*")) {
+            const docInsert = textoRespuesta.substring(textoRespuesta.indexOf("//*") + 3, textoRespuesta.indexOf("*//"))
+            mensaje = { tipo: "documento", contenido: textoRespuesta.substring(textoRespuesta.indexOf("*//") + 3).trim() || "Documento generado.", contenidoDoc: docInsert, tipoDoc }
         } else if (esGeneracionDoc) {
-            mensaje = { tipo: "documento", contenido: "Documento generado.", contenidoDoc: respuesta.response, tipoDoc }
+            mensaje = { tipo: "documento", contenido: "Documento generado.", contenidoDoc: textoRespuesta, tipoDoc }
         }
 
         const idMensaje = await this.iaRepository.guardarRespuesta(mensaje, idChat, idUsuario)

@@ -4,26 +4,39 @@ import 'dotenv/config';
 
 
 export default class IaController{
-  async generate(json):Promise<any>{
+  private async llamarOllama(endpoint: string, json: any): Promise<any> {
     try {
         const controller = new AbortController()
         const timeout = setTimeout(() => controller.abort(), 5 * 60 * 1000)
-        const response = await fetch(`http://${process.env.OLLAMA_HOST}:11434/api/generate`, {
+        const response = await fetch(`http://${process.env.OLLAMA_HOST}:11434${endpoint}`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(json),
           signal: controller.signal
         })
         clearTimeout(timeout);
-  
+
         const data = await response.json();
-        
+
         return data;
-    
+
       } catch (error) {
         console.error("Error llamando a Ollama:", error);
         return null
       }
+  }
+
+  async generate(json):Promise<any>{
+    return this.llamarOllama("/api/generate", json)
+  }
+
+  async chat(messages: { role: string, content: string }[], options?: any): Promise<any> {
+    return this.llamarOllama("/api/chat", {
+      model: "qwen2.5:3b",
+      messages,
+      stream: false,
+      options: options || { num_thread: 8 }
+    })
   }
   private getR2Client(): S3Client {
     // Cloudflare R2 en vez de AWS S3: misma API (S3-compatible), solo cambia

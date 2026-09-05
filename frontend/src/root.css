@@ -100,14 +100,14 @@
     --background-color-text-user: rgb(133, 144, 204);
     --background-color-text-user-doc: hsla(277, 14%, 57%, 100%);
     --background-color-text-ia: rgb(74, 158, 147);
-    --background-color-text-ia-selected: rgb(88, 184, 189);
+    --background-color-text-ia-selected: rgb(40, 120, 125);
     --background-color-text-ia-selected-oscuro: rgb(65, 120, 122);
     --background-color-text-ia-doc: hsla(197, 52%, 38%, 100%);
     --background-color-oscuro: rgb(26, 63, 78);
     --background-color-menu: hsla(210, 10%, 92%, 0.966);
     --background-color-body: hsla(180, 35%, 55%, 0.75);
     --button-color: hsla(229, 46%, 9%, 100%);
-    --color-text: hsla(0, 0, 0, 100%);
+    --color-text: hsla(0, 0%, 0%, 100%);
     --family-font-conversacion: Verdana, Geneva, Tahoma, sans-serif; 
     --font-size-chat: 16px;
     --font-size-menu: 14px;

@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
+import { renderMarkdown } from '../servicios/markdown'
 import './ChatPrincipal.css'
 
 function useEditorComentarios(editorRef) {
@@ -63,7 +64,7 @@ export default function ChatPrincipal({ mensajes, esperando, onVerPDF }) {
 
   useEffect(() => {
     if (editorDoc && editorRef.current) {
-      editorRef.current.innerHTML = (editorDoc.contenido || '').replace(/\n/g, '<br>')
+      editorRef.current.innerHTML = renderMarkdown(editorDoc.contenido || '')
     }
   }, [editorDoc?.index])
 
@@ -136,7 +137,7 @@ export default function ChatPrincipal({ mensajes, esperando, onVerPDF }) {
                   <button className="mensaje_descargar" onClick={() => setEditorDoc({ contenido: mensaje.contenidoDoc, index })}>
                     &#x270E; Editar
                   </button>
-                  <button className="mensaje_descargar" onClick={() => descargarPDF(mensaje.contenidoDoc.replace(/\n/g, '<br>'), `documento_${index + 1}`)}>
+                  <button className="mensaje_descargar" onClick={() => descargarPDF(renderMarkdown(mensaje.contenidoDoc), `documento_${index + 1}`)}>
                     &#x2B07; Descargar PDF
                   </button>
                 </div>
@@ -155,14 +156,14 @@ export default function ChatPrincipal({ mensajes, esperando, onVerPDF }) {
                 <button className="mensaje_descargar" onClick={() => setEditorDoc({ contenido: mensaje.contenidoDoc || mensaje.contenido, index })}>
                   &#x270E; Editar
                 </button>
-                <button className="mensaje_descargar" onClick={() => descargarPDF((mensaje.contenidoDoc || mensaje.contenido).replace(/\n/g, '<br>'), `documento_${index + 1}`)}>
+                <button className="mensaje_descargar" onClick={() => descargarPDF(renderMarkdown(mensaje.contenidoDoc || mensaje.contenido), `documento_${index + 1}`)}>
                   &#x2B07; Descargar PDF
                 </button>
               </div>
             </div>
           ) : (
             <div className="mensaje_ia">
-              <p className="mensaje_texto">{mensaje.contenido}</p>
+              <div className="mensaje_texto mensaje_markdown" dangerouslySetInnerHTML={{ __html: renderMarkdown(mensaje.contenido) }} />
             </div>
           )}
         </div>
