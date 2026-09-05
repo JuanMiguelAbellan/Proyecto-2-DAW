@@ -30,13 +30,56 @@ export default class IaController{
     return this.llamarOllama("/api/generate", json)
   }
 
-  async chat(messages: { role: string, content: string }[], options?: any): Promise<any> {
-    return this.llamarOllama("/api/chat", {
-      model: "qwen2.5:3b",
-      messages,
-      stream: false,
-      options: options || { num_thread: 8 }
-    })
+  async chat(messages: { role: string, content: string }[], options?: any, onChunk?: (texto: string) => void): Promise<any> {
+    try {
+      const controller = new AbortController()
+      const timeout = setTimeout(() => controller.abort(), 5 * 60 * 1000)
+      const response = await fetch(`http://${process.env.OLLAMA_HOST}:11434/api/chat`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: "qwen2.5:3b",
+          messages,
+          stream: true,
+          options: options || { num_thread: 8 }
+        }),
+        signal: controller.signal
+      })
+
+      if (!response.ok || !response.body) {
+        clearTimeout(timeout)
+        return null
+      }
+
+      const reader = response.body.getReader()
+      const decoder = new TextDecoder()
+      let buffer = ""
+      let contenidoCompleto = ""
+      let metaFinal: any = {}
+
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+        buffer += decoder.decode(value, { stream: true })
+        const lineas = buffer.split("\n")
+        buffer = lineas.pop() || ""
+        for (const linea of lineas) {
+          if (!linea.trim()) continue
+          const obj = JSON.parse(linea)
+          if (obj.message?.content) {
+            contenidoCompleto += obj.message.content
+            if (onChunk) onChunk(obj.message.content)
+          }
+          if (obj.done) metaFinal = obj
+        }
+      }
+      clearTimeout(timeout)
+
+      return { ...metaFinal, message: { role: "assistant", content: contenidoCompleto } }
+    } catch (error) {
+      console.error("Error llamando a Ollama (chat):", error)
+      return null
+    }
   }
   private getR2Client(): S3Client {
     // Cloudflare R2 en vez de AWS S3: misma API (S3-compatible), solo cambia

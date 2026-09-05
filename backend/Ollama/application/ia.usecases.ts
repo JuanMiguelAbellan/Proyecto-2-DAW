@@ -43,7 +43,7 @@ Da formato a tus respuestas en Markdown siempre que aporte claridad: usa ## y ##
         })
     }
 
-    async getRespuesta(prompt: string, mensajeVisible: string, tipoSub: string, idUsuario: Number, idChat?: Number, urlPDF?: string): Promise<Mensaje> {
+    async getRespuesta(prompt: string, mensajeVisible: string, tipoSub: string, idUsuario: Number, idChat?: Number, urlPDF?: string, onChunk?: (texto: string) => void): Promise<Mensaje> {
         const historial = idChat != null ? await this.construirHistorial(idChat) : []
         const tipoDoc = prompt.includes('[Documento:') ? await this.clasificarDocumento(prompt) : undefined
 
@@ -64,7 +64,7 @@ Da formato a tus respuestas en Markdown siempre que aporte claridad: usa ## y ##
             ...historial,
             { role: 'user', content: prompt }
         ]
-        const respuesta = await this.iaController.chat(mensajesChat)
+        const respuesta = await this.iaController.chat(mensajesChat, undefined, onChunk)
 
         if (!respuesta || !respuesta.message) {
             return { contenido: "Error al contactar con Ollama" }

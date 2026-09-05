@@ -142,6 +142,58 @@ export default function BarraInferior({ chatActivo, setMensajes, onTituloGenerad
     return Object.keys(scores).find(k => scores[k] === max)
   }
 
+  function wsUrl() {
+    const base = buildUrl('ws/chat')
+    return base.replace(/^http/, 'ws') + `${base.includes('?') ? '&' : '?'}token=${localStorage.getItem('token')}`
+  }
+
+  function enviarStreaming(idChat, prompt, mensajeVisible, urlPDF, onTitulo) {
+    let recibioAlgo = false
+    const ws = new WebSocket(wsUrl())
+
+    ws.onopen = () => {
+      ws.send(JSON.stringify({ prompt, mensajeVisible, tipo: 'free', idChat, urlPDF }))
+    }
+
+    ws.onmessage = (event) => {
+      const datos = JSON.parse(event.data)
+      if (datos.type === 'chunk') {
+        if (!recibioAlgo) {
+          recibioAlgo = true
+          setEsperando(false)
+          setMensajes((prev) => [...prev, { rol: 'ia', contenido: datos.content, tipo: 'normal' }])
+          return
+        }
+        setMensajes((prev) => {
+          const copia = [...prev]
+          const ultimo = copia[copia.length - 1]
+          copia[copia.length - 1] = { ...ultimo, contenido: (ultimo.contenido || '') + datos.content }
+          return copia
+        })
+      } else if (datos.type === 'done') {
+        setEsperando(false)
+        const mensajeFinal = { rol: 'ia', contenido: datos.mensaje.contenido, tipo: datos.mensaje.tipo, contenidoDoc: datos.mensaje.contenidoDoc, tipoDoc: datos.mensaje.tipoDoc }
+        setMensajes((prev) => {
+          if (!recibioAlgo) return [...prev, mensajeFinal]
+          const copia = [...prev]
+          copia[copia.length - 1] = mensajeFinal
+          return copia
+        })
+        if (datos.mensaje.titulo) onTitulo(datos.mensaje.titulo)
+        ws.close()
+      } else if (datos.type === 'error') {
+        setEsperando(false)
+        console.error('Error del chat:', datos.message)
+        ws.close()
+      }
+    }
+
+    ws.onerror = (e) => {
+      setEsperando(false)
+      console.error('Error de WebSocket:', e)
+    }
+  }
+
   function enviarConContenido(textoActual, contenidoArchivos, mensajeVisible, urlPDF = null, nombrePDF = null) {
     const promptCompleto = contenidoArchivos
       ? `${textoActual || 'Analiza el siguiente documento y haz un resumen:'}\n\n${contenidoArchivos}`
@@ -156,28 +208,14 @@ export default function BarraInferior({ chatActivo, setMensajes, onTituloGenerad
           onNuevoChat(nuevoChat)
           setMensajes([mensajeUsuario])
           setEsperando(true)
-          post('api/ia/generate', { prompt: promptCompleto, mensajeVisible, tipo: 'free', idChat: nuevoChat.id_chat, urlPDF },
-            (respuesta) => {
-              setEsperando(false)
-              setMensajes((prev) => [...prev, { rol: 'ia', contenido: respuesta.contenido, tipo: respuesta.tipo, contenidoDoc: respuesta.contenidoDoc }])
-              if (respuesta.titulo) onTituloGenerado(nuevoChat.id_chat, respuesta.titulo)
-            },
-            (error) => { setEsperando(false); console.error('Error:', error) }
-          )
+          enviarStreaming(nuevoChat.id_chat, promptCompleto, mensajeVisible, urlPDF, (titulo) => onTituloGenerado(nuevoChat.id_chat, titulo))
         },
         (error) => console.error('Error creando chat:', error)
       )
     } else {
       setMensajes((prev) => [...prev, mensajeUsuario])
       setEsperando(true)
-      post('api/ia/generate', { prompt: promptCompleto, mensajeVisible, tipo: 'free', idChat: chatActivo.id_chat, urlPDF },
-        (respuesta) => {
-          setEsperando(false)
-          setMensajes((prev) => [...prev, { rol: 'ia', contenido: respuesta.contenido, tipo: respuesta.tipo, contenidoDoc: respuesta.contenidoDoc }])
-          if (respuesta.titulo) onTituloGenerado(chatActivo.id_chat, respuesta.titulo)
-        },
-        (error) => { setEsperando(false); console.error('Error:', error) }
-      )
+      enviarStreaming(chatActivo.id_chat, promptCompleto, mensajeVisible, urlPDF, (titulo) => onTituloGenerado(chatActivo.id_chat, titulo))
     }
   }
 

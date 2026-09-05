@@ -17,6 +17,14 @@ const createToken = (user: Usuario): string => {
   return jwt.sign(payload, SECRET_KEY, { expiresIn: "1 days" });
 };
 
+const verifyToken = (token: string): any | null => {
+  try {
+    return jwt.verify(token, SECRET_KEY);
+  } catch {
+    return null;
+  }
+};
+
 const isAuth = (req: Request, response: Response, next: NextFunction) => {
   try {
     const authHeader = req.headers["authorization"];
@@ -37,4 +45,4 @@ const isAuth = (req: Request, response: Response, next: NextFunction) => {
   }
 };
 
-export { decode, createToken, isAuth };
+export { decode, createToken, isAuth, verifyToken };
