@@ -29,7 +29,8 @@ Cuando el usuario adjunte documentos (indicados con [Documento: nombre]), analí
             model: "qwen2.5:3b",
             system: this.SYSTEM_PROMPT,
             prompt: prompt,
-            stream: false
+            stream: false,
+            options: { num_thread: 8 }
         }
 
         let esPrimerMensaje = false
@@ -94,7 +95,8 @@ Cuando el usuario adjunte documentos (indicados con [Documento: nombre]), analí
         const json = {
             model: "qwen2.5:3b",
             prompt: `Genera un título muy corto (máximo 4 palabras) para una conversación que empieza con: "${prompt}". Responde ÚNICAMENTE el título, sin comillas ni puntos.`,
-            stream: false
+            stream: false,
+            options: { num_thread: 8 }
         }
         const respuesta = await this.iaController.generate(json)
         if (!respuesta) return null
