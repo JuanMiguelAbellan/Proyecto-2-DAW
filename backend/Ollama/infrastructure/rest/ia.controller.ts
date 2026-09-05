@@ -45,7 +45,7 @@ export default class IaController{
     const params: PutObjectCommandInput = {
       Bucket: bucket,
       Key: `documentos/${nombreArchivo}`,
-      Body: documento.contenido,
+      Body: documento.contenidoDoc || documento.contenido,
       ContentType: "text/plain",
     };
     const url = `${publicUrl}/documentos/${nombreArchivo}`;
