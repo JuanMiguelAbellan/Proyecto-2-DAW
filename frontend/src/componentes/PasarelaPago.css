@@ -191,3 +191,21 @@
     color: var(--color-text);
     opacity: 0.8;
 }
+
+.pasarela_cargando {
+    padding: 2.5rem 1.5rem;
+    text-align: center;
+    font-family: var(--family-font-conversacion);
+    color: var(--color-text);
+    opacity: 0.8;
+}
+
+.pasarela_error {
+    margin: 0.6rem 0 0;
+    padding: 0.6rem 0.8rem;
+    border-radius: 8px;
+    background: rgba(200, 40, 40, 0.1);
+    color: #a02020;
+    font-family: var(--family-font-conversacion);
+    font-size: 0.85rem;
+}

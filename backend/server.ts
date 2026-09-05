@@ -1,6 +1,7 @@
 import express from "express";
 import routerUsuario from "./Usuarios/infrastructure/rest/usuario.rest"
 import routerIA from "./Ollama/infrastructure/rest/ia.rest"
+import routerStripe, { stripeWebhookHandler } from "./Usuarios/infrastructure/rest/stripe.rest"
 import dotenv from "dotenv";
 import cors from "cors";
 import swaggerJsdoc from 'swagger-jsdoc'
@@ -16,8 +17,14 @@ const options: cors.CorsOptions = {
   origin: allowedOrigins,
 };
 const app = express();
-app.use(express.json({ limit: '50mb' }));
 app.use(cors(options));
+
+// El webhook de Stripe necesita el body en crudo para verificar la firma,
+// por eso se registra en su ruta exacta ANTES de express.json() (que si
+// fuera antes, ya habría consumido/parseado el body).
+app.post('/api/usuarios/webhook', express.raw({ type: 'application/json' }), stripeWebhookHandler);
+
+app.use(express.json({ limit: '50mb' }));
 
 const swaggerOptions = {
   definition: {
@@ -40,6 +47,7 @@ app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec))
 
 const api = "/api/";
 app.use(`${api}usuarios`, routerUsuario);
+app.use(`${api}usuarios`, routerStripe);
 app.use(`${api}ia`, routerIA)
 
 export default app
