@@ -42,7 +42,7 @@ Express + TypeScript API  ──►  PostgreSQL (usuarios, chats, mensajes)
       │
       └──────────────►  Ollama (Railway) — qwen2.5:3b
                               │
-                              └──►  S3 — almacenamiento de PDFs subidos
+                              └──►  Cloudflare R2 — almacenamiento de PDFs subidos
 ```
 
 ## Stack técnico
@@ -54,7 +54,7 @@ Express + TypeScript API  ──►  PostgreSQL (usuarios, chats, mensajes)
 | Base de datos | PostgreSQL |
 | Autenticación | JWT + bcrypt |
 | IA | Ollama autoalojado (`qwen2.5:3b`) |
-| Almacenamiento | AWS S3 (`@aws-sdk/client-s3`) |
+| Almacenamiento | Cloudflare R2 (`@aws-sdk/client-s3`, API compatible con S3) |
 | Documentación API | Swagger / OpenAPI |
 | Tests | Jest + Supertest |
 | Infraestructura | Docker, GitHub Actions (CI/CD) |
@@ -66,7 +66,7 @@ Requisitos: Docker y Docker Compose.
 ```bash
 git clone https://github.com/JuanMiguelAbellan/Proyecto-2-DAW.git
 cd Proyecto-2-DAW
-cp backend/.env.example backend/.env   # completar variables (BD, JWT, S3, Ollama)
+cp backend/.env.example backend/.env   # completar variables (BD, JWT, R2, Ollama)
 docker compose up
 ```
 
@@ -83,9 +83,9 @@ npm test        # Jest + Supertest, cobertura en /coverage
 
 ## Despliegue
 
-Guía completa de despliegue manual en AWS (RDS, Elastic Beanstalk, EC2 con Ollama y S3) en [`Documentación/doc-infraestructura.md`](./Documentación/doc-infraestructura.md).
+Desplegado en producción sobre Railway (backend, Postgres y Ollama en tres servicios separados, con red privada entre ellos) y Vercel (frontend). El almacenamiento de documentos usa Cloudflare R2.
 
-> Nota: el entorno de referencia usa AWS Academy con credenciales temporales. Para un despliegue permanente, sustituir por una cuenta AWS estándar (o un proveedor gestionado tipo Render/Railway + Vercel).
+La guía original de despliegue manual en AWS Academy (RDS, Elastic Beanstalk, EC2 con Ollama y S3) queda como referencia histórica en [`Documentación/doc-infraestructura.md`](./Documentación/doc-infraestructura.md), pero ya no es el entorno real del proyecto.
 
 ## Roadmap
 

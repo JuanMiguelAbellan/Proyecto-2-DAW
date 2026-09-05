@@ -26,27 +26,29 @@ export default class IaController{
       }
   }
   async guardarDocS3(documento:Mensaje, nombreArchivo:string):Promise<String>{
-    const region=process.env.AWS_REGION
-    const accessKeyId=process.env.AWS_ACCESS_KEY_ID
-    const secretAccessKey=process.env.AWS_SECRET_ACCESS_KEY
-    const sessionToken=process.env.AWS_SESSION_TOKEN
+    // Cloudflare R2 en vez de AWS S3: misma API (S3-compatible), solo cambia
+    // el endpoint/región y las credenciales. 10GB gratis, sin coste de salida.
+    const accountId=process.env.R2_ACCOUNT_ID
+    const accessKeyId=process.env.R2_ACCESS_KEY_ID
+    const secretAccessKey=process.env.R2_SECRET_ACCESS_KEY
     const s3Client = new S3Client({
-      region: region,
+      region: "auto",
+      endpoint: `https://${accountId}.r2.cloudflarestorage.com`,
       credentials: {
         accessKeyId: accessKeyId,
-        secretAccessKey: secretAccessKey,
-        sessionToken: sessionToken
+        secretAccessKey: secretAccessKey
       },
     });
-    const s3Bucket=process.env.AWS_S3_BUCKET
-    
+    const bucket=process.env.R2_BUCKET
+    const publicUrl=process.env.R2_PUBLIC_URL
+
     const params: PutObjectCommandInput = {
-      Bucket: s3Bucket,
+      Bucket: bucket,
       Key: `documentos/${nombreArchivo}`,
       Body: documento.contenido,
       ContentType: "text/plain",
     };
-    const url = `https://${s3Bucket}.s3.${region}.amazonaws.com/documentos/${nombreArchivo}`;
+    const url = `${publicUrl}/documentos/${nombreArchivo}`;
   try {
     const command = new PutObjectCommand(params);
     const response = await s3Client.send(command);
