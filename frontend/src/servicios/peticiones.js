@@ -1,6 +1,6 @@
 const URL_SERVER = import.meta.env.VITE_API_URL || ''
 
-function buildUrl(path) {
+export function buildUrl(path) {
   const base = URL_SERVER.replace(/\/$/, '')
   const cleanPath = path.replace(/^\//, '')
   return base ? `${base}/${cleanPath}` : `/${cleanPath}`

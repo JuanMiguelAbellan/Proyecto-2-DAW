@@ -9,4 +9,6 @@ export default interface Mensaje{
     contenidoDoc?:string
     tipoDoc?:string
     fechaCreacion?:Date
+    urlPDF?:string
+    nombrePDF?:string
 }

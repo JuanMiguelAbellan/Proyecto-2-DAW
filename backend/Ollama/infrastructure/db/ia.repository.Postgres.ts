@@ -11,7 +11,7 @@ export default class IaRepositoryPostgres implements IaReposiroty {
     async getMensajes(idChat: Number): Promise<Mensaje[]> {
         const query = `
             SELECT m.id_mensaje AS id, m.rol, m.contenido, m.creado_en AS "fechaCreacion",
-                   d.tipo AS "tipoDoc"
+                   d.tipo AS "tipoDoc", d.s3_key AS "urlPDF"
             FROM mensajes m
             LEFT JOIN documentos d ON d.id_mensaje = m.id_mensaje
             WHERE m.id_chat = $1
@@ -19,8 +19,9 @@ export default class IaRepositoryPostgres implements IaReposiroty {
         const rows = await executeQuery(query, [idChat]);
         return (rows || []).map(r => ({
             ...r,
-            tipo: r.tipoDoc ? 'documento' : 'normal',
-            contenidoDoc: r.tipoDoc ? r.contenido : undefined
+            tipo: r.rol === 'ia' && r.tipoDoc ? 'documento' : 'normal',
+            contenidoDoc: r.tipoDoc ? r.contenido : undefined,
+            nombrePDF: r.urlPDF ? r.urlPDF.split('/').pop().replace(/^\d+-/, '') : undefined
         }))
     }
     async contarMensajes(idChat: Number): Promise<Number> {
@@ -32,9 +33,10 @@ export default class IaRepositoryPostgres implements IaReposiroty {
         const query = `UPDATE chats SET titulo = $1 WHERE id_chat = $2`
         await executeQuery(query, [titulo, idChat])
     }
-    async guardarMensajeUsuario(prompt: string, idChat: Number): Promise<void> {
-        const query = `INSERT INTO mensajes (id_chat, rol, contenido) VALUES ($1, 'usuario', $2)`
-        await executeQuery(query, [idChat, prompt]);
+    async guardarMensajeUsuario(prompt: string, idChat: Number): Promise<Number> {
+        const query = `INSERT INTO mensajes (id_chat, rol, contenido) VALUES ($1, 'usuario', $2) RETURNING id_mensaje`
+        const rows: any[] = await executeQuery(query, [idChat, prompt]);
+        return rows[0].id_mensaje;
     }
     async guardarRespuesta(respuesta: Mensaje, idChat?: Number, idUsuario?: Number): Promise<Number> {
         let idChatNuevo = idChat
@@ -53,6 +55,16 @@ export default class IaRepositoryPostgres implements IaReposiroty {
         const query = `INSERT INTO documentos (id_mensaje, s3_key, tipo) VALUES ($1, $2, $3)`
         const rows: any[] = await executeQuery(query, [idMensaje, key || '', tipo]);
         if (!rows) throw new Error("Error guardando el documento de respuesta")
+    }
+    async actualizarDocumento(idMensaje: Number, key: String): Promise<void> {
+        await executeQuery(`UPDATE documentos SET s3_key = $1 WHERE id_mensaje = $2`, [key, idMensaje])
+    }
+    async esPropietarioMensaje(idMensaje: Number, idUsuario: Number): Promise<boolean> {
+        const rows = await executeQuery(
+            `SELECT 1 FROM mensajes m JOIN chats c ON c.id_chat = m.id_chat WHERE m.id_mensaje = $1 AND c.id_usuario = $2`,
+            [idMensaje, idUsuario]
+        )
+        return !!(rows && rows.length > 0)
     }
     async getDocumentos(idUsuario: Number): Promise<any[]> {
         const query = `

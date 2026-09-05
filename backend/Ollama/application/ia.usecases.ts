@@ -24,7 +24,7 @@ Cuando el usuario adjunte documentos (indicados con [Documento: nombre]), analí
         return Object.keys(scores).find(k => scores[k] === max) || 'general'
     }
 
-    async getRespuesta(prompt: string, mensajeVisible: string, tipoSub: string, idUsuario: Number, idChat?: Number): Promise<Mensaje> {
+    async getRespuesta(prompt: string, mensajeVisible: string, tipoSub: string, idUsuario: Number, idChat?: Number, urlPDF?: string): Promise<Mensaje> {
         const json = {
             model: "qwen2.5:3b",
             system: this.SYSTEM_PROMPT,
@@ -34,14 +34,17 @@ Cuando el usuario adjunte documentos (indicados con [Documento: nombre]), analí
         }
 
         let esPrimerMensaje = false
+        const tipoDoc = prompt.includes('[Documento:') ? this.detectarTipoDoc(prompt) : undefined
         if (idChat != null) {
             const total = await this.iaRepository.contarMensajes(idChat)
             esPrimerMensaje = total === 0
-            await this.iaRepository.guardarMensajeUsuario(mensajeVisible || prompt, idChat)
+            const idMensajeUsuario = await this.iaRepository.guardarMensajeUsuario(mensajeVisible || prompt, idChat)
+            if (urlPDF) {
+                await this.iaRepository.guardarDocumentoRespuesta(idMensajeUsuario, urlPDF, tipoDoc)
+            }
         }
 
         const esGeneracionDoc = /\bhaz(me)?\b|hacer\s+un|genera(r|me)?|crea(r|me|do)?|escrib(e|ir|eme)|redact(a|ar)|expand|ampl[íi]|reescrib|nuevo\s+doc|doc\s+nuevo|\bdoc(umento)?\b.*\b(sobre|acerca|de)\b/i.test(mensajeVisible || prompt)
-        const tipoDoc = prompt.includes('[Documento:') ? this.detectarTipoDoc(prompt) : undefined
 
         const respuesta = await this.iaController.generate(json)
 
@@ -125,5 +128,17 @@ Cuando el usuario adjunte documentos (indicados con [Documento: nombre]), analí
 
     async getDocumentos(idUsuario: Number): Promise<any[]> {
         return this.iaRepository.getDocumentos(idUsuario)
+    }
+
+    async subirPDF(buffer: Buffer, nombreOriginal: string): Promise<string> {
+        return this.iaController.subirPDF(buffer, nombreOriginal)
+    }
+
+    async guardarPDFAnotado(idMensaje: Number, idUsuario: Number, buffer: Buffer, nombreOriginal: string): Promise<string | null> {
+        const esPropietario = await this.iaRepository.esPropietarioMensaje(idMensaje, idUsuario)
+        if (!esPropietario) return null
+        const url = await this.iaController.subirPDF(buffer, nombreOriginal)
+        await this.iaRepository.actualizarDocumento(idMensaje, url)
+        return url
     }
 }

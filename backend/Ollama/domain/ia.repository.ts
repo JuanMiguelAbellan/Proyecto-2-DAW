@@ -5,9 +5,11 @@ export default interface IaReposiroty {
     getMensajes(idChat: Number): Promise<Mensaje[]>
     contarMensajes(idChat: Number): Promise<Number>
     actualizarTituloChat(idChat: Number, titulo: string): Promise<void>
-    guardarMensajeUsuario(prompt: string, idChat: Number): Promise<void>
+    guardarMensajeUsuario(prompt: string, idChat: Number): Promise<Number>
     guardarRespuesta(respuesta: Mensaje, idChat?: Number, idUsuario?: Number): Promise<Number>
     guardarDocumentoRespuesta(idMensaje: Number, key: String, tipoDoc?: string): Promise<void>
+    actualizarDocumento(idMensaje: Number, key: String): Promise<void>
+    esPropietarioMensaje(idMensaje: Number, idUsuario: Number): Promise<boolean>
     getDocumentos(idUsuario: Number): Promise<any[]>
     addPreferencia(preferencia: String, idUsuario: Number): Promise<String>
     editPreferencia(preferencias: String, idUsuario: Number): Promise<String>

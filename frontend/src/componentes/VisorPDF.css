@@ -14,8 +14,9 @@
 .visor_modal {
   background: white;
   border-radius: 12px;
-  max-width: 90vw;
-  max-height: 90vh;
+  width: 90vw;
+  height: 90vh;
+  max-width: 1100px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -86,15 +87,73 @@
   background: #f0f0f0;
 }
 
-.visor_contenido {
-  overflow: auto;
-  padding: 1rem;
+.visor_toolbar {
   display: flex;
-  justify-content: center;
-  background: #f5f5f5;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid #e0e0e0;
+  flex-wrap: wrap;
+  background: #fafafa;
 }
 
-.visor_contenido canvas {
-  max-width: 100%;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+.visor_toolbar button {
+  border: 1px solid #d8d8d8;
+  background: white;
+  font-size: 0.82rem;
+  cursor: pointer;
+  padding: 0.35rem 0.7rem;
+  border-radius: 6px;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.visor_toolbar button:hover:not(:disabled) {
+  background: #f0f0f0;
+}
+
+.visor_toolbar button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.visor_modo_activo {
+  background: #dff0f0 !important;
+  border-color: #58b8bd !important;
+  color: #0a5a5e;
+}
+
+.visor_toolbar_sep {
+  width: 1px;
+  align-self: stretch;
+  background: #e0e0e0;
+  margin: 0 0.2rem;
+}
+
+.visor_estado {
+  font-size: 0.8rem;
+  color: #2a7a2a;
+  margin-left: 0.4rem;
+}
+
+.visor_contenido {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  background: #525659;
+}
+
+.visor_cargando {
+  position: absolute;
+  top: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  color: white;
+  font-size: 0.9rem;
+  z-index: 2;
+}
+
+.visor_error {
+  color: #ffb4b4;
 }

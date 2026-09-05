@@ -1,10 +1,9 @@
 import { useState, useRef, useEffect } from 'react'
-import { post } from '../servicios/peticiones'
+import { post, buildUrl } from '../servicios/peticiones'
 import './BarraInferior.css'
 import './ChatPrincipal.css'
 
 const MAX_FILE_MB = 20
-const URL_SERVER = import.meta.env.VITE_API_URL || ''
 
 export default function BarraInferior({ chatActivo, setMensajes, onTituloGenerado, setEsperando, onNuevoChat, archivos, setArchivos }) {
   const [texto, setTexto] = useState('')
@@ -79,7 +78,7 @@ export default function BarraInferior({ chatActivo, setMensajes, onTituloGenerad
       try {
         const formData = new FormData()
         formData.append('file', f)
-        const res = await fetch(URL_SERVER + 'api/ia/extractText', {
+        const res = await fetch(buildUrl('api/ia/extractText'), {
           method: 'POST',
           headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` },
           body: formData
@@ -111,6 +110,25 @@ export default function BarraInferior({ chatActivo, setMensajes, onTituloGenerad
     return contenidos.join('\n\n')
   }
 
+  async function subirPDFAlServidor(f) {
+    try {
+      const formData = new FormData()
+      formData.append('file', f)
+      const res = await fetch(buildUrl('api/ia/subirPDF'), {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` },
+        body: formData
+      })
+      if (res.ok) {
+        const data = await res.json()
+        return data.url || null
+      }
+    } catch (e) {
+      console.error('Error subiendo PDF:', e)
+    }
+    return null
+  }
+
   function detectarTipoDoc(texto) {
     const t = texto.toLowerCase()
     const contar = (terms) => terms.filter(w => t.includes(w)).length
@@ -138,7 +156,7 @@ export default function BarraInferior({ chatActivo, setMensajes, onTituloGenerad
           onNuevoChat(nuevoChat)
           setMensajes([mensajeUsuario])
           setEsperando(true)
-          post('api/ia/generate', { prompt: promptCompleto, mensajeVisible, tipo: 'free', idChat: nuevoChat.id_chat },
+          post('api/ia/generate', { prompt: promptCompleto, mensajeVisible, tipo: 'free', idChat: nuevoChat.id_chat, urlPDF },
             (respuesta) => {
               setEsperando(false)
               setMensajes((prev) => [...prev, { rol: 'ia', contenido: respuesta.contenido, tipo: respuesta.tipo, contenidoDoc: respuesta.contenidoDoc }])
@@ -152,7 +170,7 @@ export default function BarraInferior({ chatActivo, setMensajes, onTituloGenerad
     } else {
       setMensajes((prev) => [...prev, mensajeUsuario])
       setEsperando(true)
-      post('api/ia/generate', { prompt: promptCompleto, mensajeVisible, tipo: 'free', idChat: chatActivo.id_chat },
+      post('api/ia/generate', { prompt: promptCompleto, mensajeVisible, tipo: 'free', idChat: chatActivo.id_chat, urlPDF },
         (respuesta) => {
           setEsperando(false)
           setMensajes((prev) => [...prev, { rol: 'ia', contenido: respuesta.contenido, tipo: respuesta.tipo, contenidoDoc: respuesta.contenidoDoc }])
@@ -213,7 +231,7 @@ export default function BarraInferior({ chatActivo, setMensajes, onTituloGenerad
       const contenidoArchivos = await leerArchivos(archivosCopy)
       const mensajeVisible = textoActual || '📄 Documento adjunto'
       const pdfFile = archivosCopy.find(f => f.type === 'application/pdf' || f.name.endsWith('.pdf'))
-      const urlPDF = pdfFile ? URL.createObjectURL(pdfFile) : null
+      const urlPDF = pdfFile ? await subirPDFAlServidor(pdfFile) : null
       setPrevistaDoc({ contenidoArchivos, textoActual, mensajeVisible, urlPDF, nombrePDF: pdfFile?.name })
     } else {
       enviarConContenido(textoActual, '', textoActual)

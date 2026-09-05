@@ -129,7 +129,7 @@ export default function ChatPrincipal({ mensajes, esperando, onVerPDF }) {
                     </span>
                   )}
                   {mensaje.urlPDF && (
-                    <button className="mensaje_descargar" onClick={() => onVerPDF({ fuente: mensaje.urlPDF, nombre: mensaje.nombrePDF || 'documento.pdf' })}>
+                    <button className="mensaje_descargar" onClick={() => onVerPDF({ fuente: mensaje.urlPDF, nombre: mensaje.nombrePDF || 'documento.pdf', idMensaje: mensaje.id })}>
                       &#x1F4C4; Ver PDF
                     </button>
                   )}

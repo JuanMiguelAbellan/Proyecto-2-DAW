@@ -80,7 +80,18 @@ export default function Conversacion({ chats, chatActivo, setChatActivo, mensaje
               />
             </div>
         }
-      {visorPDF && <VisorPDF fuente={visorPDF.fuente} nombre={visorPDF.nombre} onCerrar={() => setVisorPDF(null)} />}
+      {visorPDF && (
+        <VisorPDF
+          fuente={visorPDF.fuente}
+          nombre={visorPDF.nombre}
+          idMensaje={visorPDF.idMensaje}
+          onCerrar={() => setVisorPDF(null)}
+          onGuardado={(nuevaUrl) => {
+            setMensajes(prev => prev.map(m => m.id === visorPDF.idMensaje ? { ...m, urlPDF: nuevaUrl } : m))
+            setVisorPDF(v => v ? { ...v, fuente: nuevaUrl } : v)
+          }}
+        />
+      )}
       </section>
     </main>
   )

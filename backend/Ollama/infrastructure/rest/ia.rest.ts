@@ -46,9 +46,9 @@ const routerIA = express.Router();
  *         description: Error al contactar con Ollama
  */
 routerIA.post("/generate", isAuth, async (req: Request, res: Response) => {
-    const { prompt, mensajeVisible, tipo, idChat } = req.body;
+    const { prompt, mensajeVisible, tipo, idChat, urlPDF } = req.body;
     const idUsuario = req.body.id;
-    const respuesta = await iaUsecases.getRespuesta(prompt, mensajeVisible, tipo, idUsuario, idChat)
+    const respuesta = await iaUsecases.getRespuesta(prompt, mensajeVisible, tipo, idUsuario, idChat, urlPDF)
     console.log(respuesta);
 
     if (respuesta.contenido == null || respuesta.contenido == "") {
@@ -152,6 +152,88 @@ routerIA.delete("/chat/:idChat", isAuth, async (req: Request, res: Response) => 
     const idChat = Number(req.params.idChat)
     await iaUsecases.eliminarChat(idChat)
     res.json({ ok: true })
+});
+
+/**
+ * @swagger
+ * /api/ia/subirPDF:
+ *   post:
+ *     summary: Sube un PDF adjuntado por el usuario a almacenamiento permanente (R2)
+ *     tags: [IA]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               file: { type: string, format: binary }
+ *     responses:
+ *       200:
+ *         description: URL pública del PDF subido
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 url: { type: string }
+ *       400:
+ *         description: No se envió ningún archivo
+ *       401:
+ *         description: No autorizado
+ */
+routerIA.post("/subirPDF", isAuth, upload.single("file"), async (req: Request, res: Response) => {
+    const file = (req as any).file
+    if (!file) { res.status(400).json({ error: "No file" }); return }
+    try {
+        const url = await iaUsecases.subirPDF(file.buffer, file.originalname)
+        res.json({ url })
+    } catch (error) {
+        console.error("Error subiendo PDF:", error)
+        res.status(500).json({ error: "Error al subir el PDF" })
+    }
+});
+
+/**
+ * @swagger
+ * /api/ia/guardarPDFAnotado/{idMensaje}:
+ *   post:
+ *     summary: Sustituye el PDF de un mensaje por una versión anotada (resaltados, comentarios...)
+ *     tags: [IA]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: idMensaje
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               file: { type: string, format: binary }
+ *     responses:
+ *       200:
+ *         description: URL pública del PDF anotado
+ *       403:
+ *         description: El mensaje no pertenece al usuario autenticado
+ *       401:
+ *         description: No autorizado
+ */
+routerIA.post("/guardarPDFAnotado/:idMensaje", upload.single("file"), isAuth, async (req: Request, res: Response) => {
+    const file = (req as any).file
+    if (!file) { res.status(400).json({ error: "No file" }); return }
+    const idMensaje = Number(req.params.idMensaje)
+    const idUsuario = req.body.id
+    const url = await iaUsecases.guardarPDFAnotado(idMensaje, idUsuario, file.buffer, file.originalname)
+    if (!url) { res.status(403).json({ error: "No autorizado sobre este documento" }); return }
+    res.json({ url })
 });
 
 routerIA.get("/documentos", isAuth, async (req: Request, res: Response) => {
