@@ -9,4 +9,5 @@ export default interface Usuario{
     rol?:Rol | string
     preferencias?:JSON | string
     planSubscripcion?:string
+    emailVerificado?:boolean
 }

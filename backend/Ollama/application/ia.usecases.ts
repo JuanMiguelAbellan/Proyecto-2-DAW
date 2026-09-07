@@ -103,7 +103,7 @@ Da formato a tus respuestas en Markdown siempre que aporte claridad: usa ## y ##
         }
 
         if (esPrimerMensaje && idChat != null) {
-            const titulo = await this.generarTitulo(prompt)
+            const titulo = await this.generarTitulo(prompt).catch(() => null)
             if (titulo) {
                 await this.iaRepository.actualizarTituloChat(idChat, titulo)
                 mensaje.titulo = titulo

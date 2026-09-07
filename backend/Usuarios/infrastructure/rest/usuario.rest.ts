@@ -308,6 +308,93 @@ routerUsuario.patch("/subscripcion", isAuth, async(req: Request, res: Response) 
     }
 })
 
+/**
+ * @swagger
+ * /api/usuarios/verificar-email/{token}:
+ *   get:
+ *     summary: Confirma el email de un usuario a partir del token enviado por correo
+ *     tags: [Usuarios]
+ *     parameters:
+ *       - in: path
+ *         name: token
+ *         required: true
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: Email verificado correctamente
+ *       400:
+ *         description: Token inválido o ya usado
+ */
+routerUsuario.get("/verificar-email/:token", async (req: Request, res: Response) => {
+    try {
+        const ok = await usuarioUseCases.verificarEmail(String(req.params.token))
+        if (!ok) { res.status(400).json({ error: "Token inválido o ya utilizado" }); return }
+        res.json({ ok: true })
+    } catch (e) {
+        res.status(500).json({ error: e.message })
+    }
+})
+
+/**
+ * @swagger
+ * /api/usuarios/solicitar-reset:
+ *   post:
+ *     summary: Solicita un enlace de recuperación de contraseña por email
+ *     tags: [Usuarios]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email: { type: string }
+ *     responses:
+ *       200:
+ *         description: Si el email existe, se ha enviado un correo (respuesta siempre igual para no filtrar qué emails están registrados)
+ */
+routerUsuario.post("/solicitar-reset", async (req: Request, res: Response) => {
+    try {
+        const { email } = req.body
+        await usuarioUseCases.solicitarResetPassword(email)
+    } catch (e) {
+        console.error(e)
+    }
+    res.json({ ok: true })
+})
+
+/**
+ * @swagger
+ * /api/usuarios/resetear-password:
+ *   post:
+ *     summary: Establece una nueva contraseña a partir de un token de recuperación
+ *     tags: [Usuarios]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               token: { type: string }
+ *               passwordNueva: { type: string }
+ *     responses:
+ *       200:
+ *         description: Contraseña actualizada
+ *       400:
+ *         description: Token inválido o caducado
+ */
+routerUsuario.post("/resetear-password", async (req: Request, res: Response) => {
+    try {
+        const { token, passwordNueva } = req.body
+        const ok = await usuarioUseCases.resetearPassword(token, passwordNueva)
+        if (!ok) { res.status(400).json({ error: "El enlace no es válido o ha caducado" }); return }
+        res.json({ ok: true })
+    } catch (e) {
+        res.status(500).json({ error: e.message })
+    }
+})
+
 routerUsuario.get("", (req:Request, res:Response)=>{
     res.send("API de usuarios")
 })

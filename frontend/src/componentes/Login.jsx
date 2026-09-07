@@ -2,7 +2,7 @@ import { useState } from "react"
 import { handleChange, handleSubmit } from "../servicios/login"
 import './Login.css'
 
-export default function Login({ onLogin, onRegistro }) {
+export default function Login({ onLogin, onRegistro, onRecuperar, mensajeInfo }) {
   const [form, setForm] = useState({ email: "", password: "" })
   const [error, setError] = useState("")
 
@@ -10,6 +10,7 @@ export default function Login({ onLogin, onRegistro }) {
     <div className="login">
       <img src="/images/logo.svg" alt="IADocs" className="logo_login" />
       <h1>IA Docs</h1>
+      {mensajeInfo && <p className="login_mensaje">{mensajeInfo}</p>}
       <form onSubmit={(e) => handleSubmit(e, form, setError, onLogin)}>
         <input type="text" name="email" placeholder="Email" value={form.email}
           onChange={(e) => handleChange(e, form, setForm)} />
@@ -18,6 +19,7 @@ export default function Login({ onLogin, onRegistro }) {
         {error && <p className="error">{error}</p>}
         <button type="submit">Iniciar sesión</button>
       </form>
+      <button onClick={onRecuperar}>¿Olvidaste tu contraseña?</button>
       <button onClick={onRegistro}>¿No tienes cuenta? Regístrate</button>
     </div>
   )

@@ -16,3 +16,11 @@ setupChatWebSocket(server);
   await executeQuery(`ALTER TYPE plan_subscripcion ADD VALUE IF NOT EXISTS 'empresa'`);
   console.log("Migración comprobada: plan_subscripcion incluye 'empresa'");
 })();
+
+(async () => {
+  await executeQuery(`ALTER TABLE usuarios ADD COLUMN IF NOT EXISTS email_verificado BOOLEAN NOT NULL DEFAULT FALSE`);
+  await executeQuery(`ALTER TABLE usuarios ADD COLUMN IF NOT EXISTS token_verificacion VARCHAR(255)`);
+  await executeQuery(`ALTER TABLE usuarios ADD COLUMN IF NOT EXISTS token_reset_password VARCHAR(255)`);
+  await executeQuery(`ALTER TABLE usuarios ADD COLUMN IF NOT EXISTS token_reset_expira TIMESTAMP`);
+  console.log("Migración comprobada: columnas de verificación de email y reset de password");
+})();

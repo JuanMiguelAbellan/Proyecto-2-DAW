@@ -3,6 +3,9 @@ import { get } from './servicios/peticiones'
 import Conversacion from './componentes/Conversacion'
 import Login from './componentes/Login'
 import Registro from './componentes/Registro'
+import VerificarEmail from './componentes/VerificarEmail'
+import SolicitarReset from './componentes/SolicitarReset'
+import ResetearPassword from './componentes/ResetearPassword'
 import Subscripcion from './componentes/Subscripcion'
 import AjustesCuenta from './componentes/AjustesCuenta'
 import AjustesSubscripcion from './componentes/AjustesSubscripcion'
@@ -16,6 +19,7 @@ import './styles/media.css'
 function App() {
   const [token, setToken] = useState(localStorage.getItem('token'))
   const [pantalla, setPantalla] = useState('login')
+  const [mensajeInfo, setMensajeInfo] = useState('')
   const [vistaApp, setVistaApp] = useState('chat')
   const [temaOscuro, setTemaOscuro] = useState(false)
   const [chats, setChats] = useState([])
@@ -85,11 +89,31 @@ function App() {
     setChats(prev => prev.map(c => c.id_chat === idChat ? { ...c, titulo } : c))
   }
 
+  const ruta = window.location.pathname
+  if (ruta.startsWith('/verificar-email/')) {
+    const token = ruta.replace('/verificar-email/', '')
+    return <VerificarEmail token={token} onIrALogin={() => { window.location.href = '/' }} />
+  }
+  if (ruta.startsWith('/resetear-password/')) {
+    const token = ruta.replace('/resetear-password/', '')
+    return <ResetearPassword token={token} onIrALogin={() => { window.location.href = '/' }} />
+  }
+
   if (!token) {
     if (pantalla === 'registro') {
-      return <Registro onVolver={() => setPantalla('login')} />
+      return <Registro onVolver={(msg) => { if (msg) setMensajeInfo(msg); setPantalla('login') }} />
     }
-    return <Login onLogin={handleLogin} onRegistro={() => setPantalla('registro')} />
+    if (pantalla === 'recuperar') {
+      return <SolicitarReset onVolver={() => setPantalla('login')} />
+    }
+    return (
+      <Login
+        onLogin={handleLogin}
+        onRegistro={() => setPantalla('registro')}
+        onRecuperar={() => setPantalla('recuperar')}
+        mensajeInfo={mensajeInfo}
+      />
+    )
   }
 
   const vistas = {

@@ -3,6 +3,7 @@ import express, { Request, Response } from "express";
 const multer = require("multer");
 import IaUseCases from "../../application/ia.usecases"
 import { isAuth } from "../../../context/security/auth";
+import { limitarPeticionesIA } from "../../../context/security/rateLimiter";
 import IaRepositoryPostgres from "../db/ia.repository.Postgres";
 import IaController from "./ia.controller";
 
@@ -45,7 +46,7 @@ const routerIA = express.Router();
  *       500:
  *         description: Error al contactar con Ollama
  */
-routerIA.post("/generate", isAuth, async (req: Request, res: Response) => {
+routerIA.post("/generate", isAuth, limitarPeticionesIA(20, 60_000), async (req: Request, res: Response) => {
     const { prompt, mensajeVisible, tipo, idChat, urlPDF } = req.body;
     const idUsuario = req.body.id;
     const respuesta = await iaUsecases.getRespuesta(prompt, mensajeVisible, tipo, idUsuario, idChat, urlPDF)
@@ -184,7 +185,7 @@ routerIA.delete("/chat/:idChat", isAuth, async (req: Request, res: Response) => 
  *       401:
  *         description: No autorizado
  */
-routerIA.post("/subirPDF", isAuth, upload.single("file"), async (req: Request, res: Response) => {
+routerIA.post("/subirPDF", isAuth, limitarPeticionesIA(10, 60_000), upload.single("file"), async (req: Request, res: Response) => {
     const file = (req as any).file
     if (!file) { res.status(400).json({ error: "No file" }); return }
     try {

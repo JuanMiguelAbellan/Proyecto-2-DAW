@@ -2,8 +2,12 @@ import Usuario from "../domain/Usuario";
 import UsuarioRepository from "../domain/usuario.repository";
 import { hash } from "../../context/security/encrypter";
 import { compare } from "bcrypt";
+import { randomBytes } from "crypto";
 import Mensaje from "../../Ollama/domain/Mensaje";
 import UsuarioController from "../infrastructure/rest/usuario.controller";
+import { enviarEmail } from "../../context/mail/mailer";
+
+const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173";
 
 
 export default class UsuarioUseCases{
@@ -26,13 +30,51 @@ export default class UsuarioUseCases{
         }
     }
 
-    registro(usuario: Usuario): Promise<Usuario>{
+    async registro(usuario: Usuario): Promise<Usuario>{
          if (!usuario.password){
             throw new Error("Falta password");
         }
         const cifrada = hash(usuario.password);
         usuario.password = cifrada;
-        return this.usuarioRepository.registro(usuario);
+        const usuarioCreado = await this.usuarioRepository.registro(usuario);
+
+        const token = randomBytes(32).toString("hex");
+        await this.usuarioRepository.guardarTokenVerificacion(usuarioCreado.id, token);
+        await enviarEmail(
+            usuarioCreado.email,
+            "Verifica tu cuenta de IADocuments",
+            `<p>Hola ${usuarioCreado.nombre || ""},</p>
+             <p>Confirma tu cuenta haciendo clic en el siguiente enlace:</p>
+             <p><a href="${FRONTEND_URL}/verificar-email/${token}">${FRONTEND_URL}/verificar-email/${token}</a></p>`
+        );
+
+        return usuarioCreado;
+    }
+
+    async verificarEmail(token: string): Promise<boolean> {
+        return this.usuarioRepository.verificarEmail(token);
+    }
+
+    async solicitarResetPassword(email: string): Promise<void> {
+        const token = randomBytes(32).toString("hex");
+        const expira = new Date(Date.now() + 60 * 60 * 1000); // 1 hora
+        const existe = await this.usuarioRepository.guardarTokenReset(email, token, expira);
+        // Si el email no existe no avisamos del motivo, para no filtrar qué
+        // correos están registrados.
+        if (!existe) return;
+        await enviarEmail(
+            email,
+            "Recupera tu contraseña de IADocuments",
+            `<p>Hemos recibido una solicitud para restablecer tu contraseña.</p>
+             <p>Si has sido tú, haz clic en el siguiente enlace (caduca en 1 hora):</p>
+             <p><a href="${FRONTEND_URL}/resetear-password/${token}">${FRONTEND_URL}/resetear-password/${token}</a></p>
+             <p>Si no has sido tú, puedes ignorar este correo.</p>`
+        );
+    }
+
+    async resetearPassword(token: string, nuevaPassword: string): Promise<boolean> {
+        const nuevoHash = hash(nuevaPassword);
+        return this.usuarioRepository.resetearPasswordConToken(token, nuevoHash);
     }
 
     getUsuario(idUser: Number):Promise<Usuario>{

@@ -1,6 +1,7 @@
 import { WebSocketServer, WebSocket } from "ws";
 import { Server } from "http";
 import { verifyToken } from "../../../context/security/auth";
+import { tomarToken } from "../../../context/security/rateLimiter";
 import IaUseCases from "../../application/ia.usecases";
 import IaRepositoryPostgres from "../db/ia.repository.Postgres";
 import IaController from "../rest/ia.controller";
@@ -35,6 +36,11 @@ export default function setupChatWebSocket(server: Server): void {
                 datos = JSON.parse(raw.toString());
             } catch {
                 ws.send(JSON.stringify({ type: "error", message: "Mensaje mal formado" }));
+                return;
+            }
+
+            if (!tomarToken(`user:${idUsuario}`, 20, 60_000)) {
+                ws.send(JSON.stringify({ type: "error", message: "Demasiados mensajes, espera un momento antes de seguir" }));
                 return;
             }
 

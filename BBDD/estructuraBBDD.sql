@@ -10,7 +10,11 @@ CREATE TABLE usuarios (
     email           VARCHAR(255) NOT NULL UNIQUE,
     password_hash   VARCHAR(255) NOT NULL,
     rol             rol_usuario NOT NULL DEFAULT 'usuario',
-    preferencias    JSONB
+    preferencias    JSONB,
+    email_verificado      BOOLEAN NOT NULL DEFAULT FALSE,
+    token_verificacion    VARCHAR(255),
+    token_reset_password  VARCHAR(255),
+    token_reset_expira    TIMESTAMP
 );
 
 CREATE TABLE subscripcion (

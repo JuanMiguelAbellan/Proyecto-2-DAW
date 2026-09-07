@@ -37,7 +37,7 @@ export function handleSubmit(e, form, setErrores, setErrorServidor, onVolver) {
   const { repetir, ...datos } = form
   post("api/usuarios/registro",
     { ...datos, rol: "usuario", preferencias: {} },
-    () => onVolver(),
+    () => onVolver("Cuenta creada. Revisa tu email para verificar tu cuenta."),
     () => setErrorServidor("Error al registrarse, prueba con otro email")
   )
 }

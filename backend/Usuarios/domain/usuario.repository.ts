@@ -13,4 +13,8 @@ export default interface UsuarioRepository{
     editarInfo(nombre: string, apellidos: string, email: string, id: Number): Promise<void>
     cambiarPassword(newPasswordHash: string, id: Number): Promise<void>
     cambiarPlan(plan: string, id: Number): Promise<void>
+    guardarTokenVerificacion(id: Number, token: string): Promise<void>
+    verificarEmail(token: string): Promise<boolean>
+    guardarTokenReset(email: string, token: string, expira: Date): Promise<boolean>
+    resetearPasswordConToken(token: string, newPasswordHash: string): Promise<boolean>
 }

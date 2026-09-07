@@ -90,3 +90,11 @@
     margin: 0;
     text-align: center;
 }
+
+.login_mensaje {
+    color: var(--background-color-body);
+    font-size: var(--font-size-menu);
+    max-width: 360px;
+    text-align: center;
+    margin: 0 0 1rem;
+}
