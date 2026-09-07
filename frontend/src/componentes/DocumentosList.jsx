@@ -22,14 +22,21 @@ export default function DocumentosList({ onVolver }) {
     )
   }, [])
 
-  function descargarTexto(preview, tipo, id) {
-    const blob = new Blob([preview], { type: 'text/plain' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `documento_${tipo}_${id}.txt`
-    a.click()
-    URL.revokeObjectURL(url)
+  async function descargarDocumento(doc) {
+    if (!doc.url) return
+    try {
+      const res = await fetch(doc.url)
+      const blob = await res.blob()
+      const esPDF = blob.type.includes('pdf') || doc.url.toLowerCase().endsWith('.pdf')
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `documento_${doc.tipo}_${doc.id}.${esPDF ? 'pdf' : 'txt'}`
+      a.click()
+      URL.revokeObjectURL(url)
+    } catch (e) {
+      console.error('Error descargando el documento:', e)
+    }
   }
 
   return (
@@ -56,7 +63,7 @@ export default function DocumentosList({ onVolver }) {
               </div>
               <p className="doc_chat">📂 {doc.chat}</p>
               <p className="doc_preview">{doc.preview}{doc.preview?.length >= 200 ? '…' : ''}</p>
-              <button className="doc_descargar" onClick={() => descargarTexto(doc.preview, doc.tipo, doc.id)}>
+              <button className="doc_descargar" onClick={() => descargarDocumento(doc)}>
                 ↓ Descargar
               </button>
             </div>

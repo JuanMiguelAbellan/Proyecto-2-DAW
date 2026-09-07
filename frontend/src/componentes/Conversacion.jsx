@@ -1,9 +1,12 @@
-import { useState } from 'react'
+import { useState, lazy, Suspense } from 'react'
 import BarraInferior from './BarraInferior'
 import ChatPrincipal from './ChatPrincipal'
 import AsideChats from './AsideChats'
-import VisorPDF from './VisorPDF'
 import './Conversacion.css'
+
+// pdf.js pesa bastante (visor + editor de anotaciones): se carga solo
+// cuando de verdad hace falta abrir un PDF, no en la carga inicial del chat.
+const VisorPDF = lazy(() => import('./VisorPDF'))
 
 export default function Conversacion({ chats, chatActivo, setChatActivo, mensajes, setMensajes, onNuevoChat, onTituloGenerado, onEliminarChat }) {
   const [esperando, setEsperando] = useState(false)
@@ -81,16 +84,18 @@ export default function Conversacion({ chats, chatActivo, setChatActivo, mensaje
             </div>
         }
       {visorPDF && (
-        <VisorPDF
-          fuente={visorPDF.fuente}
-          nombre={visorPDF.nombre}
-          idMensaje={visorPDF.idMensaje}
-          onCerrar={() => setVisorPDF(null)}
-          onGuardado={(nuevaUrl) => {
-            setMensajes(prev => prev.map(m => m.id === visorPDF.idMensaje ? { ...m, urlPDF: nuevaUrl } : m))
-            setVisorPDF(v => v ? { ...v, fuente: nuevaUrl } : v)
-          }}
-        />
+        <Suspense fallback={null}>
+          <VisorPDF
+            fuente={visorPDF.fuente}
+            nombre={visorPDF.nombre}
+            idMensaje={visorPDF.idMensaje}
+            onCerrar={() => setVisorPDF(null)}
+            onGuardado={(nuevaUrl) => {
+              setMensajes(prev => prev.map(m => m.id === visorPDF.idMensaje ? { ...m, urlPDF: nuevaUrl } : m))
+              setVisorPDF(v => v ? { ...v, fuente: nuevaUrl } : v)
+            }}
+          />
+        </Suspense>
       )}
       </section>
     </main>

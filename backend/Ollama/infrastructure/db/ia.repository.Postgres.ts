@@ -69,7 +69,7 @@ export default class IaRepositoryPostgres implements IaReposiroty {
     async getDocumentos(idUsuario: Number): Promise<any[]> {
         const query = `
             SELECT d.id_documento AS id, d.tipo, d.creado_en AS "fechaCreacion",
-                   LEFT(m.contenido, 200) AS preview, c.titulo AS chat
+                   LEFT(m.contenido, 200) AS preview, d.s3_key AS url, c.titulo AS chat
             FROM documentos d
             JOIN mensajes m ON m.id_mensaje = d.id_mensaje
             JOIN chats c ON c.id_chat = m.id_chat

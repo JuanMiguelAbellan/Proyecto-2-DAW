@@ -1,6 +1,8 @@
-import { useState } from 'react'
-import PasarelaPago from './PasarelaPago'
+import { useState, lazy, Suspense } from 'react'
 import './Subscripcion.css'
+
+// Stripe.js es pesado y solo hace falta si se llega a pulsar "Subscribirse".
+const PasarelaPago = lazy(() => import('./PasarelaPago'))
 
 export default function Subscripcion({ onVolver, onPlanCambiado }) {
   const [planPendiente, setPlanPendiente] = useState(null)
@@ -17,11 +19,13 @@ export default function Subscripcion({ onVolver, onPlanCambiado }) {
   return (
     <div className="subscripcion">
       {planPendiente && (
-        <PasarelaPago
-          plan={planPendiente}
-          onExito={handleExito}
-          onCancelar={() => setPlanPendiente(null)}
-        />
+        <Suspense fallback={null}>
+          <PasarelaPago
+            plan={planPendiente}
+            onExito={handleExito}
+            onCancelar={() => setPlanPendiente(null)}
+          />
+        </Suspense>
       )}
 
       <div className="subscripcion_header">

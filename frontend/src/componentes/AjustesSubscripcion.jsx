@@ -1,7 +1,9 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, lazy, Suspense } from 'react'
 import { get, pacth } from '../servicios/peticiones'
-import PasarelaPago from './PasarelaPago'
 import './Ajustes.css'
+
+// Stripe.js es pesado y solo hace falta si se llega a cambiar de plan.
+const PasarelaPago = lazy(() => import('./PasarelaPago'))
 
 const PLANES = [
   { id: 'gratis', nombre: 'Gratuito', precio: '0 €/mes', docs: '5 documentos/mes', mensajes: '50 mensajes/mes' },
@@ -63,11 +65,13 @@ export default function AjustesSubscripcion({ onVolver, onPlanCambiado }) {
     <div className="ajustes_pagina">
       {toast && <div className="ajustes_toast">{toast}</div>}
       {planPendiente && (
-        <PasarelaPago
-          plan={planPendiente}
-          onExito={() => confirmarPago(planPendiente)}
-          onCancelar={() => setPlanPendiente(null)}
-        />
+        <Suspense fallback={null}>
+          <PasarelaPago
+            plan={planPendiente}
+            onExito={() => confirmarPago(planPendiente)}
+            onCancelar={() => setPlanPendiente(null)}
+          />
+        </Suspense>
       )}
 
       <div className="ajustes_header">
