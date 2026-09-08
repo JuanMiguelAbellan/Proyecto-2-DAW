@@ -89,14 +89,21 @@ function App() {
     setChats(prev => prev.map(c => c.id_chat === idChat ? { ...c, titulo } : c))
   }
 
+  function irALoginLimpio() {
+    // Si el navegador ya tenía una sesión distinta guardada, no la
+    // reutilices al volver al login desde un enlace de email.
+    localStorage.removeItem('token')
+    window.location.href = '/'
+  }
+
   const ruta = window.location.pathname
   if (ruta.startsWith('/verificar-email/')) {
     const token = ruta.replace('/verificar-email/', '')
-    return <VerificarEmail token={token} onIrALogin={() => { window.location.href = '/' }} />
+    return <VerificarEmail token={token} onIrALogin={irALoginLimpio} />
   }
   if (ruta.startsWith('/resetear-password/')) {
     const token = ruta.replace('/resetear-password/', '')
-    return <ResetearPassword token={token} onIrALogin={() => { window.location.href = '/' }} />
+    return <ResetearPassword token={token} onIrALogin={irALoginLimpio} />
   }
 
   if (!token) {
