@@ -12,7 +12,12 @@ Nace como Trabajo de Fin de Grado (2º DAW) con un objetivo concreto: que analiz
 - **Gestión de documentos**: subida de PDF, extracción de texto (`pdf-parse`) y visor integrado (`VisorPDF`).
 - **Chats con contexto**: cada usuario puede tener varios chats, cada uno con su historial de mensajes persistido en PostgreSQL.
 - **Dos modos de respuesta**: conversación libre o respuesta anclada al contenido de un documento subido.
-- **IA autoalojada**: el backend habla con [Ollama](https://ollama.com) (modelo `qwen2.5:3b`, elegido por su soporte de español) en lugar de una API de pago de terceros — control total sobre coste, privacidad de los documentos y latencia.
+- **RAG con embeddings** (`pgvector` + `nomic-embed-text`): al adjuntar un documento se trocea y se indexa; en preguntas posteriores del mismo chat solo se recuperan los fragmentos relevantes por similitud semántica, en vez de reenviar el documento completo en cada turno.
+- **IA autoalojada**: el backend habla con [Ollama](https://ollama.com) (modelo `qwen2.5:3b` para el chat, `nomic-embed-text` para embeddings) en lugar de una API de pago de terceros — control total sobre coste, privacidad de los documentos y latencia.
+- **Streaming token a token** de la respuesta por WebSocket, en lugar de esperar a la respuesta completa.
+- **Verificación de email y recuperación de contraseña**, con envío de correo transaccional (API de Brevo).
+- **Pagos reales en modo test** (Stripe: PaymentIntents + webhook) para los planes de pago.
+- **Rate limiting** compartido entre REST y WebSocket para los endpoints de IA.
 - **Accesibilidad configurable** (`AjustesAccesibilidad`) y ajustes de cuenta.
 - **Flujo de suscripción/pago** modelado en el frontend (`PasarelaPago`, `Subscripcion`), pensado como un producto con plan de negocio real, no solo una demo técnica.
 - **Documentación de API** autogenerada con Swagger (`/api/docs`).
@@ -38,9 +43,9 @@ backend/
 Cliente (React + Vite)
       │  HTTPS / JSON
       ▼
-Express + TypeScript API  ──►  PostgreSQL (usuarios, chats, mensajes)
+Express + TypeScript API  ──►  PostgreSQL (usuarios, chats, mensajes, fragmentos + embeddings)
       │
-      └──────────────►  Ollama (Railway) — qwen2.5:3b
+      └──────────────►  Ollama (Railway) — qwen2.5:3b (chat) / nomic-embed-text (embeddings)
                               │
                               └──►  Cloudflare R2 — almacenamiento de PDFs subidos
 ```
@@ -51,9 +56,11 @@ Express + TypeScript API  ──►  PostgreSQL (usuarios, chats, mensajes)
 |---|---|
 | Frontend | React 19, Vite, `pdfjs-dist` para el visor de PDF |
 | Backend | Node.js, Express 5, TypeScript |
-| Base de datos | PostgreSQL |
+| Base de datos | PostgreSQL + `pgvector` |
 | Autenticación | JWT + bcrypt |
-| IA | Ollama autoalojado (`qwen2.5:3b`) |
+| IA | Ollama autoalojado (`qwen2.5:3b` chat, `nomic-embed-text` embeddings) |
+| Email transaccional | API de Brevo |
+| Pagos | Stripe (modo test) |
 | Almacenamiento | Cloudflare R2 (`@aws-sdk/client-s3`, API compatible con S3) |
 | Documentación API | Swagger / OpenAPI |
 | Tests | Jest + Supertest |
@@ -89,9 +96,10 @@ La guía original de despliegue manual en AWS Academy (RDS, Elastic Beanstalk, E
 
 ## Roadmap
 
-- [ ] Streaming de la respuesta del modelo token a token (WebSockets) en lugar de esperar la respuesta completa.
-- [ ] RAG real sobre varios documentos (embeddings + búsqueda semántica) en lugar de inyectar el texto completo en el prompt.
+- [x] Streaming de la respuesta del modelo token a token (WebSockets) en lugar de esperar la respuesta completa.
+- [x] RAG real sobre documentos (embeddings + búsqueda semántica con `pgvector`) en lugar de inyectar el texto completo en el prompt.
 - [ ] Migrar el frontend a TypeScript de forma completa.
+- [ ] Purgar del historial de git los secretos que se llegaron a commitear al principio del proyecto.
 
 ## Autor
 

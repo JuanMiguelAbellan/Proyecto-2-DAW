@@ -147,12 +147,12 @@ export default function BarraInferior({ chatActivo, setMensajes, onTituloGenerad
     return base.replace(/^http/, 'ws') + `${base.includes('?') ? '&' : '?'}token=${localStorage.getItem('token')}`
   }
 
-  function enviarStreaming(idChat, prompt, mensajeVisible, urlPDF, onTitulo) {
+  function enviarStreaming(idChat, prompt, mensajeVisible, urlPDF, documentoTexto, nombreDoc, onTitulo) {
     let recibioAlgo = false
     const ws = new WebSocket(wsUrl())
 
     ws.onopen = () => {
-      ws.send(JSON.stringify({ prompt, mensajeVisible, tipo: 'free', idChat, urlPDF }))
+      ws.send(JSON.stringify({ prompt, mensajeVisible, tipo: 'free', idChat, urlPDF, documentoTexto, nombreDoc }))
     }
 
     ws.onmessage = (event) => {
@@ -195,8 +195,12 @@ export default function BarraInferior({ chatActivo, setMensajes, onTituloGenerad
   }
 
   function enviarConContenido(textoActual, contenidoArchivos, mensajeVisible, urlPDF = null, nombrePDF = null) {
-    const promptCompleto = contenidoArchivos
-      ? `${textoActual || 'Analiza el siguiente documento y haz un resumen:'}\n\n${contenidoArchivos}`
+    // El texto del documento ya no se mete en el prompt: se manda aparte
+    // como documentoTexto para que el backend lo indexe (RAG) y solo
+    // recupere los fragmentos relevantes en preguntas futuras, en vez de
+    // reenviar el documento entero en cada turno de la conversación.
+    const prompt = contenidoArchivos
+      ? (textoActual || 'Analiza el siguiente documento y haz un resumen:')
       : textoActual
     const tipoDoc = contenidoArchivos ? detectarTipoDoc(contenidoArchivos) : null
     const mensajeUsuario = { rol: 'usuario', contenido: mensajeVisible, contenidoDoc: contenidoArchivos || null, tipoDoc, urlPDF, nombrePDF }
@@ -208,14 +212,14 @@ export default function BarraInferior({ chatActivo, setMensajes, onTituloGenerad
           onNuevoChat(nuevoChat)
           setMensajes([mensajeUsuario])
           setEsperando(true)
-          enviarStreaming(nuevoChat.id_chat, promptCompleto, mensajeVisible, urlPDF, (titulo) => onTituloGenerado(nuevoChat.id_chat, titulo))
+          enviarStreaming(nuevoChat.id_chat, prompt, mensajeVisible, urlPDF, contenidoArchivos, nombrePDF, (titulo) => onTituloGenerado(nuevoChat.id_chat, titulo))
         },
         (error) => console.error('Error creando chat:', error)
       )
     } else {
       setMensajes((prev) => [...prev, mensajeUsuario])
       setEsperando(true)
-      enviarStreaming(chatActivo.id_chat, promptCompleto, mensajeVisible, urlPDF, (titulo) => onTituloGenerado(chatActivo.id_chat, titulo))
+      enviarStreaming(chatActivo.id_chat, prompt, mensajeVisible, urlPDF, contenidoArchivos, nombrePDF, (titulo) => onTituloGenerado(chatActivo.id_chat, titulo))
     }
   }
 

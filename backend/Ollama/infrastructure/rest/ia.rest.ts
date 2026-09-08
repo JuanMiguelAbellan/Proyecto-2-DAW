@@ -47,9 +47,9 @@ const routerIA = express.Router();
  *         description: Error al contactar con Ollama
  */
 routerIA.post("/generate", isAuth, limitarPeticionesIA(20, 60_000), async (req: Request, res: Response) => {
-    const { prompt, mensajeVisible, tipo, idChat, urlPDF } = req.body;
+    const { prompt, mensajeVisible, tipo, idChat, urlPDF, documentoTexto, nombreDoc } = req.body;
     const idUsuario = req.body.id;
-    const respuesta = await iaUsecases.getRespuesta(prompt, mensajeVisible, tipo, idUsuario, idChat, urlPDF)
+    const respuesta = await iaUsecases.getRespuesta(prompt, mensajeVisible, tipo, idUsuario, idChat, urlPDF, documentoTexto, nombreDoc)
     console.log(respuesta);
 
     if (respuesta.contenido == null || respuesta.contenido == "") {

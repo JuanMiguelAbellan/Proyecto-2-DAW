@@ -12,6 +12,8 @@ interface MensajeEntrante {
     tipo?: string;
     idChat?: number;
     urlPDF?: string;
+    documentoTexto?: string;
+    nombreDoc?: string;
 }
 
 export default function setupChatWebSocket(server: Server): void {
@@ -52,6 +54,8 @@ export default function setupChatWebSocket(server: Server): void {
                     idUsuario,
                     datos.idChat,
                     datos.urlPDF,
+                    datos.documentoTexto,
+                    datos.nombreDoc,
                     (texto: string) => {
                         if (ws.readyState === WebSocket.OPEN) {
                             ws.send(JSON.stringify({ type: "chunk", content: texto }));

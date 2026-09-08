@@ -99,4 +99,27 @@ export default class IaRepositoryPostgres implements IaReposiroty {
         await executeQuery(`DELETE FROM mensajes WHERE id_chat = $1`, [idChat])
         await executeQuery(`DELETE FROM chats WHERE id_chat = $1`, [idChat])
     }
+    async guardarFragmentos(idChat: Number, idMensaje: Number | undefined, nombreDoc: string | undefined, fragmentos: { contenido: string, embedding: number[] }[]): Promise<void> {
+        if (fragmentos.length === 0) return
+        const valores: string[] = []
+        const params: any[] = []
+        fragmentos.forEach((f, i) => {
+            const base = i * 6
+            valores.push(`($${base + 1}, $${base + 2}, $${base + 3}, $${base + 4}, $${base + 5}, $${base + 6}::vector)`)
+            params.push(idChat, idMensaje ?? null, nombreDoc ?? null, i, f.contenido, `[${f.embedding.join(',')}]`)
+        })
+        const query = `INSERT INTO documento_chunks (id_chat, id_mensaje, nombre_doc, orden, contenido, embedding) VALUES ${valores.join(', ')}`
+        await executeQuery(query, params)
+    }
+    async buscarFragmentosRelevantes(idChat: Number, embeddingConsulta: number[], limite: number): Promise<{ contenido: string, nombreDoc: string }[]> {
+        const vectorLiteral = `[${embeddingConsulta.join(',')}]`
+        const query = `
+            SELECT contenido, nombre_doc AS "nombreDoc"
+            FROM documento_chunks
+            WHERE id_chat = $1
+            ORDER BY embedding <=> $2::vector
+            LIMIT $3`
+        const rows = await executeQuery(query, [idChat, vectorLiteral, limite])
+        return rows || []
+    }
 }

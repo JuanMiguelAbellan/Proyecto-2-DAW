@@ -14,4 +14,6 @@ export default interface IaReposiroty {
     addPreferencia(preferencia: String, idUsuario: Number): Promise<String>
     editPreferencia(preferencias: String, idUsuario: Number): Promise<String>
     eliminarChat(idChat: Number): Promise<void>
+    guardarFragmentos(idChat: Number, idMensaje: Number | undefined, nombreDoc: string | undefined, fragmentos: { contenido: string, embedding: number[] }[]): Promise<void>
+    buscarFragmentosRelevantes(idChat: Number, embeddingConsulta: number[], limite: number): Promise<{ contenido: string, nombreDoc: string }[]>
 }

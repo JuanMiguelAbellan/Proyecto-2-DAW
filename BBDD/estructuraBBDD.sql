@@ -1,3 +1,5 @@
+CREATE EXTENSION IF NOT EXISTS vector;
+
 CREATE TYPE rol_usuario AS ENUM ('admin', 'usuario');
 CREATE TYPE plan_subscripcion AS ENUM ('free', 'pro', 'empresa');
 CREATE TYPE estado_subscripcion AS ENUM ('activa', 'pendiente', 'cancelada', 'expirada');
@@ -62,3 +64,22 @@ CREATE TABLE documentos (
     FOREIGN KEY (id_mensaje) REFERENCES mensajes (id_mensaje)
     ON DELETE CASCADE
 );
+
+-- RAG: fragmentos de los documentos adjuntados, con su embedding, para
+-- recuperar solo los trozos relevantes en vez de reenviar el documento
+-- entero en cada mensaje del chat.
+CREATE TABLE documento_chunks (
+    id_chunk    SERIAL PRIMARY KEY,
+    id_chat     INTEGER NOT NULL,
+    id_mensaje  INTEGER,
+    nombre_doc  VARCHAR(255),
+    orden       INTEGER NOT NULL,
+    contenido   TEXT NOT NULL,
+    embedding   vector(768) NOT NULL,
+    creado_en   TIMESTAMP NOT NULL DEFAULT NOW(),
+    FOREIGN KEY (id_chat) REFERENCES chats (id_chat) ON DELETE CASCADE,
+    FOREIGN KEY (id_mensaje) REFERENCES mensajes (id_mensaje) ON DELETE CASCADE
+);
+
+CREATE INDEX documento_chunks_id_chat_idx ON documento_chunks (id_chat);
+CREATE INDEX documento_chunks_embedding_idx ON documento_chunks USING hnsw (embedding vector_cosine_ops);

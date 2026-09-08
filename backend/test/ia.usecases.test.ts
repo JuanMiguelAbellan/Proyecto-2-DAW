@@ -17,6 +17,8 @@ function crearRepoFalso(overrides: Partial<IaReposiroty> = {}): IaReposiroty {
     addPreferencia: jest.fn(),
     editPreferencia: jest.fn(),
     eliminarChat: jest.fn(),
+    guardarFragmentos: jest.fn(),
+    buscarFragmentosRelevantes: jest.fn().mockResolvedValue([]),
     ...overrides,
   } as unknown as IaReposiroty;
 }
@@ -27,6 +29,7 @@ function crearControllerFalso(overrides: Partial<IaController> = {}): IaControll
     chat: jest.fn().mockResolvedValue({ message: { role: "assistant", content: "Respuesta de prueba" } }),
     guardarDocS3: jest.fn().mockResolvedValue("clave-s3"),
     subirPDF: jest.fn().mockResolvedValue("https://r2.example.com/doc.pdf"),
+    embed: jest.fn().mockResolvedValue([[0.1, 0.2, 0.3]]),
     ...overrides,
   } as unknown as IaController;
 }
@@ -72,17 +75,20 @@ describe("IaUseCases.getRespuesta", () => {
     expect(mensajesEnviados[2]).toEqual({ role: "assistant", content: "Primera respuesta" });
   });
 
-  it("clasifica el documento cuando el prompt referencia uno", async () => {
+  it("clasifica el documento cuando se adjunta uno nuevo", async () => {
     const repo = crearRepoFalso();
     const controller = crearControllerFalso({ generate: jest.fn().mockResolvedValue({ response: "legal" }) });
     const usecases = new IaUseCases(repo, controller);
 
     const mensaje = await usecases.getRespuesta(
-      "[Documento: contrato.pdf] Resume esto",
+      "Resume esto",
       "Resume esto",
       "free",
       1,
-      10
+      10,
+      undefined,
+      "Texto completo del contrato de alquiler...",
+      "contrato.pdf"
     );
 
     expect(controller.generate).toHaveBeenCalled();
@@ -94,7 +100,7 @@ describe("IaUseCases.getRespuesta", () => {
     const controller = crearControllerFalso({ generate: jest.fn().mockRejectedValue(new Error("timeout")) });
     const usecases = new IaUseCases(repo, controller);
 
-    const mensaje = await usecases.getRespuesta("[Documento: x.pdf] Resume", "Resume", "free", 1, 10);
+    const mensaje = await usecases.getRespuesta("Resume", "Resume", "free", 1, 10, undefined, "Texto del documento", "x.pdf");
 
     expect(mensaje.tipoDoc).toBe("general");
   });
@@ -113,6 +119,68 @@ describe("IaUseCases.getRespuesta", () => {
     expect(mensaje.tipo).toBe("documento");
     expect(mensaje.contenidoDoc).toBe("Contenido del documento generado");
     expect(controller.guardarDocS3).toHaveBeenCalled();
+  });
+
+  it("indexa (chunking + embeddings) un documento recién adjuntado en vez de solo reenviarlo", async () => {
+    const repo = crearRepoFalso();
+    const embed = jest.fn().mockImplementation((textos: string[]) => Promise.resolve(textos.map(() => [0.1, 0.2])));
+    const controller = crearControllerFalso({ embed });
+    const usecases = new IaUseCases(repo, controller);
+
+    const textoLargo = "a".repeat(2500); // debe partirse en varios fragmentos
+    await usecases.getRespuesta("Resume esto", "Resume esto", "free", 1, 10, undefined, textoLargo, "doc.pdf");
+    // ingestarDocumento es fire-and-forget: dejamos que su cadena de promesas (mocks) se asiente
+    await new Promise((resolve) => setImmediate(resolve));
+
+    expect(embed).toHaveBeenCalled();
+    const fragmentosEnviados = embed.mock.calls[0][0];
+    expect(fragmentosEnviados.length).toBeGreaterThan(1);
+
+    expect(repo.guardarFragmentos).toHaveBeenCalledTimes(1);
+    const [idChatGuardado, , nombreDocGuardado, fragmentosGuardados] = (repo.guardarFragmentos as jest.Mock).mock.calls[0];
+    expect(idChatGuardado).toBe(10);
+    expect(nombreDocGuardado).toBe("doc.pdf");
+    expect(fragmentosGuardados.length).toBe(fragmentosEnviados.length);
+  });
+
+  it("incluye un extracto directo del documento recién adjuntado en el prompt actual", async () => {
+    const repo = crearRepoFalso();
+    const controller = crearControllerFalso();
+    const usecases = new IaUseCases(repo, controller);
+
+    await usecases.getRespuesta("Resume esto", "Resume esto", "free", 1, 10, undefined, "Contenido del documento adjuntado", "doc.pdf");
+
+    const mensajesEnviados = (controller.chat as jest.Mock).mock.calls[0][0];
+    const mensajeUsuario = mensajesEnviados[mensajesEnviados.length - 1];
+    expect(mensajeUsuario.content).toContain("Contenido del documento adjuntado");
+  });
+
+  it("en turnos sin documento nuevo, recupera solo los fragmentos relevantes (RAG) en vez del documento completo", async () => {
+    const repo = crearRepoFalso({
+      buscarFragmentosRelevantes: jest.fn().mockResolvedValue([
+        { contenido: "Fragmento relevante sobre el plazo del contrato", nombreDoc: "contrato.pdf" },
+      ]),
+    });
+    const controller = crearControllerFalso();
+    const usecases = new IaUseCases(repo, controller);
+
+    await usecases.getRespuesta("¿Cuál es el plazo?", "¿Cuál es el plazo?", "free", 1, 10);
+
+    expect(repo.buscarFragmentosRelevantes).toHaveBeenCalledWith(10, expect.any(Array), expect.any(Number));
+    const mensajesEnviados = (controller.chat as jest.Mock).mock.calls[0][0];
+    const mensajeUsuario = mensajesEnviados[mensajesEnviados.length - 1];
+    expect(mensajeUsuario.content).toContain("Fragmento relevante sobre el plazo del contrato");
+    expect(mensajeUsuario.content).toContain("¿Cuál es el plazo?");
+  });
+
+  it("no busca fragmentos si el mensaje no pertenece a un chat", async () => {
+    const repo = crearRepoFalso();
+    const controller = crearControllerFalso();
+    const usecases = new IaUseCases(repo, controller);
+
+    await usecases.getRespuesta("Hola", "Hola", "free", 1);
+
+    expect(repo.buscarFragmentosRelevantes).not.toHaveBeenCalled();
   });
 });
 

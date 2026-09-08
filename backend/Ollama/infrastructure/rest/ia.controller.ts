@@ -81,6 +81,11 @@ export default class IaController{
       return null
     }
   }
+  async embed(textos: string[]): Promise<number[][]> {
+    const data = await this.llamarOllama("/api/embed", { model: "nomic-embed-text", input: textos })
+    return data?.embeddings || []
+  }
+
   private getR2Client(): S3Client {
     // Cloudflare R2 en vez de AWS S3: misma API (S3-compatible), solo cambia
     // el endpoint/región y las credenciales. 10GB gratis, sin coste de salida.
