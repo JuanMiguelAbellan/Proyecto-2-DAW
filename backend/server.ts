@@ -11,7 +11,6 @@ dotenv.config();
 const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost",
-  "https://frontend-psi-ashen-43.vercel.app",
   process.env.FRONTEND_URL
 ].filter(Boolean);
 const options: cors.CorsOptions = {
