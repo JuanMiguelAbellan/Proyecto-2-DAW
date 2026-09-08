@@ -4,6 +4,7 @@ import Usuario from "./Usuario"
 export default interface UsuarioRepository{
     login(usuario: Usuario): Promise<Usuario | null>
     registro(usuario: Usuario): Promise<Usuario>
+    existeEmail(email: string): Promise<boolean>
     insertarDoc(documento:Mensaje, key:string)
     editarPrefencias(preferencias, idUser:Number):Promise<void>
     contarDocsMes(idUsuario: Number): Promise<Number>

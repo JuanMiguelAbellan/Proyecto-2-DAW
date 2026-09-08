@@ -107,6 +107,11 @@ export default class UsuarioRepositoryPostgres implements UsuarioRepository{
         };
         return usuarioDB;
     }
+    async existeEmail(email: string): Promise<boolean> {
+        const result: any[] = await executeQuery(`SELECT 1 FROM usuarios WHERE email = $1`, [email])
+        return !!(result && result.length > 0)
+    }
+
     async registro(usuario: Usuario): Promise<Usuario> {
         const preferenciasJson = JSON.stringify(usuario.preferencias ?? {});
         const query = `INSERT INTO usuarios (email, password_hash, nombre, apellidos, rol, preferencias)

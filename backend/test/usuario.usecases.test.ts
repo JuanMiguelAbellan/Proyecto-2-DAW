@@ -7,6 +7,7 @@ function crearRepoFalso(overrides: Partial<UsuarioRepository> = {}): UsuarioRepo
   return {
     login: jest.fn(),
     registro: jest.fn(),
+    existeEmail: jest.fn().mockResolvedValue(false),
     insertarDoc: jest.fn(),
     editarPrefencias: jest.fn(),
     contarDocsMes: jest.fn().mockResolvedValue(0),
@@ -71,6 +72,26 @@ describe("UsuarioUseCases", () => {
 
       const usuarioGuardado = registro.mock.calls[0][0];
       expect(usuarioGuardado.password).not.toBe("plano123");
+    });
+
+    it("rechaza el registro si el email ya existe, sin llegar a insertar", async () => {
+      const registro = jest.fn();
+      const repo = crearRepoFalso({ existeEmail: jest.fn().mockResolvedValue(true), registro });
+      const usecases = new UsuarioUseCases(repo, controllerFalso);
+
+      await expect(usecases.registro({ email: "a@a.com", password: "plano123" })).rejects.toThrow(
+        "Ya existe una cuenta con ese email"
+      );
+      expect(registro).not.toHaveBeenCalled();
+    });
+
+    it("no falla si el envío del email de verificación falla (registro ya guardado)", async () => {
+      const repo = crearRepoFalso({
+        registro: jest.fn().mockResolvedValue({ id: 5, email: "a@a.com", nombre: "Ana" }),
+      });
+      const usecases = new UsuarioUseCases(repo, controllerFalso);
+
+      await expect(usecases.registro({ email: "a@a.com", password: "plano123" })).resolves.toBeDefined();
     });
 
     it("genera y guarda un token de verificación de email tras crear el usuario", async () => {

@@ -44,11 +44,11 @@ routerUsuario.post("/registro", async (req : Request, res: Response)=>{
         rol:rol,
         apellidos: apellidos
     }
-    const usuarioRegistrado = await usuarioUseCases.registro(usuario)
-    if(usuarioRegistrado != null){
+    try {
+        const usuarioRegistrado = await usuarioUseCases.registro(usuario)
         res.status(200).send(usuarioRegistrado)
-    } else{
-        res.status(400).send("Error al registrar el usuario")
+    } catch (e) {
+        res.status(400).json({ error: e.message })
     }
 })
 

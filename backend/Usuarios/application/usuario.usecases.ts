@@ -34,19 +34,24 @@ export default class UsuarioUseCases{
          if (!usuario.password){
             throw new Error("Falta password");
         }
+        if (await this.usuarioRepository.existeEmail(usuario.email)) {
+            throw new Error("Ya existe una cuenta con ese email");
+        }
         const cifrada = hash(usuario.password);
         usuario.password = cifrada;
         const usuarioCreado = await this.usuarioRepository.registro(usuario);
 
         const token = randomBytes(32).toString("hex");
         await this.usuarioRepository.guardarTokenVerificacion(usuarioCreado.id, token);
-        await enviarEmail(
+        // No esperamos a que el email salga: si el SMTP tarda o falla no debe
+        // tirar abajo un registro que ya se ha guardado correctamente en BD.
+        enviarEmail(
             usuarioCreado.email,
             "Verifica tu cuenta de IADocuments",
             `<p>Hola ${usuarioCreado.nombre || ""},</p>
              <p>Confirma tu cuenta haciendo clic en el siguiente enlace:</p>
              <p><a href="${FRONTEND_URL}/verificar-email/${token}">${FRONTEND_URL}/verificar-email/${token}</a></p>`
-        );
+        ).catch(err => console.error("Error enviando email de verificación:", err));
 
         return usuarioCreado;
     }
@@ -62,14 +67,14 @@ export default class UsuarioUseCases{
         // Si el email no existe no avisamos del motivo, para no filtrar qué
         // correos están registrados.
         if (!existe) return;
-        await enviarEmail(
+        enviarEmail(
             email,
             "Recupera tu contraseña de IADocuments",
             `<p>Hemos recibido una solicitud para restablecer tu contraseña.</p>
              <p>Si has sido tú, haz clic en el siguiente enlace (caduca en 1 hora):</p>
              <p><a href="${FRONTEND_URL}/resetear-password/${token}">${FRONTEND_URL}/resetear-password/${token}</a></p>
              <p>Si no has sido tú, puedes ignorar este correo.</p>`
-        );
+        ).catch(err => console.error("Error enviando email de recuperación:", err));
     }
 
     async resetearPassword(token: string, nuevaPassword: string): Promise<boolean> {
