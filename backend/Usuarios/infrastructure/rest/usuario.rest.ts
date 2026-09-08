@@ -85,15 +85,13 @@ routerUsuario.post("/login", async(req : Request, res: Response)=>{
         email: email,
         password: password
     }
-    const usuario = await usuarioUseCases.login(usuarioAPI)
-    if(usuario == null){
-        res.status(404).json({ mensaje: "Usuario no encontrado" });
+    try {
+        const usuario = await usuarioUseCases.login(usuarioAPI)
+        const token = createToken(usuario)
+        res.json({ token })
+    } catch (e) {
+        res.status(401).json({ mensaje: "Email o contraseña incorrectos" })
     }
-    let token=""
-    if(usuario != null){
-        token = createToken(usuario);
-    }
-    res.json({ token });
 })
 
 routerUsuario.post("/guardarDoc", isAuth, async(req: Request, res: Response)=>{
