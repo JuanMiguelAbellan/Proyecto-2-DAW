@@ -48,6 +48,7 @@ routerUsuario.post("/registro", async (req : Request, res: Response)=>{
         const usuarioRegistrado = await usuarioUseCases.registro(usuario)
         res.status(200).send(usuarioRegistrado)
     } catch (e) {
+        console.error("Error en /registro:", e)
         res.status(400).json({ error: e.message })
     }
 })
